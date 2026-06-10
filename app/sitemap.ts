@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://cursor-rules-generator.vercel.app";
+  const baseUrl = "https://cursorgenerator.dev";
   const lastModified = new Date();
 
   return [

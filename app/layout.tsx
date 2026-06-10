@@ -19,7 +19,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const siteUrl = "https://cursor-rules-generator.vercel.app";
+const siteUrl = "https://cursorgenerator.dev";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

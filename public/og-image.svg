@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#09090b"/>
+  <text x="80" y="280" font-family="monospace" font-size="52" font-weight="bold" fill="#fafafa">Cursor Rules Generator</text>
+  <text x="80" y="340" font-family="monospace" font-size="28" fill="#a1a1aa">Free .cursorrules File Generator for Cursor IDE</text>
+  <text x="80" y="420" font-family="monospace" font-size="20" fill="#52525b">21+ tech stacks · Real-time preview · One-click download</text>
+  <rect x="80" y="470" width="160" height="40" rx="6" fill="#2563eb"/>
+  <text x="160" y="496" font-family="monospace" font-size="16" font-weight="bold" fill="#ffffff" text-anchor="middle">Generate Rules</text>
+</svg>

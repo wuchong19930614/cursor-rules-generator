@@ -20,7 +20,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const siteUrl = "https://cursorgenerator.dev";
+const siteUrl = "https://www.cursorgenerator.dev";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

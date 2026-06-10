@@ -1,7 +1,7 @@
 // lib/schema.ts
 // JSON-LD Schema 工厂函数 — 5 套，按设计文档 4.5 节
 
-const baseUrl = "https://cursorgenerator.dev";
+const baseUrl = "https://www.cursorgenerator.dev";
 
 /** Organization Schema — 全局站点发布者信息 */
 export function getOrganizationSchema(): object {

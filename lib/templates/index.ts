@@ -1,5 +1,5 @@
 // lib/templates/index.ts
-// 模板注册表 — 按设计文档 3.4 节实现
+// 模板注册表 — 按设计文档 3.4 节实现（21 个模板）
 
 import type { CursorRuleTemplate } from './types';
 import { reactTemplate } from './react';
@@ -7,14 +7,51 @@ import { nextjsTemplate } from './nextjs';
 import { vueTemplate } from './vue';
 import { typescriptTemplate } from './typescript';
 import { pythonTemplate } from './python';
+import { svelteTemplate } from './svelte';
+import { angularTemplate } from './angular';
+import { astroTemplate } from './astro';
+import { remixTemplate } from './remix';
+import { nuxtTemplate } from './nuxt';
+import { goTemplate } from './go';
+import { rustTemplate } from './rust';
+import { nodeTemplate } from './node';
+import { djangoTemplate } from './django';
+import { flaskTemplate } from './flask';
+import { fastapiTemplate } from './fastapi';
+import { reactNativeTemplate } from './react-native';
+import { flutterTemplate } from './flutter';
+import { tailwindTemplate } from './tailwind';
+import { prismaTemplate } from './prisma';
+import { dockerTemplate } from './docker';
 
-/** 模板注册表 */
+/** 模板注册表（21 个模板） */
 export const templateRegistry: Record<string, CursorRuleTemplate> = {
+  // Frontend
   react: reactTemplate,
   nextjs: nextjsTemplate,
   vue: vueTemplate,
-  typescript: typescriptTemplate,
+  svelte: svelteTemplate,
+  angular: angularTemplate,
+  astro: astroTemplate,
+  tailwind: tailwindTemplate,
+  // Fullstack
+  remix: remixTemplate,
+  nuxt: nuxtTemplate,
+  // Backend
+  go: goTemplate,
+  rust: rustTemplate,
+  node: nodeTemplate,
   python: pythonTemplate,
+  django: djangoTemplate,
+  flask: flaskTemplate,
+  fastapi: fastapiTemplate,
+  // Mobile
+  'react-native': reactNativeTemplate,
+  flutter: flutterTemplate,
+  // Library / Infrastructure
+  typescript: typescriptTemplate,
+  prisma: prismaTemplate,
+  docker: dockerTemplate,
 };
 
 /**

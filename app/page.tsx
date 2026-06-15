@@ -1,3 +1,4 @@
+import Link from "next/link";
 import GeneratorForm from "@/components/generator/generator-form";
 
 export default function Home() {
@@ -14,6 +15,14 @@ export default function Home() {
             stack in minutes. Pick your stack, set your style, and get
             production-ready AI rules.
           </p>
+          <div className="mt-4">
+            <Link
+              href="/guides/how-to-use-cursor-rules"
+              className="text-blue-600 dark:text-blue-400 hover:underline text-sm"
+            >
+              New to Cursor Rules? Read our step-by-step guide &rarr;
+            </Link>
+          </div>
         </div>
 
         {/* Generator Form (Client Component) */}
@@ -52,7 +61,7 @@ export default function Home() {
             </p>
           </div>
 
-          {/* What is a .cursorrules File? (200+ words, targets ".cursorrules" keyword) */}
+          {/* What is a .cursorrules File? */}
           <div className="mb-16">
             <h2 className="text-2xl sm:text-3xl font-semibold text-zinc-900 dark:text-zinc-50 mb-4">
               What is a <code>.cursorrules</code> File?
@@ -175,13 +184,71 @@ export default function Home() {
               </li>
               <li>
                 <strong className="text-zinc-900 dark:text-zinc-50">
-                  Download & Use
+                  Download &amp; Use
                 </strong>{" "}
                 — Preview your rules in real-time, then download the{" "}
                 <code>.cursorrules</code> file. Place it in your project root
                 and Cursor applies it instantly.
               </li>
             </ol>
+          </div>
+
+          {/* Best Practices for Writing .cursorrules */}
+          <div className="mb-16">
+            <h2 className="text-2xl sm:text-3xl font-semibold text-zinc-900 dark:text-zinc-50 mb-4">
+              Best Practices for Writing .cursorrules
+            </h2>
+            <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed mb-4">
+              Writing effective <code>.cursorrules</code> files is both an art
+              and a science. The best rules are specific enough to guide the AI
+              but flexible enough to avoid over-constraining it. Here are the
+              key principles we follow when designing our templates:
+            </p>
+            <ul className="list-disc list-inside space-y-2 text-zinc-600 dark:text-zinc-400 leading-relaxed mb-4">
+              <li>
+                <strong className="text-zinc-900 dark:text-zinc-50">
+                  Be explicit about code style.
+                </strong>{" "}
+                Specify indentation (tabs vs. spaces, width), quote style
+                (single vs. double), semicolon usage, and trailing commas. The
+                AI is remarkably good at following these mechanical rules when
+                they are clearly stated.
+              </li>
+              <li>
+                <strong className="text-zinc-900 dark:text-zinc-50">
+                  Define naming conventions upfront.
+                </strong>{" "}
+                Tell the AI whether to use camelCase, PascalCase, snake_case, or
+                kebab-case for variables, functions, classes, and files.
+                Consistent naming is one of the highest-ROI rules you can set.
+              </li>
+              <li>
+                <strong className="text-zinc-900 dark:text-zinc-50">
+                  Include framework-specific patterns.
+                </strong>{" "}
+                For React, specify hooks rules and component structure. For Go,
+                define error handling idioms. For Python, set type hint
+                expectations. The more domain-specific your rules, the better
+                the AI output.
+              </li>
+              <li>
+                <strong className="text-zinc-900 dark:text-zinc-50">
+                  Keep rules concise and focused.
+                </strong>{" "}
+                A <code>.cursorrules</code> file should be comprehensive but not
+                bloated. Aim for 50-150 lines. If you exceed 200 lines,
+                consider whether some rules are redundant or better enforced by
+                a linter.
+              </li>
+              <li>
+                <strong className="text-zinc-900 dark:text-zinc-50">
+                  Version your rules alongside your code.
+                </strong>{" "}
+                Commit your <code>.cursorrules</code> file to version control so
+                your entire team uses the same AI configuration. Update it as
+                your conventions evolve.
+              </li>
+            </ul>
           </div>
 
           {/* FAQ */}
@@ -222,6 +289,24 @@ export default function Home() {
                 </div>
               ))}
             </dl>
+          </div>
+
+          {/* Navigation */}
+          <div className="mt-10 pt-6 border-t border-zinc-200 dark:border-zinc-700">
+            <div className="flex flex-wrap gap-4">
+              <Link
+                href="/about"
+                className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium"
+              >
+                Learn more about this project &rarr;
+              </Link>
+              <Link
+                href="/guides/how-to-use-cursor-rules"
+                className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium"
+              >
+                How to Use Cursor Rules: Step-by-Step Guide &rarr;
+              </Link>
+            </div>
           </div>
         </section>
       </main>

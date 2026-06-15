@@ -17,6 +17,56 @@ export function getOrganizationSchema(): object {
   };
 }
 
+/** FAQPage Schema — About 页面结构化数据 */
+export function getAboutFAQPageSchema(): object {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "How does Cursor Rules Generator choose best practices for each framework?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Our templates are researched and maintained by developers with real-world experience in each framework. We follow official style guides, community conventions, and modern best practices. Templates are regularly updated as frameworks evolve and new patterns emerge.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Can I contribute a new template or improve an existing one?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes! The project is open source under the MIT license on GitHub. You can submit pull requests for new framework templates, improvements to existing rules, bug fixes, or documentation updates. All contributions are reviewed and appreciated.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Does Cursor Rules Generator collect my data or generated rules?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "No. The generator runs entirely in your browser. Your tech stack selections, style preferences, custom rules, and generated output never leave your device. We do not store, transmit, or have any access to your rules data. We only use anonymous analytics to understand aggregate traffic patterns.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "What happens when I combine multiple tech stacks?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "When you select multiple stacks, our template engine intelligently merges the best practices from each, deduplicates overlapping guidance, and applies your style preferences uniformly across all rules. For example, selecting React, TypeScript, and Tailwind CSS produces rules covering JSX conventions, TypeScript strictness, and Tailwind utility-first patterns in a single cohesive file.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Is Cursor Rules Generator affiliated with Cursor IDE?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "No, Cursor Rules Generator is an independent community project and is not officially affiliated with Cursor IDE or Anysphere. We built this tool to help the developer community get more value from Cursor's .cursorrules feature, which we believe is one of the most impactful capabilities in AI-assisted coding.",
+        },
+      },
+    ],
+  };
+}
+
 /** WebSite Schema — 搜索框标记 */
 export function getWebSiteSchema(): object {
   return {

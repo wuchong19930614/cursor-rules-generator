@@ -205,6 +205,52 @@ export default function HowToUseCursorRulesPage() {
             legitimate code patterns.
           </p>
 
+          {/* Advanced Tips */}
+          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3">
+            Advanced Configuration Tips
+          </h2>
+          <p>
+            Once your basic rules are in place, consider these advanced
+            techniques to get even more from your <code>.cursorrules</code> file.
+            Add project-specific context such as your preferred testing framework
+            (Jest, Vitest, pytest), your CI pipeline requirements, and any
+            internal libraries or conventions that your team relies on. You can
+            also include file organization rules — for example, specifying where
+            components, utilities, and tests should live in your directory
+            structure. The more context you provide, the more precisely the AI
+            assistant can generate code that fits your actual workflow rather
+            than a generic template.
+          </p>
+          <p>
+            For monorepos and multi-package projects, place a separate{" "}
+            <code>.cursorrules</code> file in each package root. Cursor IDE reads
+            the rules file closest to the file being edited, allowing each
+            package to have its own conventions while sharing a common root-level
+            rules file for cross-cutting standards. This layered approach gives
+            you fine-grained control without duplicating shared rules across
+            every package. You can also reference external documentation or style
+            guides within your rules by including URLs that the AI can follow
+            when generating code, though this depends on Cursor&apos;s current
+            web access capabilities.
+          </p>
+
+          {/* Troubleshooting */}
+          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3">
+            Troubleshooting: When Rules Do Not Work as Expected
+          </h2>
+          <p>
+            If the AI consistently ignores certain rules, the most common cause
+            is ambiguity. Vague instructions like &quot;write clean code&quot; or
+            &quot;follow best practices&quot; give the AI no concrete direction. Rewrite
+            the rule with explicit, measurable requirements — specify exactly
+            what indentation width, what quote character, and what naming
+            pattern the AI must use. If the AI still does not comply, try
+            reordering your rules: Cursor processes <code>.cursorrules</code> as
+            a single prompt, and instructions near the end can sometimes override
+            earlier ones. Move your most important rules to the top of the file
+            for maximum impact.
+          </p>
+
           {/* Navigation */}
           <div className="mt-10 pt-6 border-t border-zinc-200 dark:border-zinc-700 not-prose">
             <div className="flex flex-wrap gap-4">

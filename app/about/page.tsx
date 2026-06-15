@@ -191,6 +191,39 @@ export default function AboutPage() {
             project&apos;s root directory. Cursor IDE picks it up instantly.
           </p>
 
+          {/* ---- Topic: Template Quality &amp; Maintenance ---- */}
+          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3">
+            Template Quality &amp; Maintenance
+          </h2>
+          <p>
+            Every template in our library goes through a rigorous quality review
+            before being published. We research each framework&apos;s official
+            style guides, community conventions, and real-world usage patterns
+            from popular open-source projects. The rules we include are not
+            generic suggestions — they reflect the actual coding standards that
+            experienced developers follow in production. For example, our React
+            template enforces functional components with explicit TypeScript
+            types, our Go template mandates idiomatic error handling and package
+            organization, and our Python template aligns with PEP 8 and modern
+            type annotation practices. We do not simply copy-paste documentation
+            into a rules file; each rule is written in clear, unambiguous
+            language that Cursor IDE interprets consistently.
+          </p>
+          <p>
+            Maintenance is an ongoing commitment. JavaScript frameworks release
+            major versions with breaking changes, TypeScript introduces new
+            features that shift best practices, and community conventions evolve
+            as new patterns emerge. We monitor framework changelogs, community
+            discussions on GitHub and Reddit, and industry blog posts to keep our
+            templates current. When React 19 introduced Server Components as the
+            default, we updated our React and Next.js templates to include rules
+            for client and server component boundaries. When Go 1.22 changed loop
+            variable semantics, our Go template followed suit. You benefit from
+            this continuous maintenance automatically — simply regenerate your
+            rules whenever you update your project&apos;s dependencies, and you
+            will receive rules that reflect the latest ecosystem standards.
+          </p>
+
           {/* ---- Topic 3: Supported Tech Stacks ---- */}
           <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3">
             Supported Tech Stacks
@@ -276,6 +309,33 @@ export default function AboutPage() {
             to students. This ensures that every student&apos;s AI assistant
             enforces the same coding standards taught in class, reinforcing
             good habits and making assignment grading more consistent.
+          </p>
+
+          {/* ---- Topic: Getting Started ---- */}
+          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3">
+            Getting Started in Under a Minute
+          </h2>
+          <p>
+            Using Cursor Rules Generator is intentionally simple. Start by
+            visiting the{" "}
+            <Link
+              href="/"
+              className="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              generator page
+            </Link>
+            , where you will see a clean interface with checkboxes for all 21
+            tech stacks. Select the frameworks your project uses — you can mix
+            frontend and backend stacks freely. Below the framework selector,
+            choose your coding style preferences: indentation width, quote style,
+            semicolon usage, and naming convention. If you have project-specific
+            requirements, type them into the custom rules text area. The
+            real-time preview updates instantly as you make changes, so you can
+            see exactly what your rules will look like before downloading. Once
+            satisfied, click the download button and save the file to your
+            project root. Cursor IDE detects it on the next interaction — no
+            restart required, no plugins, no accounts, and no payment of any
+            kind.
           </p>
 
           {/* ---- Topic 6: Privacy & Data ---- */}

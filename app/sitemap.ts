@@ -15,7 +15,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${baseUrl}/about`,
       lastModified,
       changeFrequency: "monthly",
-      priority: 0.5,
+      priority: 0.6,
+    },
+    {
+      url: `${baseUrl}/guides/how-to-use-cursor-rules`,
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.7,
     },
   ];
 }

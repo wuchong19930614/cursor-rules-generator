@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import type { StyleDefaults } from '@/lib/templates/types';
 
 interface StepStyleProps {
@@ -54,6 +55,7 @@ function SegmentedControl<T extends string>({
             min-h-[44px] px-3 py-2
             rounded-lg border text-sm text-left
             transition-all duration-150
+            focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500
             ${
               value === opt.value
                 ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 ring-1 ring-blue-500'
@@ -73,6 +75,33 @@ function SegmentedControl<T extends string>({
   );
 }
 
+const DEFAULT_STYLE: StyleDefaults = {
+  indentSize: 2,
+  useTabs: false,
+  quotes: 'double',
+  semicolons: true,
+  namingConvention: 'camelCase',
+};
+const DEFAULT_AI_STRICTNESS = 'moderate';
+const DEFAULT_NAMING = 'camelCase';
+
+/** Check if any style option has been changed from defaults */
+function isUsingDefaults(
+  style: StyleDefaults,
+  aiStrictness: string,
+  namingConvention: string
+): boolean {
+  return (
+    style.indentSize === DEFAULT_STYLE.indentSize &&
+    style.useTabs === DEFAULT_STYLE.useTabs &&
+    style.quotes === DEFAULT_STYLE.quotes &&
+    style.semicolons === DEFAULT_STYLE.semicolons &&
+    style.namingConvention === DEFAULT_STYLE.namingConvention &&
+    aiStrictness === DEFAULT_AI_STRICTNESS &&
+    namingConvention === DEFAULT_NAMING
+  );
+}
+
 export default function StepStyle({
   style,
   aiStrictness,
@@ -81,6 +110,10 @@ export default function StepStyle({
   onAiStrictnessChange,
   onNamingConventionChange,
 }: StepStyleProps) {
+  const [dismissedHint, setDismissedHint] = useState(false);
+
+  const showDefaultHint = isUsingDefaults(style, aiStrictness, namingConvention) && !dismissedHint;
+
   return (
     <div className="space-y-6">
       <div>
@@ -91,6 +124,31 @@ export default function StepStyle({
           Customize how your code should be formatted.
         </p>
       </div>
+
+      {/* Empty state / default hint */}
+      {showDefaultHint && (
+        <div className="flex items-start gap-3 p-3 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20 text-sm text-blue-700 dark:text-blue-300">
+          <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <div className="flex-1 min-w-0">
+            <p className="font-medium">Smart defaults applied</p>
+            <p className="mt-0.5 text-blue-600/80 dark:text-blue-300/80">
+              We&apos;ve picked sensible defaults based on your tech stack. Customize any option below to match your team&apos;s conventions.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setDismissedHint(true)}
+            className="flex-shrink-0 p-1 rounded hover:bg-blue-100 dark:hover:bg-blue-800/50 transition-colors"
+            aria-label="Dismiss hint"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      )}
 
       {/* Indentation */}
       <fieldset>
@@ -118,6 +176,7 @@ export default function StepStyle({
           className={`
             relative inline-flex h-6 w-11 items-center rounded-full
             transition-colors duration-200
+            focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500
             ${style.useTabs ? 'bg-blue-600' : 'bg-zinc-200 dark:bg-zinc-700'}
           `}
         >
@@ -148,6 +207,7 @@ export default function StepStyle({
               className={`
                 flex-1 min-h-[44px] px-3 py-2 rounded-lg border text-sm
                 transition-all duration-150
+                focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500
                 ${
                   style.quotes === q
                     ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 ring-1 ring-blue-500'
@@ -174,6 +234,7 @@ export default function StepStyle({
           className={`
             relative inline-flex h-6 w-11 items-center rounded-full
             transition-colors duration-200
+            focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500
             ${style.semicolons ? 'bg-blue-600' : 'bg-zinc-200 dark:bg-zinc-700'}
           `}
         >

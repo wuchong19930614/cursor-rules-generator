@@ -3,7 +3,7 @@ import GeneratorForm from "@/components/generator/generator-form";
 export default function Home() {
   return (
     <div className="flex flex-col flex-1 bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex-1 w-full max-w-3xl mx-auto py-12 px-4 sm:px-6">
+      <main id="main-content" className="flex-1 w-full max-w-3xl mx-auto py-12 px-4 sm:px-6">
         {/* Hero section */}
         <div className="text-center mb-10">
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">

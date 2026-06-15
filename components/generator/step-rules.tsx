@@ -12,6 +12,15 @@ interface StepRulesProps {
   onRulesChange: (rules: CustomRule[]) => void;
 }
 
+function Tooltip({ text }: { text: string }) {
+  return (
+    <span className="absolute left-0 -top-8 z-10 px-2 py-1 rounded text-xs bg-zinc-800 dark:bg-zinc-100 text-zinc-100 dark:text-zinc-800 shadow-lg whitespace-nowrap pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+      {text}
+      <span className="absolute left-3 top-full -mt-0.5 border-4 border-transparent border-t-zinc-800 dark:border-t-zinc-100" />
+    </span>
+  );
+}
+
 export default function StepRules({
   customRules,
   onRulesChange,
@@ -70,30 +79,41 @@ export default function StepRules({
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1 space-y-2">
-                  <input
-                    type="text"
-                    value={rule.title}
-                    onChange={(e) => updateRule(index, 'title', e.target.value)}
-                    className="w-full px-2 py-1 rounded border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    placeholder="Rule title"
-                    aria-label={`Rule ${index + 1} title`}
-                  />
-                  <textarea
-                    value={rule.content}
-                    onChange={(e) =>
-                      updateRule(index, 'content', e.target.value)
-                    }
-                    rows={2}
-                    className="w-full px-2 py-1 rounded border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-blue-500 resize-y"
-                    placeholder="Rule content"
-                    aria-label={`Rule ${index + 1} content`}
-                  />
+                  {/* Title field with tooltip */}
+                  <div className="group relative">
+                    <input
+                      type="text"
+                      value={rule.title}
+                      onChange={(e) => updateRule(index, 'title', e.target.value)}
+                      className="w-full px-2 py-1 rounded border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-blue-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+                      placeholder="Rule title"
+                      aria-label={`Rule ${index + 1} title`}
+                      title="A short, descriptive name for this custom rule (e.g., 'Commit Style', 'Testing Standards')"
+                    />
+                    <Tooltip text="Rule name — shown as a section heading in your .cursorrules file" />
+                  </div>
+                  {/* Content field with tooltip */}
+                  <div className="group relative">
+                    <textarea
+                      value={rule.content}
+                      onChange={(e) =>
+                        updateRule(index, 'content', e.target.value)
+                      }
+                      rows={2}
+                      className="w-full px-2 py-1 rounded border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-blue-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 resize-y"
+                      placeholder="Rule content"
+                      aria-label={`Rule ${index + 1} content`}
+                      title="The specific instructions or conventions for this rule (e.g., 'Use conventional commits: feat:, fix:, chore:, docs:')"
+                    />
+                    <Tooltip text="Rule body — describes exactly what the AI should follow for this convention" />
+                  </div>
                 </div>
                 <button
                   type="button"
                   onClick={() => removeRule(index)}
-                  className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                  className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500"
                   aria-label={`Remove rule ${index + 1}`}
+                  title="Remove this custom rule"
                 >
                   <svg
                     className="w-5 h-5"
@@ -120,30 +140,38 @@ export default function StepRules({
         <h3 className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
           Add a custom rule
         </h3>
-        <input
-          type="text"
-          value={newTitle}
-          onChange={(e) => setNewTitle(e.target.value)}
-          placeholder="Rule title (e.g., Commit Style)"
-          className="w-full px-2 py-1.5 rounded border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-1 focus:ring-blue-500"
-          aria-label="New rule title"
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') e.preventDefault();
-          }}
-        />
-        <textarea
-          value={newContent}
-          onChange={(e) => setNewContent(e.target.value)}
-          rows={3}
-          placeholder="Rule description (e.g., Use conventional commits: feat, fix, chore...)"
-          className="w-full px-2 py-1.5 rounded border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-1 focus:ring-blue-500 resize-y"
-          aria-label="New rule content"
-        />
+        <div className="group relative">
+          <input
+            type="text"
+            value={newTitle}
+            onChange={(e) => setNewTitle(e.target.value)}
+            placeholder="Rule title (e.g., Commit Style)"
+            className="w-full px-2 py-1.5 rounded border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+            aria-label="New rule title"
+            title="Give your custom rule a descriptive name"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') e.preventDefault();
+            }}
+          />
+          <Tooltip text="Short, descriptive name for this rule" />
+        </div>
+        <div className="group relative">
+          <textarea
+            value={newContent}
+            onChange={(e) => setNewContent(e.target.value)}
+            rows={3}
+            placeholder="Rule description (e.g., Use conventional commits: feat, fix, chore...)"
+            className="w-full px-2 py-1.5 rounded border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 resize-y"
+            aria-label="New rule content"
+            title="Describe what the AI should enforce for this convention"
+          />
+          <Tooltip text="Detailed description of what this rule enforces" />
+        </div>
         <button
           type="button"
           onClick={addRule}
           disabled={!canAdd}
-          className="min-h-[44px] px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          className="min-h-[44px] px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
         >
           + Add Rule
         </button>

@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect, Suspense } from 'react';
 import StepIndicator from './step-indicator';
 import StepTechStack from './step-tech-stack';
 import StepStyle from './step-style';
 import StepRules from './step-rules';
 import StepOutput from './step-output';
 import RulePreview from './rule-preview';
+import { useUrlState } from '@/lib/hooks/use-url-state';
 import type { GeneratorConfig, StyleDefaults } from '@/lib/templates/types';
 import { templateRegistry } from '@/lib/templates';
 
@@ -25,7 +26,6 @@ const DEFAULT_STYLE: StyleDefaults = {
   namingConvention: 'camelCase',
 };
 
-/** 根据选中的 tags 推导默认风格（取第一个匹配模板的 defaults） */
 function getDefaultStyle(selectedTags: string[]): StyleDefaults {
   for (const tag of selectedTags) {
     const tpl = Object.values(templateRegistry).find((t) =>
@@ -36,22 +36,69 @@ function getDefaultStyle(selectedTags: string[]): StyleDefaults {
   return { ...DEFAULT_STYLE };
 }
 
-/** 根据选中的 tags 推导命名约定 */
 function getDefaultNaming(selectedTags: string[]): string {
   const style = getDefaultStyle(selectedTags);
   return style.namingConvention;
 }
 
-export default function GeneratorForm() {
+/** Read URL state outside React lifecycle (safe in client components) */
+function readInitialUrlState(): Partial<GeneratorConfig> | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const encoded = params.get('s');
+    if (!encoded) return null;
+    const payload = JSON.parse(atob(encoded));
+    const customRules = (payload.cr || []).map((item: string) => {
+      const colonIdx = item.indexOf(':');
+      const title = colonIdx > -1 ? item.slice(0, colonIdx) : item;
+      const content = colonIdx > -1 ? item.slice(colonIdx + 1) : '';
+      return { title: decodeURIComponent(title), content: decodeURIComponent(content) };
+    });
+    return {
+      selectedTags: payload.t || [],
+      style: {
+        indentSize: payload.i ?? 2,
+        useTabs: payload.tb === 1,
+        quotes: payload.q || 'double',
+        semicolons: payload.sc === 1,
+        namingConvention: payload.n || 'camelCase',
+      },
+      aiStrictness: payload.as || 'moderate',
+      namingConvention: payload.n || 'camelCase',
+      customRules,
+      projectType: payload.pt || 'web',
+    };
+  } catch {
+    return null;
+  }
+}
+
+/** Computed once per page load */
+const _initialState = readInitialUrlState();
+
+function GeneratorFormInner() {
+  const { syncToUrl } = useUrlState();
+
   const [step, setStep] = useState(1);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [style, setStyle] = useState<StyleDefaults>(DEFAULT_STYLE);
-  const [aiStrictness, setAiStrictness] = useState<'strict' | 'moderate' | 'relaxed'>('moderate');
-  const [namingConvention, setNamingConvention] = useState('camelCase');
+  const [selectedTags, setSelectedTags] = useState<string[]>(
+    _initialState?.selectedTags ?? []
+  );
+  const [style, setStyle] = useState<StyleDefaults>(
+    _initialState?.style ?? DEFAULT_STYLE
+  );
+  const [aiStrictness, setAiStrictness] = useState<'strict' | 'moderate' | 'relaxed'>(
+    _initialState?.aiStrictness ?? 'moderate'
+  );
+  const [namingConvention, setNamingConvention] = useState(
+    _initialState?.namingConvention ?? 'camelCase'
+  );
   const [customRules, setCustomRules] = useState<
     { title: string; content: string }[]
-  >([]);
-  const [projectType, setProjectType] = useState('web');
+  >(_initialState?.customRules ?? []);
+  const [projectType, setProjectType] = useState(
+    _initialState?.projectType ?? 'web'
+  );
 
   const config: GeneratorConfig = useMemo(
     () => ({
@@ -65,9 +112,17 @@ export default function GeneratorForm() {
     [selectedTags, style, aiStrictness, namingConvention, customRules, projectType]
   );
 
+  // Sync state to URL (debounced), skip initial hydration render
+  useEffect(() => {
+    if (selectedTags.length === 0) return;
+    const timer = setTimeout(() => {
+      syncToUrl(config);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [config, syncToUrl, selectedTags.length]);
+
   const handleTagsChange = useCallback(
     (tags: string[]) => {
-      // When tags change, update default style/naming based on selections
       if (tags.length > 0 && selectedTags.length === 0) {
         setStyle(getDefaultStyle(tags));
         setNamingConvention(getDefaultNaming(tags));
@@ -158,14 +213,11 @@ export default function GeneratorForm() {
               enabled:hover:text-zinc-900 dark:enabled:hover:text-zinc-100
               enabled:hover:bg-zinc-100 dark:enabled:hover:bg-zinc-800
               disabled:opacity-30 disabled:cursor-not-allowed
-              transition-colors"
+              transition-colors
+              focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
           >
             ← Previous
           </button>
-
-          <span className="text-xs text-zinc-400 dark:text-zinc-500">
-            Step {step} of 4
-          </span>
 
           <button
             type="button"
@@ -175,17 +227,33 @@ export default function GeneratorForm() {
               bg-blue-600 text-white
               hover:bg-blue-700
               disabled:opacity-40 disabled:cursor-not-allowed
-              transition-colors shadow-sm"
+              transition-colors shadow-sm
+              focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
           >
             {step === 3 ? 'Generate' : 'Next →'}
           </button>
         </div>
       )}
 
-      {/* Always-visible preview (v1.1: rule-preview 接收 config prop 触发重新生成) */}
+      {/* Always-visible preview */}
       {selectedTags.length > 0 && (
         <RulePreview config={config} className="mt-4" />
       )}
     </div>
+  );
+}
+
+export default function GeneratorForm() {
+  return (
+    <Suspense fallback={
+      <div className="w-full max-w-2xl mx-auto space-y-6">
+        <div className="animate-pulse space-y-4">
+          <div className="h-10 bg-zinc-100 dark:bg-zinc-800 rounded-lg" />
+          <div className="h-64 bg-zinc-100 dark:bg-zinc-800 rounded-xl" />
+        </div>
+      </div>
+    }>
+      <GeneratorFormInner />
+    </Suspense>
   );
 }

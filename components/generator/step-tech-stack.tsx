@@ -80,7 +80,7 @@ export default function StepTechStack({
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search tech stacks..."
-          className="w-full px-3 py-2.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-3 py-2.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
           aria-label="Search technology stacks"
         />
         {search && (
@@ -142,6 +142,7 @@ export default function StepTechStack({
                 min-h-[44px] px-3 py-2
                 rounded-lg border text-left text-sm
                 transition-all duration-150
+                focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500
                 ${
                   isSelected
                     ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 ring-1 ring-blue-500'

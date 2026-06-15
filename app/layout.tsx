@@ -148,6 +148,11 @@ export default function RootLayout({
         </Script>
       </head>
       <body className="min-h-full flex flex-col">
+        {/* Skip-to-content for keyboard users */}
+        <a href="#main-content" className="skip-to-content">
+          Skip to content
+        </a>
+
         <Script src="https://www.googletagmanager.com/gtag/js?id=G-2NM7XLC7H2" strategy="afterInteractive" />
         <Script id="gtag-init" strategy="afterInteractive">
           {`window.dataLayer = window.dataLayer || [];

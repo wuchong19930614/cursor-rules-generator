@@ -24,6 +24,35 @@ export default function HowToUseCursorRulesPage() {
         </p>
 
         <div className="prose prose-zinc dark:prose-invert max-w-none space-y-4 text-zinc-600 dark:text-zinc-400 leading-relaxed">
+          {/* Prerequisites */}
+          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3">
+            Before You Begin: Prerequisites
+          </h2>
+          <p>
+            To follow this guide, you need Cursor IDE installed on your machine.
+            You can download it for free from{" "}
+            <a
+              href="https://cursor.com"
+              className="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              cursor.com
+            </a>{" "}
+            — it is available for macOS, Windows, and Linux. No account is
+            required for basic usage, though signing in enables AI features
+            powered by models like GPT-4 and Claude. You should also have a
+            project open in Cursor — any codebase will work, whether it is a
+            new project or an existing one with hundreds of files.
+          </p>
+          <p>
+            If you are new to Cursor IDE, spend a few minutes familiarizing
+            yourself with the AI features: inline code completions (triggered
+            automatically as you type), the chat panel (Cmd+L / Ctrl+L), and
+            the inline editor (Cmd+K / Ctrl+K). Understanding these interaction
+            modes will help you appreciate how <code>.cursorrules</code>{" "}
+            influences each one differently — from single-line suggestions to
+            multi-file agent operations.
+          </p>
+
           {/* Step 1 */}
           <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3">
             Step 1: Understand What .cursorrules Does
@@ -145,6 +174,35 @@ export default function HowToUseCursorRulesPage() {
             each codebase, ensuring that your React frontend, Go backend, and
             Python data pipeline each get AI assistance tuned to their specific
             ecosystem.
+          </p>
+
+          {/* Common Pitfalls */}
+          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3">
+            Common Pitfalls to Avoid
+          </h2>
+          <p>
+            Even experienced developers run into a few common issues when
+            setting up <code>.cursorrules</code>. The most frequent mistake is
+            writing rules that are too vague — statements like &quot;write clean
+            code&quot; give the AI no actionable guidance. Instead, be specific:
+            &quot;use 2-space indentation, single quotes, and no semicolons.&quot;
+            Another common pitfall is forgetting to add rules for imports and
+            file organization. AI assistants tend to add imports in random order
+            unless you explicitly specify that imports should be grouped and
+            sorted.
+          </p>
+          <p>
+            Teams sometimes create a single massive <code>.cursorrules</code>{" "}
+            file that covers every possible framework they might use. This
+            dilutes the effectiveness of the rules because the AI spends more
+            tokens processing irrelevant instructions. A better approach is to
+            create focused rules for each project — a React frontend gets React
+            rules, a Go backend gets Go rules, and nothing is wasted on
+            irrelevant guidance. Also, do not set the strictness level too high
+            during initial setup. Start with a moderate strictness level and
+            increase it as you confirm the rules produce the right results.
+            Overly strict settings early on can lead to AI refusals for
+            legitimate code patterns.
           </p>
 
           {/* Navigation */}

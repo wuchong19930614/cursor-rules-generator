@@ -82,7 +82,42 @@ export default function AboutPage() {
             instantly, privately, and as many times as you need.
           </p>
 
-          {/* ---- Topic 1: Our Mission ---- */}
+          {/* ---- Topic 1: Why Cursor Rules Matter ---- */}
+          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3">
+            Why Cursor Rules Matter
+          </h2>
+          <p>
+            Modern AI coding assistants are powerful but generic by default.
+            Without explicit guidance, they produce code in a one-size-fits-all
+            style that rarely matches your project&apos;s conventions. Variables
+            get named inconsistently, imports are added in random order, and
+            architectural decisions deviate from your team&apos;s established
+            patterns. Reviewing AI-generated code often takes longer than
+            writing it from scratch — defeating the purpose of using AI
+            assistance in the first place.
+          </p>
+          <p>
+            A <code>.cursorrules</code> file solves this by giving Cursor IDE a
+            permanent set of instructions that it consults on every interaction.
+            Think of it as your project&apos;s constitution: a single source of
+            truth for how code should be written, structured, and tested. Once
+            you define your rules, every AI-generated line respects them
+            automatically. The time you invest upfront in crafting good rules
+            pays back exponentially through faster code reviews, fewer style
+            nitpicks in PRs, and more consistent codebases that new team members
+            can navigate intuitively.
+          </p>
+          <p>
+            The challenge has always been that writing a comprehensive
+            <code>.cursorrules</code> file from scratch is tedious and
+            error-prone. Covering every framework, every naming convention, and
+            every edge case takes hours of research and debugging. That is
+            exactly why we built Cursor Rules Generator — to turn hours of
+            manual configuration into a 30-second interactive workflow that
+            produces expert-level rules every time.
+          </p>
+
+          {/* ---- Topic 2: Our Mission ---- */}
           <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3">
             Our Mission
           </h2>
@@ -126,6 +161,26 @@ export default function AboutPage() {
             guidance, and applies your chosen style preferences — indentation,
             quote style, semicolon usage, naming conventions, and AI strictness
             level.
+          </p>
+          <p>
+            The merging process is designed to handle real-world complexity.
+            When two templates specify the same rule — for example, both React
+            and TypeScript templates define naming conventions — the engine
+            resolves conflicts using a priority system that favors the more
+            specific framework. If you select React, TypeScript, and Tailwind
+            CSS together, the output file includes a unified code style section
+            derived from all three, a React-specific architectural patterns
+            section, a TypeScript-specific type discipline section, and a
+            Tailwind-specific styling section — all without duplication.
+          </p>
+          <p>
+            Under the hood, each template is a TypeScript module that exports
+            structured rule objects organized into categories: code style,
+            naming, imports, architecture, testing, documentation, and security.
+            The engine reads your selections, collects the relevant rule objects,
+            normalizes them into a consistent format, resolves conflicts through
+            category-aware merging, and serializes everything into a clean{" "}
+            <code>.cursorrules</code> file ready for immediate use.
           </p>
           <p>
             The entire generation process happens in your browser using
@@ -189,7 +244,41 @@ export default function AboutPage() {
             new template.
           </p>
 
-          {/* ---- Topic 5: Privacy & Data ---- */}
+          {/* ---- Topic 5: Who Uses Cursor Rules Generator ---- */}
+          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3">
+            Who Uses Cursor Rules Generator
+          </h2>
+          <p>
+            Our tool serves a diverse range of developers and teams. Solo
+            developers use it to maintain personal coding standards across side
+            projects without spending time manually writing rules for each
+            framework. Startup teams rely on it to establish consistent
+            conventions early, preventing the chaos that happens when five
+            engineers write code in five different styles. Open source
+            maintainers include generated <code>.cursorrules</code> files in
+            their repositories so contributors automatically follow project
+            conventions — reducing the cognitive load of reviewing first-time
+            pull requests.
+          </p>
+          <p>
+            Enterprise teams benefit from the template engine&apos;s ability to
+            combine multiple tech stacks into a single coherent rules file. A
+            team building a React frontend with a Go backend and PostgreSQL
+            database can select all three frameworks and get merged rules that
+            respect each ecosystem&apos;s idioms while maintaining consistent
+            cross-cutting conventions like naming and error handling. The result
+            is AI-generated code that looks right whether it hits the frontend,
+            backend, or database layer.
+          </p>
+          <p>
+            Educators and coding bootcamp instructors use our generator to
+            create standard <code>.cursorrules</code> files that they distribute
+            to students. This ensures that every student&apos;s AI assistant
+            enforces the same coding standards taught in class, reinforcing
+            good habits and making assignment grading more consistent.
+          </p>
+
+          {/* ---- Topic 6: Privacy & Data ---- */}
           <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3">
             Privacy &amp; Data
           </h2>

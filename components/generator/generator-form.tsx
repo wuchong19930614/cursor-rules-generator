@@ -164,12 +164,12 @@ function GeneratorFormInner() {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto space-y-6">
+    <div className="w-full max-w-2xl mx-auto space-y-6 min-h-[500px]">
       {/* Step Indicator */}
       <StepIndicator currentStep={step} steps={STEPS} />
 
       {/* Current Step */}
-      <div className="border border-zinc-200 dark:border-zinc-700 rounded-xl p-4 sm:p-6 bg-white dark:bg-zinc-900 shadow-sm">
+      <div className="border border-zinc-200 dark:border-zinc-700 rounded-xl p-4 sm:p-6 bg-white dark:bg-zinc-900 shadow-sm transition-opacity duration-200">
         {step === 1 && (
           <StepTechStack
             selectedTags={selectedTags}

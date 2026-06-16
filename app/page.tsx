@@ -133,7 +133,7 @@ export default function Home() {
                 },
                 {
                   title: "Stack-Aware Rules",
-                  desc: "Choose from 21+ tech stacks including React, Next.js, Vue, Python, Go, Rust, and more. Each template includes framework-specific best practices and patterns.",
+                  desc: "Choose from 26+ tech stacks including React, Next.js, Vue, Python, Go, Rust, and more. Each template includes framework-specific best practices and patterns.",
                 },
                 {
                   title: "Zero Setup",
@@ -165,7 +165,7 @@ export default function Home() {
                 <strong className="text-zinc-900 dark:text-zinc-50">
                   Select Your Tech Stack
                 </strong>{" "}
-                — Choose one or more technologies from our 21+ templates. The
+                — Choose one or more technologies from our 26+ templates. The
                 generator combines best practices from each stack.
               </li>
               <li>

@@ -9,11 +9,35 @@ const aboutBreadcrumb = getBreadcrumbSchema([
 ]);
 
 export const metadata: Metadata = {
-  title: "About Cursor Rules Generator — Free .cursorrules Tool",
+  title: "What is a .cursorrules File? | Free Generator Guide",
   description:
-    "Learn about Cursor Rules Generator — a free, open-source tool for creating .cursorrules files. 21+ framework templates, zero-setup, fully client-side with no data collection.",
+    "Learn about Cursor Rules Generator — a free, open-source tool for creating .cursorrules files. 26+ framework templates, zero-setup, fully client-side with no data collection.",
   alternates: {
     canonical: `${siteUrl}/about`,
+  },
+  openGraph: {
+    type: "article",
+    locale: "en_US",
+    url: `${siteUrl}/about`,
+    siteName: "Cursor Rules Generator",
+    title: "What is a .cursorrules File? | Free Generator Guide",
+    description:
+      "Learn about Cursor Rules Generator — a free, open-source tool for creating .cursorrules files. 26+ framework templates, zero-setup, fully client-side with no data collection.",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Learn about .cursorrules files and how to use the free generator",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "What is a .cursorrules File? | Free Generator Guide",
+    description:
+      "Learn about Cursor Rules Generator — a free, open-source tool for creating .cursorrules files. 26+ framework templates, zero-setup, fully client-side with no data collection.",
+    images: ["/og-image.png"],
   },
 };
 
@@ -23,17 +47,22 @@ const frameworkList = [
   { name: "Vue", key: "vue" },
   { name: "Svelte", key: "svelte" },
   { name: "Angular", key: "angular" },
+  { name: "SolidJS", key: "solidjs" },
   { name: "Astro", key: "astro" },
   { name: "Remix", key: "remix" },
   { name: "Nuxt", key: "nuxt" },
   { name: "React Native", key: "react-native" },
   { name: "Flutter", key: "flutter" },
+  { name: "Electron", key: "electron" },
+  { name: "Tauri", key: "tauri" },
   { name: "TypeScript", key: "typescript" },
   { name: "Tailwind CSS", key: "tailwind" },
   { name: "Python", key: "python" },
   { name: "Go", key: "go" },
   { name: "Rust", key: "rust" },
   { name: "Node.js", key: "node" },
+  { name: "Bun", key: "bun" },
+  { name: "Zig", key: "zig" },
   { name: "Django", key: "django" },
   { name: "Flask", key: "flask" },
   { name: "FastAPI", key: "fastapi" },
@@ -134,7 +163,7 @@ export default function AboutPage() {
             size — deserves first-class AI assistance that respects their unique
             coding standards. Our mission is to make best-practice{" "}
             <code>.cursorrules</code> configuration accessible, fast, and free
-            for everyone. By providing expertly crafted templates for 21+ tech
+            for everyone. By providing expertly crafted templates for 26+ tech
             stacks, we eliminate the guesswork and let you focus on building
             great software instead of tweaking AI instructions.
           </p>
@@ -153,7 +182,7 @@ export default function AboutPage() {
           <p>
             Our generator uses a modular template engine that combines
             framework-specific best practices with your personal coding
-            preferences. Each of our 21 templates is a carefully researched
+            preferences. Each of our 26 templates is a carefully researched
             collection of rules covering code style, naming conventions,
             architectural patterns, testing requirements, and
             framework-specific idioms. When you select multiple stacks, the
@@ -255,7 +284,7 @@ export default function AboutPage() {
           </h2>
           <p>
             Cursor Rules Generator is fully open source under the MIT license.
-            The complete source code — including the template engine, all 21
+            The complete source code — including the template engine, all 26
             framework templates, and the Next.js frontend — is available on{" "}
             <a
               href="https://github.com/wuchong19930614/cursor-rules-generator"
@@ -324,7 +353,7 @@ export default function AboutPage() {
             >
               generator page
             </Link>
-            , where you will see a clean interface with checkboxes for all 21
+            , where you will see a clean interface with checkboxes for all 26
             tech stacks. Select the frameworks your project uses — you can mix
             frontend and backend stacks freely. Below the framework selector,
             choose your coding style preferences: indentation width, quote style,

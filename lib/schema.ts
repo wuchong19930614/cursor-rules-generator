@@ -13,7 +13,7 @@ export function getOrganizationSchema(): object {
     logo: `${baseUrl}/og-image.png`,
     sameAs: ["https://github.com/wuchong19930614/cursor-rules-generator"],
     description:
-      "Free online tool to generate customized .cursorrules files for Cursor IDE. Choose from 21+ tech stack templates and download production-ready AI rules.",
+      "Free online tool to generate customized .cursorrules files for Cursor IDE. Choose from 26+ tech stack templates and download production-ready AI rules.",
   };
 }
 
@@ -75,7 +75,7 @@ export function getWebSiteSchema(): object {
     name: "Cursor Rules Generator",
     url: baseUrl,
     description:
-      "Generate customized .cursorrules files for your tech stack. 21+ templates with real-time preview.",
+      "Generate customized .cursorrules files for your tech stack. 26+ templates with real-time preview.",
     potentialAction: {
       "@type": "SearchAction",
       target: {
@@ -95,7 +95,7 @@ export function getWebApplicationSchema(): object {
     name: "Cursor Rules Generator",
     url: baseUrl,
     description:
-      "Free online .cursorrules file generator for Cursor IDE. Interactive wizard with 21+ tech stack templates.",
+      "Free online .cursorrules file generator for Cursor IDE. Interactive wizard with 26+ tech stack templates.",
     applicationCategory: "DeveloperApplication",
     operatingSystem: "All",
     offers: {
@@ -166,7 +166,7 @@ export function getFAQPageSchema(): object {
         name: "Which tech stacks are supported?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "We support 21+ tech stacks including React, Next.js, Vue, Svelte, Angular, TypeScript, Python, Go, Rust, Django, FastAPI, Flask, Node.js, Flutter, React Native, Tailwind CSS, Prisma, Docker, and more. You can select multiple stacks to combine their best practices.",
+          text: "We support 26+ tech stacks including React, Next.js, Vue, Svelte, Angular, SolidJS, TypeScript, Python, Go, Rust, Bun, Zig, Django, FastAPI, Flask, Node.js, Flutter, React Native, Tailwind CSS, Prisma, Docker, and more. You can select multiple stacks to combine their best practices.",
         },
       },
     ],

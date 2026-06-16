@@ -1,5 +1,5 @@
 // lib/templates/index.ts
-// 模板注册表 — 按设计文档 3.4 节实现（21 个模板）
+// 模板注册表 — 按设计文档 3.4 节实现（26 个模板）
 
 import type { CursorRuleTemplate } from './types';
 import { reactTemplate } from './react';
@@ -23,8 +23,13 @@ import { flutterTemplate } from './flutter';
 import { tailwindTemplate } from './tailwind';
 import { prismaTemplate } from './prisma';
 import { dockerTemplate } from './docker';
+import { electronTemplate } from './electron';
+import { tauriTemplate } from './tauri';
+import { bunTemplate } from './bun';
+import { zigTemplate } from './zig';
+import { solidjsTemplate } from './solidjs';
 
-/** 模板注册表（21 个模板） */
+/** 模板注册表（26 个模板） */
 export const templateRegistry: Record<string, CursorRuleTemplate> = {
   // Frontend
   react: reactTemplate,
@@ -52,6 +57,15 @@ export const templateRegistry: Record<string, CursorRuleTemplate> = {
   typescript: typescriptTemplate,
   prisma: prismaTemplate,
   docker: dockerTemplate,
+  // Desktop
+  electron: electronTemplate,
+  tauri: tauriTemplate,
+  // Runtime
+  bun: bunTemplate,
+  // Systems
+  zig: zigTemplate,
+  // Frontend
+  solidjs: solidjsTemplate,
 };
 
 /**

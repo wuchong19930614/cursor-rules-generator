@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     template: "%s | Cursor Rules Generator",
   },
   description:
-    "Generate customized .cursorrules files for your tech stack in minutes. Choose from 21+ templates (React, Next.js, Python, Go, Rust & more), set your coding style, and download production-ready AI rules for Cursor IDE.",
+    "Generate customized .cursorrules files for your tech stack in minutes. Choose from 26+ templates (React, Next.js, Python, Go, Rust & more), set your coding style, and download production-ready AI rules for Cursor IDE. Start generating in 30 seconds.",
   keywords: [
     "cursor rules",
     ".cursorrules",
@@ -57,7 +57,7 @@ export const metadata: Metadata = {
     siteName: "Cursor Rules Generator",
     title: "Cursor Rules Generator — Free .cursorrules File Generator",
     description:
-      "Generate customized .cursorrules files for your tech stack in minutes. 21+ templates, real-time preview, one-click download.",
+      "Generate customized .cursorrules files for your tech stack in minutes. 26+ templates, real-time preview, one-click download. Start generating in 30 seconds.",
     images: [
       {
         url: "/og-image.png",
@@ -73,7 +73,7 @@ export const metadata: Metadata = {
     creator: "@cursorrulesgen",
     title: "Cursor Rules Generator — Free .cursorrules File Generator",
     description:
-      "Generate customized .cursorrules files for your tech stack in minutes. 21+ templates, real-time preview, one-click download.",
+      "Generate customized .cursorrules files for your tech stack in minutes. 26+ templates, real-time preview, one-click download. Start generating in 30 seconds.",
     images: ["/og-image.png"],
   },
   robots: {

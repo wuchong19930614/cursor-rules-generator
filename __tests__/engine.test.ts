@@ -336,6 +336,87 @@ describe("generateProjectRules", () => {
     );
     expect(files[0].frontmatter.description.length).toBeLessThanOrEqual(120);
   });
+
+  it("merged mode includes custom rules in content", () => {
+    const files = generateProjectRules(
+      makeConfig({
+        selectedTags: ["react"],
+        outputMode: "project-rules",
+        ruleApplicationMode: "intelligent",
+        splitRules: false,
+        customRules: [
+          { title: "No Console Logs", content: "Never commit console.log." },
+        ],
+      })
+    );
+    expect(files.length).toBe(1);
+    expect(files[0].content).toContain("## Custom Rules");
+    expect(files[0].content).toContain("### No Console Logs");
+    expect(files[0].content).toContain("Never commit console.log.");
+  });
+
+  it("split mode adds dedicated custom-rules.mdc file", () => {
+    const files = generateProjectRules(
+      makeConfig({
+        selectedTags: ["react"],
+        outputMode: "project-rules",
+        ruleApplicationMode: "intelligent",
+        splitRules: true,
+        customRules: [
+          { title: "Rule A", content: "Content A" },
+        ],
+      })
+    );
+    const crFile = files.find((f) => f.filename === "custom-rules.mdc");
+    expect(crFile).toBeDefined();
+    expect(crFile!.content).toContain("## Custom Rules");
+    expect(crFile!.content).toContain("### Rule A");
+    expect(crFile!.content).toContain("Content A");
+  });
+
+  it("split mode without customRules has no custom-rules.mdc", () => {
+    const files = generateProjectRules(
+      makeConfig({
+        selectedTags: ["react"],
+        outputMode: "project-rules",
+        ruleApplicationMode: "intelligent",
+        splitRules: true,
+        customRules: [],
+      })
+    );
+    const crFile = files.find((f) => f.filename === "custom-rules.mdc");
+    expect(crFile).toBeUndefined();
+  });
+
+  it("always-apply mode also includes custom rules", () => {
+    const files = generateProjectRules(
+      makeConfig({
+        selectedTags: ["react"],
+        outputMode: "project-rules",
+        ruleApplicationMode: "always-apply",
+        splitRules: false,
+        customRules: [
+          { title: "No Logs", content: "No console.log" },
+        ],
+      })
+    );
+    expect(files[0].content).toContain("## Custom Rules");
+  });
+
+  it("manual mode also includes custom rules", () => {
+    const files = generateProjectRules(
+      makeConfig({
+        selectedTags: ["react"],
+        outputMode: "project-rules",
+        ruleApplicationMode: "manual",
+        splitRules: false,
+        customRules: [
+          { title: "No Logs", content: "No console.log" },
+        ],
+      })
+    );
+    expect(files[0].content).toContain("## Custom Rules");
+  });
 });
 
 // ========== Day 1 新增：generateAgentsMd 测试 ==========

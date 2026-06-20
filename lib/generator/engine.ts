@@ -162,6 +162,19 @@ function generateFrontmatter(
   return lines.join('\n');
 }
 
+/** 格式化自定义规则为 markdown 内容块 */
+function formatCustomRulesContent(
+  customRules: { title: string; content: string }[],
+): string {
+  if (!customRules || customRules.length === 0) return '';
+  const lines: string[] = ['## Custom Rules'];
+  for (const rule of customRules) {
+    lines.push(`### ${rule.title}`);
+    lines.push(rule.content);
+  }
+  return lines.join('\n');
+}
+
 /** 截断过长的 description（>120 字符） */
 function truncateDescription(text: string, maxLen = 120): string {
   if (text.length <= maxLen) return text;
@@ -201,7 +214,7 @@ export function generateProjectRules(config: GeneratorConfig): RuleFile[] {
 
   if (config.splitRules) {
     // 每个 section 独立文件
-    return sections.map((s) => {
+    const files = sections.map((s) => {
       const templateSlug = slugify(s.templateId);
       const sectionSlug = slugify(s.id);
       const filename = `${templateSlug}-${sectionSlug}.mdc`;
@@ -225,14 +238,32 @@ export function generateProjectRules(config: GeneratorConfig): RuleFile[] {
 
       return { filename, frontmatter: fm, content: s.content };
     });
+
+    // 自定义规则追加为独立文件
+    if (config.customRules && config.customRules.length > 0) {
+      files.push({
+        filename: 'custom-rules.mdc',
+        frontmatter: {
+          description: truncateDescription('Custom rules for your project'),
+        },
+        content: formatCustomRulesContent(config.customRules),
+      });
+    }
+
+    return files;
   }
 
   // 合并为一个文件
   const templateId = sections[0]?.templateId || 'rules';
   const filename = `${slugify(templateId)}.mdc`;
-  const combinedContent = sections
+  let combinedContent = sections
     .map((s) => `# ${s.title}\n\n${s.content}`)
     .join('\n\n');
+
+  // 追加自定义规则
+  if (config.customRules && config.customRules.length > 0) {
+    combinedContent += '\n\n' + formatCustomRulesContent(config.customRules);
+  }
 
   const description = truncateDescription(
     sections.map((s) => s.title).join('; ')

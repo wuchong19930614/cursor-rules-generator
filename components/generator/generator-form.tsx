@@ -8,10 +8,19 @@ import StepRules from './step-rules';
 import StepOutput from './step-output';
 import RulePreview from './rule-preview';
 import { useUrlState } from '@/lib/hooks/use-url-state';
-import type { GeneratorConfig, StyleDefaults } from '@/lib/templates/types';
+import type {
+  GeneratorConfig,
+  StyleDefaults,
+  OutputMode,
+  RuleApplicationMode,
+} from '@/lib/templates/types';
 import { templateRegistry } from '@/lib/templates';
 
+/** Step 0 引入的索引偏移量 */
+const STEP_OFFSET = 1;
+
 const STEPS = [
+  { number: 0, label: 'Output Mode' },
   { number: 1, label: 'Tech Stack' },
   { number: 2, label: 'Style' },
   { number: 3, label: 'Custom Rules' },
@@ -68,6 +77,11 @@ function readInitialUrlState(): Partial<GeneratorConfig> | null {
       namingConvention: payload.n || 'camelCase',
       customRules,
       projectType: payload.pt || 'web',
+      outputMode: (payload.om as OutputMode) || 'project-rules',
+      ruleApplicationMode:
+        (payload.rm as RuleApplicationMode) || 'intelligent',
+      splitRules: payload.sr === 1,
+      globsPattern: Array.isArray(payload.gp) ? payload.gp : undefined,
     };
   } catch {
     return null;
@@ -80,16 +94,26 @@ const _initialState = readInitialUrlState();
 function GeneratorFormInner() {
   const { syncToUrl } = useUrlState();
 
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0);
+  const [outputMode, setOutputMode] = useState<OutputMode>(
+    _initialState?.outputMode ?? 'project-rules'
+  );
+  const [ruleApplicationMode, setRuleApplicationMode] =
+    useState<RuleApplicationMode>(
+      _initialState?.ruleApplicationMode ?? 'intelligent'
+    );
+  const [splitRules, setSplitRules] = useState(
+    _initialState?.splitRules ?? false
+  );
   const [selectedTags, setSelectedTags] = useState<string[]>(
     _initialState?.selectedTags ?? []
   );
   const [style, setStyle] = useState<StyleDefaults>(
     _initialState?.style ?? DEFAULT_STYLE
   );
-  const [aiStrictness, setAiStrictness] = useState<'strict' | 'moderate' | 'relaxed'>(
-    _initialState?.aiStrictness ?? 'moderate'
-  );
+  const [aiStrictness, setAiStrictness] = useState<
+    'strict' | 'moderate' | 'relaxed'
+  >(_initialState?.aiStrictness ?? 'moderate');
   const [namingConvention, setNamingConvention] = useState(
     _initialState?.namingConvention ?? 'camelCase'
   );
@@ -108,8 +132,21 @@ function GeneratorFormInner() {
       namingConvention,
       customRules,
       projectType,
+      outputMode,
+      ruleApplicationMode,
+      splitRules,
     }),
-    [selectedTags, style, aiStrictness, namingConvention, customRules, projectType]
+    [
+      selectedTags,
+      style,
+      aiStrictness,
+      namingConvention,
+      customRules,
+      projectType,
+      outputMode,
+      ruleApplicationMode,
+      splitRules,
+    ]
   );
 
   // Sync state to URL (debounced), skip initial hydration render
@@ -134,6 +171,8 @@ function GeneratorFormInner() {
 
   const canProceed = useMemo(() => {
     switch (step) {
+      case 0:
+        return true; // Step 0 总可继续
       case 1:
         return selectedTags.length > 0;
       case 2:
@@ -145,16 +184,20 @@ function GeneratorFormInner() {
     }
   }, [step, selectedTags]);
 
+  const totalSteps = 5; // 0-4
   const nextStep = () => {
-    if (step < 4 && canProceed) setStep(step + 1);
+    if (step < totalSteps - 1 && canProceed) setStep(step + 1);
   };
 
   const prevStep = () => {
-    if (step > 1) setStep(step - 1);
+    if (step > 0) setStep(step - 1);
   };
 
   const restart = () => {
-    setStep(1);
+    setStep(0);
+    setOutputMode('project-rules');
+    setRuleApplicationMode('intelligent');
+    setSplitRules(false);
     setSelectedTags([]);
     setStyle(DEFAULT_STYLE);
     setAiStrictness('moderate');
@@ -166,10 +209,145 @@ function GeneratorFormInner() {
   return (
     <div className="w-full max-w-2xl mx-auto space-y-6 min-h-[500px]">
       {/* Step Indicator */}
-      <StepIndicator currentStep={step} steps={STEPS} />
+      <StepIndicator
+        currentStep={step + STEP_OFFSET}
+        steps={STEPS.map((s, i) => ({ number: i + 1, label: s.label }))}
+      />
 
       {/* Current Step */}
       <div className="border border-zinc-200 dark:border-zinc-700 rounded-xl p-4 sm:p-6 bg-white dark:bg-zinc-900 shadow-sm transition-opacity duration-200">
+        {step === 0 && (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+                Choose Output Format
+              </h2>
+              <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+                Select the format for your generated Cursor rules.
+              </p>
+            </div>
+
+            {/* Output Mode Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {(
+                [
+                  {
+                    value: 'project-rules' as OutputMode,
+                    label: 'Project Rules',
+                    desc: '.mdc files in .cursor/rules/',
+                    icon: '📁',
+                  },
+                  {
+                    value: 'agents-md' as OutputMode,
+                    label: 'AGENTS.md',
+                    desc: 'Single markdown file',
+                    icon: '📄',
+                  },
+                  {
+                    value: 'legacy' as OutputMode,
+                    label: 'Legacy',
+                    desc: '.cursorrules (classic)',
+                    icon: '📜',
+                  },
+                ] as const
+              ).map((mode) => (
+                <button
+                  key={mode.value}
+                  type="button"
+                  onClick={() => setOutputMode(mode.value)}
+                  className={`p-4 rounded-xl border-2 text-left transition-all min-h-[44px]
+                    ${
+                      outputMode === mode.value
+                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 shadow-sm'
+                        : 'border-zinc-200 dark:border-zinc-700 hover:border-zinc-300 dark:hover:border-zinc-600'
+                    }
+                    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500`}
+                >
+                  <div className="text-2xl mb-1">{mode.icon}</div>
+                  <div className="font-medium text-sm text-zinc-900 dark:text-zinc-100">
+                    {mode.label}
+                  </div>
+                  <div className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+                    {mode.desc}
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            {/* Project Rules 次级选项 */}
+            {outputMode === 'project-rules' && (
+              <div className="space-y-4 pl-1 border-l-2 border-blue-200 dark:border-blue-800 pl-4">
+                <div>
+                  <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300 block mb-2">
+                    Application Mode
+                  </label>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {(
+                      [
+                        {
+                          value: 'always-apply' as RuleApplicationMode,
+                          label: 'Always Apply',
+                        },
+                        {
+                          value: 'intelligent' as RuleApplicationMode,
+                          label: 'Intelligent',
+                        },
+                        {
+                          value: 'file-specific' as RuleApplicationMode,
+                          label: 'File Specific',
+                        },
+                        {
+                          value: 'manual' as RuleApplicationMode,
+                          label: 'Manual',
+                        },
+                      ] as const
+                    ).map((am) => (
+                      <button
+                        key={am.value}
+                        type="button"
+                        onClick={() => setRuleApplicationMode(am.value)}
+                        className={`px-3 py-2 rounded-lg text-xs font-medium border transition-all min-h-[44px]
+                          ${
+                            ruleApplicationMode === am.value
+                              ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
+                              : 'border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-zinc-300'
+                          }
+                          focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500`}
+                      >
+                        {am.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-zinc-700 dark:text-zinc-300">
+                    Split into multiple files
+                  </span>
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={splitRules}
+                    onClick={() => setSplitRules(!splitRules)}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors
+                      ${
+                        splitRules
+                          ? 'bg-blue-600'
+                          : 'bg-zinc-200 dark:bg-zinc-700'
+                      }
+                      focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform
+                        ${splitRules ? 'translate-x-6' : 'translate-x-1'}`}
+                    />
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {step === 1 && (
           <StepTechStack
             selectedTags={selectedTags}
@@ -207,7 +385,7 @@ function GeneratorFormInner() {
           <button
             type="button"
             onClick={prevStep}
-            disabled={step === 1}
+            disabled={step === 0}
             className="min-h-[44px] px-4 py-2 rounded-lg text-sm font-medium
               text-zinc-600 dark:text-zinc-400
               enabled:hover:text-zinc-900 dark:enabled:hover:text-zinc-100
@@ -245,14 +423,16 @@ function GeneratorFormInner() {
 
 export default function GeneratorForm() {
   return (
-    <Suspense fallback={
-      <div className="w-full max-w-2xl mx-auto space-y-6">
-        <div className="animate-pulse space-y-4">
-          <div className="h-10 bg-zinc-100 dark:bg-zinc-800 rounded-lg" />
-          <div className="h-64 bg-zinc-100 dark:bg-zinc-800 rounded-xl" />
+    <Suspense
+      fallback={
+        <div className="w-full max-w-2xl mx-auto space-y-6">
+          <div className="animate-pulse space-y-4">
+            <div className="h-10 bg-zinc-100 dark:bg-zinc-800 rounded-lg" />
+            <div className="h-64 bg-zinc-100 dark:bg-zinc-800 rounded-xl" />
+          </div>
         </div>
-      </div>
-    }>
+      }
+    >
       <GeneratorFormInner />
     </Suspense>
   );

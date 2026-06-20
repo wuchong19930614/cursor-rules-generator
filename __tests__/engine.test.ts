@@ -1,8 +1,13 @@
 // __tests__/engine.test.ts
-// generateCursorRules() 引擎单元测试 — 18+ 用例 per 设计文档 6.1 节
+// generateCursorRules() 引擎单元测试 — Day 1 扩展含 MDC/AGENTS.md/Legacy/ZIP 测试
 
 import { describe, it, expect } from "vitest";
-import { generateCursorRules } from "@/lib/generator/engine";
+import {
+  generateCursorRules,
+  generateProjectRules,
+  generateAgentsMd,
+  generateLegacyRules,
+} from "@/lib/generator/engine";
 import type { GeneratorConfig } from "@/lib/templates/types";
 
 function makeConfig(overrides?: Partial<GeneratorConfig>): GeneratorConfig {
@@ -20,18 +25,21 @@ function makeConfig(overrides?: Partial<GeneratorConfig>): GeneratorConfig {
     namingConvention: overrides?.namingConvention ?? "camelCase",
     customRules: overrides?.customRules ?? [],
     projectType: overrides?.projectType ?? "web",
+    outputMode: overrides?.outputMode ?? "project-rules",
+    ruleApplicationMode: overrides?.ruleApplicationMode ?? "intelligent",
+    splitRules: overrides?.splitRules ?? false,
+    globsPattern: overrides?.globsPattern,
   };
 }
 
+// ========== 现有 Legacy 测试（保持不变） ==========
 describe("generateCursorRules", () => {
-  // 1. 空 selectedTags → 返回提示文本
   it("returns hint when selectedTags is empty", () => {
     const output = generateCursorRules(makeConfig({ selectedTags: [] }));
     expect(output).toContain("Cursor Rules");
     expect(output).toContain("Select a tech stack");
   });
 
-  // 2. 单模板 → 输出含所有 sections
   it("includes all sections for a single template", () => {
     const output = generateCursorRules(makeConfig({ selectedTags: ["react"] }));
     expect(output).toContain("## Project Structure");
@@ -40,7 +48,6 @@ describe("generateCursorRules", () => {
     expect(output).toContain("## Side Effects & Effects");
   });
 
-  // 3. 输出含 Header
   it("includes generated header with tech stack info", () => {
     const output = generateCursorRules(
       makeConfig({ selectedTags: ["react", "nextjs"] })
@@ -49,60 +56,44 @@ describe("generateCursorRules", () => {
     expect(output).toContain("react, nextjs");
   });
 
-  // 4. 多模板同 id section → 去重（React 和 Next.js 跨模板同 id section）
   it("deduplicates sections by id across templates", () => {
-    // React 和 Next.js 都使用 react 标签，但使用不同的 section ids
-    // React: react-project-structure, react-component-patterns, react-state-management, react-effects
-    // Next.js: next-routing, next-data-fetching, next-optimization, next-typescript(optional)
     const output = generateCursorRules(
       makeConfig({
         selectedTags: ["react", "nextjs", "typescript"],
       })
     );
-    // 验证 React 的 sections
     expect(output).toContain("## Project Structure");
     expect(output).toContain("## Component Patterns");
     expect(output).toContain("## State Management");
     expect(output).toContain("## Side Effects & Effects");
-    // 验证 Next.js 的 sections
     expect(output).toContain("## Routing & Pages");
     expect(output).toContain("## Data Fetching");
     expect(output).toContain("## Performance & Optimization");
-    // 计数 ## 标题（跳过 header）
     const sectionCount = (output.match(/^## /gm) || []).length;
     expect(sectionCount).toBeGreaterThanOrEqual(7);
   });
 
-  // 5. dependsOn/tags 过滤 — 不匹配的 section 不出现
   it("filters sections by tag matching (dependsOn)", () => {
-    // Go 模板: sections 标签为 ['go']
     const output = generateCursorRules(makeConfig({ selectedTags: ["go"] }));
     expect(output).toContain("## Error Handling");
-    // 不会包含 React 的 sections
     expect(output).not.toContain("## Component Patterns");
     expect(output).not.toContain("## JSX");
   });
 
-  // 6. optional section + 单标签 → 不出现
   it("hides optional section with single matching tag", () => {
-    // Next.js optional section `next-typescript`: tags=['nextjs','typescript']
-    // 当只有 nextjs 标签时，只匹配 1 个 → 不出现
     const output = generateCursorRules(
       makeConfig({ selectedTags: ["nextjs"] })
     );
     expect(output).not.toContain("TypeScript in Next.js");
   });
 
-  // 7. optional section + 双标签 → 出现
   it("shows optional section with 2+ matching tags", () => {
-    // 当同时有 nextjs 和 typescript 标签时，匹配 2 个 → 出现
     const output = generateCursorRules(
       makeConfig({ selectedTags: ["nextjs", "typescript"] })
     );
     expect(output).toContain("TypeScript in Next.js");
   });
 
-  // 8. 自定义规则 → 追加到输出末尾
   it("appends custom rules at the end", () => {
     const output = generateCursorRules(
       makeConfig({
@@ -115,22 +106,18 @@ describe("generateCursorRules", () => {
     expect(output).toContain("## Custom Rules");
     expect(output).toContain("### No Console Logs");
     expect(output).toContain("Never commit console.log.");
-    // 自定义规则在 React sections 之后
     const customRulesIndex = output.indexOf("## Custom Rules");
     const projectStructureIndex = output.indexOf("## Project Structure");
     expect(customRulesIndex).toBeGreaterThan(projectStructureIndex);
   });
 
-  // 9. 变量替换：{{INDENT}}
   it("replaces {{INDENT}} with spaces", () => {
     const output = generateCursorRules(
       makeConfig({ selectedTags: ["react"], style: { indentSize: 4 } } as any)
     );
-    // {{INDENT}} 被替换，不应残留占位符
     expect(output).not.toContain("{{INDENT}}");
   });
 
-  // 10. 变量替换：{{INDENT}} with tabs
   it("replaces {{INDENT}} with tabs when useTabs is true", () => {
     const output = generateCursorRules(
       makeConfig({
@@ -141,9 +128,7 @@ describe("generateCursorRules", () => {
     expect(output).toContain("Use \t spaces for indentation.");
   });
 
-  // 11. 变量替换：{{QUOTE}}
   it("replaces {{QUOTE}} variable", () => {
-    // 找一个包含 {{QUOTE}} 的模板... Python template has it
     const output = generateCursorRules(
       makeConfig({
         selectedTags: ["python"],
@@ -153,7 +138,6 @@ describe("generateCursorRules", () => {
     expect(output).not.toContain("{{QUOTE}}");
   });
 
-  // 12. 变量替换：{{SEMICOLON}}
   it("replaces {{SEMICOLON}} variable", () => {
     const output = generateCursorRules(
       makeConfig({
@@ -164,7 +148,6 @@ describe("generateCursorRules", () => {
     expect(output).not.toContain("{{SEMICOLON}}");
   });
 
-  // 13. 变量替换：{{NAMING}}
   it("replaces {{NAMING}} variable", () => {
     const output = generateCursorRules(
       makeConfig({
@@ -173,11 +156,9 @@ describe("generateCursorRules", () => {
       })
     );
     expect(output).not.toContain("{{NAMING}}");
-    // Next.js routing section uses {{NAMING}}
     expect(output).toContain("PascalCase");
   });
 
-  // 14. 变量替换：{{STRICTNESS}}
   it("replaces {{STRICTNESS}} variable", () => {
     const output = generateCursorRules(
       makeConfig({
@@ -188,46 +169,37 @@ describe("generateCursorRules", () => {
     expect(output).not.toContain("{{STRICTNESS}}");
   });
 
-  // 15. 字面量 {{ 不被误替换
   it("preserves literal double braces", () => {
-    // 模板中不应有字面量 {{, 但 variable replacement 不应破坏双花括号
     const output = generateCursorRules(
       makeConfig({ selectedTags: ["react"] })
     );
-    // 不应残留占位符
     expect(output).not.toContain("{{INDENT}}");
     expect(output).not.toContain("{{QUOTE}}");
   });
 
-  // 16. 多模板组合 → category 排序
   it("orders sections by category priority", () => {
-    // React (frontend) vs Python (backend) vs TypeScript (library)
     const output = generateCursorRules(
       makeConfig({
         selectedTags: ["react", "python", "typescript"],
       })
     );
-    // frontend 应在 backend 和 library 之前
     const reactIndex = output.indexOf("## Project Structure");
-    const pythonIndex = output.indexOf("## Python"); // Python's first section
+    const pythonIndex = output.indexOf("## Python");
     if (pythonIndex > 0) {
       expect(reactIndex).toBeLessThan(pythonIndex);
     }
   });
 
-  // 17. 输出为非空字符串
   it("returns non-empty output for valid config", () => {
     const output = generateCursorRules(makeConfig());
     expect(output.length).toBeGreaterThan(500);
   });
 
-  // 18. 不存在 template → throw Error（通过 getTemplate 间接测试）
   it("throws when getTemplate is called with invalid id", async () => {
     const { getTemplate } = await import("@/lib/templates");
     expect(() => getTemplate("nonexistent")).toThrow("Template not found");
   });
 
-  // 19. 多自定义规则
   it("appends multiple custom rules", () => {
     const output = generateCursorRules(
       makeConfig({
@@ -244,11 +216,260 @@ describe("generateCursorRules", () => {
     expect(output).toContain("Content B");
   });
 
-  // 20. 自定义规则为空数组 → 不出现 Custom Rules section
   it("omits custom rules section when empty", () => {
     const output = generateCursorRules(
       makeConfig({ selectedTags: ["react"], customRules: [] })
     );
     expect(output).not.toContain("## Custom Rules");
+  });
+});
+
+// ========== Day 1 新增：generateProjectRules 测试 ==========
+describe("generateProjectRules", () => {
+  it("returns RuleFile[] for project-rules mode (merged)", () => {
+    const files = generateProjectRules(
+      makeConfig({
+        selectedTags: ["react"],
+        outputMode: "project-rules",
+        ruleApplicationMode: "intelligent",
+        splitRules: false,
+      })
+    );
+    expect(files.length).toBe(1);
+    expect(files[0].filename).toContain(".mdc");
+    expect(files[0].frontmatter.description.length).toBeGreaterThan(0);
+    expect(files[0].frontmatter.alwaysApply).toBe(false);
+    expect(files[0].content.length).toBeGreaterThan(0);
+  });
+
+  it("returns multiple RuleFile[] when splitRules is true", () => {
+    const files = generateProjectRules(
+      makeConfig({
+        selectedTags: ["react", "typescript"],
+        outputMode: "project-rules",
+        ruleApplicationMode: "intelligent",
+        splitRules: true,
+      })
+    );
+    expect(files.length).toBeGreaterThanOrEqual(2);
+    for (const f of files) {
+      expect(f.filename).toContain(".mdc");
+      expect(f.frontmatter.description.length).toBeGreaterThan(0);
+    }
+  });
+
+  it("always-apply mode includes alwaysApply: true", () => {
+    const files = generateProjectRules(
+      makeConfig({
+        selectedTags: ["react"],
+        outputMode: "project-rules",
+        ruleApplicationMode: "always-apply",
+        splitRules: false,
+      })
+    );
+    expect(files[0].frontmatter.alwaysApply).toBe(true);
+  });
+
+  it("manual mode has no alwaysApply field", () => {
+    const files = generateProjectRules(
+      makeConfig({
+        selectedTags: ["react"],
+        outputMode: "project-rules",
+        ruleApplicationMode: "manual",
+        splitRules: false,
+      })
+    );
+    expect(files[0].frontmatter.alwaysApply).toBeUndefined();
+  });
+
+  it("file-specific mode without globs falls back to manual", () => {
+    const files = generateProjectRules(
+      makeConfig({
+        selectedTags: ["react"],
+        outputMode: "project-rules",
+        ruleApplicationMode: "file-specific",
+        splitRules: false,
+      })
+    );
+    // 没有 globs 时回退到 manual
+    expect(files[0].frontmatter.alwaysApply).toBeUndefined();
+    expect(files[0].frontmatter.globs).toBeUndefined();
+  });
+
+  it("empty selectedTags returns single empty mdc", () => {
+    const files = generateProjectRules(
+      makeConfig({ selectedTags: [], outputMode: "project-rules" })
+    );
+    expect(files.length).toBe(1);
+    expect(files[0].filename).toBe("cursor-rules.mdc");
+    expect(files[0].content).toBe("");
+  });
+
+  it("globsPattern is resolved for sections without defaultGlobs", () => {
+    const files = generateProjectRules(
+      makeConfig({
+        selectedTags: ["react"],
+        outputMode: "project-rules",
+        ruleApplicationMode: "file-specific",
+        splitRules: true,
+        globsPattern: ["*.tsx", "*.ts"],
+      })
+    );
+    expect(files.length).toBeGreaterThan(0);
+    // 每个 file 的 globs 应由 globsPattern 提供
+    for (const f of files) {
+      if (f.frontmatter.globs) {
+        expect(f.frontmatter.globs).toEqual(["*.tsx", "*.ts"]);
+      }
+    }
+  });
+
+  it("description truncated at 120 chars", () => {
+    // 使用多标签来生成长 description
+    const files = generateProjectRules(
+      makeConfig({
+        selectedTags: ["react", "nextjs", "typescript", "tailwind"],
+        outputMode: "project-rules",
+        ruleApplicationMode: "intelligent",
+        splitRules: false,
+      })
+    );
+    expect(files[0].frontmatter.description.length).toBeLessThanOrEqual(120);
+  });
+
+  it("merged mode includes custom rules in content", () => {
+    const files = generateProjectRules(
+      makeConfig({
+        selectedTags: ["react"],
+        outputMode: "project-rules",
+        ruleApplicationMode: "intelligent",
+        splitRules: false,
+        customRules: [
+          { title: "No Console Logs", content: "Never commit console.log." },
+        ],
+      })
+    );
+    expect(files.length).toBe(1);
+    expect(files[0].content).toContain("## Custom Rules");
+    expect(files[0].content).toContain("### No Console Logs");
+    expect(files[0].content).toContain("Never commit console.log.");
+  });
+
+  it("split mode adds dedicated custom-rules.mdc file", () => {
+    const files = generateProjectRules(
+      makeConfig({
+        selectedTags: ["react"],
+        outputMode: "project-rules",
+        ruleApplicationMode: "intelligent",
+        splitRules: true,
+        customRules: [
+          { title: "Rule A", content: "Content A" },
+        ],
+      })
+    );
+    const crFile = files.find((f) => f.filename === "custom-rules.mdc");
+    expect(crFile).toBeDefined();
+    expect(crFile!.content).toContain("## Custom Rules");
+    expect(crFile!.content).toContain("### Rule A");
+    expect(crFile!.content).toContain("Content A");
+  });
+
+  it("split mode without customRules has no custom-rules.mdc", () => {
+    const files = generateProjectRules(
+      makeConfig({
+        selectedTags: ["react"],
+        outputMode: "project-rules",
+        ruleApplicationMode: "intelligent",
+        splitRules: true,
+        customRules: [],
+      })
+    );
+    const crFile = files.find((f) => f.filename === "custom-rules.mdc");
+    expect(crFile).toBeUndefined();
+  });
+
+  it("always-apply mode also includes custom rules", () => {
+    const files = generateProjectRules(
+      makeConfig({
+        selectedTags: ["react"],
+        outputMode: "project-rules",
+        ruleApplicationMode: "always-apply",
+        splitRules: false,
+        customRules: [
+          { title: "No Logs", content: "No console.log" },
+        ],
+      })
+    );
+    expect(files[0].content).toContain("## Custom Rules");
+  });
+
+  it("manual mode also includes custom rules", () => {
+    const files = generateProjectRules(
+      makeConfig({
+        selectedTags: ["react"],
+        outputMode: "project-rules",
+        ruleApplicationMode: "manual",
+        splitRules: false,
+        customRules: [
+          { title: "No Logs", content: "No console.log" },
+        ],
+      })
+    );
+    expect(files[0].content).toContain("## Custom Rules");
+  });
+});
+
+// ========== Day 1 新增：generateAgentsMd 测试 ==========
+describe("generateAgentsMd", () => {
+  it("returns markdown without frontmatter", () => {
+    const output = generateAgentsMd(
+      makeConfig({
+        selectedTags: ["react"],
+        outputMode: "agents-md",
+      })
+    );
+    expect(output).toContain("# Cursor Rules");
+    expect(output).not.toContain("---");
+    expect(output).toContain("## ");
+  });
+
+  it("empty tags returns hint", () => {
+    const output = generateAgentsMd(
+      makeConfig({ selectedTags: [], outputMode: "agents-md" })
+    );
+    expect(output).toContain("Select a tech stack");
+  });
+
+  it("includes custom rules at the end", () => {
+    const output = generateAgentsMd(
+      makeConfig({
+        selectedTags: ["react"],
+        outputMode: "agents-md",
+        customRules: [{ title: "No Logs", content: "No console.log" }],
+      })
+    );
+    expect(output).toContain("## Custom Rules");
+    expect(output).toContain("### No Logs");
+  });
+});
+
+// ========== Day 1 新增：generateLegacyRules 测试 ==========
+describe("generateLegacyRules", () => {
+  it("output matches generateCursorRules", () => {
+    const legacy = generateLegacyRules(
+      makeConfig({ selectedTags: ["react"], outputMode: "legacy" })
+    );
+    const original = generateCursorRules(
+      makeConfig({ selectedTags: ["react"] })
+    );
+    expect(legacy).toBe(original);
+  });
+
+  it("includes header when tags are selected", () => {
+    const output = generateLegacyRules(
+      makeConfig({ selectedTags: ["go"], outputMode: "legacy" })
+    );
+    expect(output).toContain("# Cursor Rules");
+    expect(output).toContain("go");
   });
 });

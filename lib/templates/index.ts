@@ -1,6 +1,17 @@
 // lib/templates/index.ts
 // 模板注册表 — 按设计文档 3.4 节实现（26 个模板）
 
+export type {
+  GeneratorConfig,
+  CursorRuleTemplate,
+  RuleSection,
+  StyleDefaults,
+  OutputMode,
+  RuleApplicationMode,
+  MdcFrontmatter,
+  RuleFile,
+} from './types';
+
 import type { CursorRuleTemplate } from './types';
 import { reactTemplate } from './react';
 import { nextjsTemplate } from './nextjs';

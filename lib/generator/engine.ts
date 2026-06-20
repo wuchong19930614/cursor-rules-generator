@@ -1,8 +1,9 @@
 // lib/generator/engine.ts
-// 按设计文档 3.6 节实现的 Cursor Rules 生成引擎
+// 按设计文档 Day 1 重构：支持 Cursor Project Rules 多格式输出
+// 保留 generateCursorRules 作为 Legacy 模式入口
 
 import { getTemplate, getTemplatesByTags } from '../templates';
-import type { GeneratorConfig } from '../templates/types';
+import type { GeneratorConfig, RuleFile, MdcFrontmatter } from '../templates/types';
 
 /** 扩展变量映射（v1.1: 6 个变量） */
 const VARIABLE_MAP: Record<string, (config: GeneratorConfig) => string> = {
@@ -22,7 +23,6 @@ const VARIABLE_MAP: Record<string, (config: GeneratorConfig) => string> = {
  */
 function applyVariables(content: string, config: GeneratorConfig): string {
   let result = content;
-  // 先用唯一 token 转义字面量 {{，防止误替换
   result = result.replace(/\\\{\{/g, '\x00OPEN\x00');
   for (const [placeholder, resolver] of Object.entries(VARIABLE_MAP)) {
     result = result.replace(
@@ -47,8 +47,367 @@ function generateHeader(config: GeneratorConfig): string {
   return lines.join('\n');
 }
 
+// ========== Day 1 新增：内部共享的 section 收集逻辑 ==========
+
+interface CollectedSection {
+  id: string;
+  title: string;
+  content: string;
+  tags: string[];
+  templateId: string;
+}
+
+function collectSections(config: GeneratorConfig): CollectedSection[] {
+  if (!config.selectedTags || config.selectedTags.length === 0) {
+    return [];
+  }
+
+  const templates = getTemplatesByTags(config.selectedTags);
+  const seenSectionIds = new Set<string>();
+  const sections: CollectedSection[] = [];
+
+  const categoryOrder = ['general', 'frontend', 'backend', 'fullstack', 'mobile', 'library'];
+  templates.sort((a, b) => {
+    const ai = categoryOrder.indexOf(a.category);
+    const bi = categoryOrder.indexOf(b.category);
+    return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+  });
+
+  for (const template of templates) {
+    for (const section of template.sections) {
+      if (section.tags && section.tags.length > 0) {
+        const hasMatch = section.tags.some((tag) =>
+          config.selectedTags.includes(tag)
+        );
+        if (!hasMatch) continue;
+      }
+
+      if (seenSectionIds.has(section.id)) continue;
+      seenSectionIds.add(section.id);
+
+      if (section.optional) {
+        if (
+          !section.tags ||
+          section.tags.filter((t) => config.selectedTags.includes(t)).length < 2
+        ) {
+          continue;
+        }
+      }
+
+      sections.push({
+        id: section.id,
+        title: section.title,
+        content: applyVariables(section.content, config),
+        tags: section.tags || [],
+        templateId: template.id,
+      });
+    }
+  }
+
+  return sections;
+}
+
+// ========== Day 1 新增：YAML frontmatter 生成 ==========
+
+/** YAML 转义：双引号 quoted scalar */
+function escapeYamlString(value: string): string {
+  return `"${value.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n')}"`;
+}
+
+/** 将 globs 字符串数组序列化为 YAML 数组格式 [*.tsx, *.ts] */
+function formatGlobsArray(globs: string[]): string {
+  return `[${globs.join(', ')}]`;
+}
+
 /**
- * 主生成函数
+ * 生成 MDC frontmatter YAML 块
+ * 根据 ruleApplicationMode 决定字段集合
+ */
+function generateFrontmatter(
+  description: string,
+  mode: GeneratorConfig['ruleApplicationMode'],
+  globs?: string[],
+): string {
+  const lines: string[] = ['---'];
+
+  // description 总是必填
+  lines.push(`description: ${escapeYamlString(description)}`);
+
+  switch (mode) {
+    case 'always-apply':
+      if (globs && globs.length > 0) {
+        lines.push(`globs: ${formatGlobsArray(globs)}`);
+      }
+      lines.push('alwaysApply: true');
+      break;
+    case 'intelligent':
+      if (globs && globs.length > 0) {
+        lines.push(`globs: ${formatGlobsArray(globs)}`);
+      }
+      lines.push('alwaysApply: false');
+      break;
+    case 'file-specific':
+      // 必须有 globs
+      if (globs && globs.length > 0) {
+        lines.push(`globs: ${formatGlobsArray(globs)}`);
+      }
+      lines.push('alwaysApply: false');
+      break;
+    case 'manual':
+      // 仅有 description，无 alwaysApply / globs
+      break;
+  }
+
+  lines.push('---');
+  return lines.join('\n');
+}
+
+/** 格式化自定义规则为 markdown 内容块 */
+function formatCustomRulesContent(
+  customRules: { title: string; content: string }[],
+): string {
+  if (!customRules || customRules.length === 0) return '';
+  const lines: string[] = ['## Custom Rules'];
+  for (const rule of customRules) {
+    lines.push(`### ${rule.title}`);
+    lines.push(rule.content);
+  }
+  return lines.join('\n');
+}
+
+/** 截断过长的 description（>120 字符） */
+function truncateDescription(text: string, maxLen = 120): string {
+  if (text.length <= maxLen) return text;
+  return text.slice(0, maxLen - 1) + '…';
+}
+
+/** 生成安全的文件名 slug */
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+// ========== Day 1 新增：generateProjectRules ==========
+
+/**
+ * 生成 Project Rules（.mdc 文件数组）
+ * - splitRules: true → 每个 section 一个文件
+ * - splitRules: false → 所有 rules 合并为一个文件
+ */
+export function generateProjectRules(config: GeneratorConfig): RuleFile[] {
+  const sections = collectSections(config);
+
+  if (sections.length === 0) {
+    // 零 section：生成一个空 .mdc（仅 description + 无 body）
+    return [
+      {
+        filename: 'cursor-rules.mdc',
+        frontmatter: {
+          description: truncateDescription('Cursor rules for your project'),
+        },
+        content: '',
+      },
+    ];
+  }
+
+  if (config.splitRules) {
+    // 每个 section 独立文件
+    const files = sections.map((s) => {
+      const templateSlug = slugify(s.templateId);
+      const sectionSlug = slugify(s.id);
+      const filename = `${templateSlug}-${sectionSlug}.mdc`;
+
+      let globs = resolveGlobs(config, s);
+      if (config.ruleApplicationMode === 'file-specific' && (!globs || globs.length === 0)) {
+        // file-specific 模式没有 globs → 回退到 manual
+        return {
+          filename,
+          frontmatter: { description: truncateDescription(s.title) },
+          content: s.content,
+        };
+      }
+
+      const fm: MdcFrontmatter = { description: truncateDescription(s.title) };
+      if (globs && globs.length > 0) fm.globs = globs;
+      if (config.ruleApplicationMode === 'always-apply') fm.alwaysApply = true;
+      else if (config.ruleApplicationMode === 'intelligent') fm.alwaysApply = false;
+      else if (config.ruleApplicationMode === 'file-specific') fm.alwaysApply = false;
+      // manual: 不设 alwaysApply
+
+      return { filename, frontmatter: fm, content: s.content };
+    });
+
+    // 自定义规则追加为独立文件
+    if (config.customRules && config.customRules.length > 0) {
+      files.push({
+        filename: 'custom-rules.mdc',
+        frontmatter: {
+          description: truncateDescription('Custom rules for your project'),
+        },
+        content: formatCustomRulesContent(config.customRules),
+      });
+    }
+
+    return files;
+  }
+
+  // 合并为一个文件
+  const templateId = sections[0]?.templateId || 'rules';
+  const filename = `${slugify(templateId)}.mdc`;
+  let combinedContent = sections
+    .map((s) => `# ${s.title}\n\n${s.content}`)
+    .join('\n\n');
+
+  // 追加自定义规则
+  if (config.customRules && config.customRules.length > 0) {
+    combinedContent += '\n\n' + formatCustomRulesContent(config.customRules);
+  }
+
+  const description = truncateDescription(
+    sections.map((s) => s.title).join('; ')
+  );
+
+  let globs = resolveGlobs(config, sections[0]);
+  if (config.ruleApplicationMode === 'file-specific' && (!globs || globs.length === 0)) {
+    return [
+      {
+        filename,
+        frontmatter: { description },
+        content: combinedContent,
+      },
+    ];
+  }
+
+  const fm: MdcFrontmatter = { description };
+  if (globs && globs.length > 0) fm.globs = globs;
+  if (config.ruleApplicationMode === 'always-apply') fm.alwaysApply = true;
+  else if (config.ruleApplicationMode === 'intelligent') fm.alwaysApply = false;
+  else if (config.ruleApplicationMode === 'file-specific') fm.alwaysApply = false;
+
+  return [{ filename, frontmatter: fm, content: combinedContent }];
+}
+
+// ========== Day 1 新增：generateAgentsMd ==========
+
+/**
+ * 生成 AGENTS.md 格式（纯 markdown，无 frontmatter）
+ */
+export function generateAgentsMd(config: GeneratorConfig): string {
+  const sections = collectSections(config);
+
+  if (sections.length === 0) {
+    return '# Cursor Rules\n\nSelect a tech stack to generate your rules.\n';
+  }
+
+  const output: string[] = ['# Cursor Rules\n'];
+
+  for (const s of sections) {
+    output.push(`\n## ${s.title}\n`);
+    output.push(s.content);
+  }
+
+  if (config.customRules && config.customRules.length > 0) {
+    output.push('\n## Custom Rules\n');
+    for (const rule of config.customRules) {
+      output.push(`### ${rule.title}`);
+      output.push(rule.content);
+    }
+  }
+
+  return output.join('\n');
+}
+
+// ========== Day 1 新增：generateLegacyRules（包装现有逻辑） ==========
+
+/**
+ * Legacy 模式：生成 .cursorrules 文本，与现有格式完全一致
+ */
+export function generateLegacyRules(config: GeneratorConfig): string {
+  return generateCursorRules(config);
+}
+
+// ========== Day 1 新增：ZIP 打包 ==========
+
+/**
+ * 使用 JSZip 打包 RuleFile[] 为 ZIP Blob
+ * 失败返回 null
+ */
+export async function generateZipBlob(files: RuleFile[]): Promise<Blob | null> {
+  if (typeof window === 'undefined') return null;
+  if (files.length === 0) return null;
+
+  try {
+    const JSZip = (await import('jszip')).default;
+
+    // 检查 Blob 支持
+    if (!JSZip.support || !JSZip.support.blob) {
+      return null;
+    }
+
+    const zip = new JSZip();
+    for (const file of files) {
+      const mdcContent = formatMdcFile(file);
+      zip.file(file.filename, mdcContent);
+    }
+
+    const blob = await zip.generateAsync({ type: 'blob' });
+    return blob;
+  } catch {
+    return null;
+  }
+}
+
+/** 将 RuleFile 格式化为完整的 .mdc 文本（frontmatter + body） */
+function formatMdcFile(file: RuleFile): string {
+  const fm = generateFrontmatterFromObject(file.frontmatter);
+  if (file.content) {
+    return `${fm}\n${file.content}`;
+  }
+  return fm;
+}
+
+function generateFrontmatterFromObject(fm: MdcFrontmatter): string {
+  const lines: string[] = ['---'];
+  lines.push(`description: ${escapeYamlString(fm.description)}`);
+  if (fm.globs && fm.globs.length > 0) {
+    lines.push(`globs: ${formatGlobsArray(fm.globs)}`);
+  }
+  if (fm.alwaysApply !== undefined) {
+    lines.push(`alwaysApply: ${fm.alwaysApply}`);
+  }
+  lines.push('---');
+  return lines.join('\n');
+}
+
+// ========== 辅助函数 ==========
+
+/** 解析 globs：全局配置优先，section 级别覆盖 */
+function resolveGlobs(config: GeneratorConfig, section: CollectedSection): string[] | undefined {
+  // 读取模板的 defaultGlobs
+  let templateGlobs: string[] | undefined;
+  try {
+    const tpl = getTemplate(section.templateId);
+    if (tpl.defaultGlobs && tpl.defaultGlobs[section.id]) {
+      templateGlobs = tpl.defaultGlobs[section.id];
+    }
+  } catch {
+    // 模板不存在，忽略
+  }
+
+  // section 有 defaultGlobs → 使用
+  if (templateGlobs && templateGlobs.length > 0) return templateGlobs;
+  // config 有 globsPattern → 使用
+  if (config.globsPattern && config.globsPattern.length > 0) return config.globsPattern;
+  // 都为空 → undefined
+  return undefined;
+}
+
+// ========== 保留：Legacy 生成函数（现有逻辑不变） ==========
+
+/**
+ * 主生成函数（Legacy 模式）
  * 按设计 3.6 节完整实现：
  * 1. 空状态防护
  * 2. 按 category 排序

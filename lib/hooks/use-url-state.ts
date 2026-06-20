@@ -5,7 +5,7 @@ import { useCallback, useMemo } from 'react';
 import type { GeneratorConfig } from '@/lib/templates/types';
 
 function encodeConfig(config: GeneratorConfig): string {
-  const payload = {
+  const payload: Record<string, unknown> = {
     t: config.selectedTags,
     i: config.style.indentSize,
     tb: config.style.useTabs ? 1 : 0,
@@ -17,6 +17,13 @@ function encodeConfig(config: GeneratorConfig): string {
       .filter((r) => r.title && r.content)
       .map((r) => `${encodeURIComponent(r.title)}:${encodeURIComponent(r.content)}`),
     pt: config.projectType,
+    // Day 1 新增
+    om: config.outputMode,
+    rm: config.ruleApplicationMode,
+    sr: config.splitRules ? 1 : 0,
+    gp: config.globsPattern && config.globsPattern.length > 0
+      ? config.globsPattern
+      : undefined,
   };
   return btoa(JSON.stringify(payload));
 }
@@ -44,6 +51,12 @@ function decodeConfig(encoded: string): Partial<GeneratorConfig> | null {
       namingConvention: payload.n || 'camelCase',
       customRules,
       projectType: payload.pt || 'web',
+      // Day 1 新增
+      outputMode: (payload.om as GeneratorConfig['outputMode']) || 'project-rules',
+      ruleApplicationMode:
+        (payload.rm as GeneratorConfig['ruleApplicationMode']) || 'intelligent',
+      splitRules: payload.sr === 1,
+      globsPattern: Array.isArray(payload.gp) ? payload.gp : undefined,
     };
   } catch {
     return null;
@@ -62,10 +75,10 @@ export function useUrlState(): {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const hasUrlState = useMemo(() => searchParams.has('s'), [searchParams]);
+  const hasUrlState = useMemo(() => searchParams?.has('s') ?? false, [searchParams]);
 
   const restoreFromUrl = useCallback((): Partial<GeneratorConfig> | null => {
-    const encoded = searchParams.get('s');
+    const encoded = searchParams?.get('s');
     if (!encoded) return null;
     return decodeConfig(encoded);
   }, [searchParams]);

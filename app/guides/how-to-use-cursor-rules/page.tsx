@@ -10,10 +10,34 @@ export const metadata: Metadata = {
   },
 };
 
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: "How to Use Cursor Rules — Complete Step-by-Step Guide",
+  description:
+    "Learn how to create, configure, and use .cursorrules files to get the most out of Cursor IDE's AI assistant. Step-by-step tutorial with examples for React, Python, Go, and more.",
+  datePublished: "2026-06-15",
+  dateModified: "2026-06-15",
+  author: {
+    "@type": "Organization",
+    name: "Cursor Rules Generator",
+  },
+  publisher: {
+    "@type": "Organization",
+    name: "Cursor Rules Generator",
+  },
+};
+
 export default function HowToUseCursorRulesPage() {
   return (
     <div className="flex flex-col flex-1 bg-zinc-50 font-sans dark:bg-black">
       <main className="flex-1 w-full max-w-2xl mx-auto py-16 px-4 sm:px-6">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(articleSchema),
+          }}
+        />
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-4">
           How to Use Cursor Rules
         </h1>

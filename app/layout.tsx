@@ -5,9 +5,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import {
   getOrganizationSchema,
   getWebSiteSchema,
-  getWebApplicationSchema,
   getBreadcrumbSchema,
-  getFAQPageSchema,
 } from "@/lib/schema";
 import "./globals.css";
 
@@ -130,19 +128,7 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(getWebApplicationSchema()),
-          }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
             __html: JSON.stringify(homeBreadcrumb),
-          }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(getFAQPageSchema()),
           }}
         />
         <Script id="clarity-script" strategy="afterInteractive">

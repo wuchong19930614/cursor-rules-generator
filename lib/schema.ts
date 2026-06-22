@@ -131,26 +131,34 @@ export function getFAQPageSchema(): object {
     mainEntity: [
       {
         "@type": "Question",
-        name: "What is a .cursorrules file?",
+        name: "What is the difference between Project Rules, AGENTS.md, and .cursorrules?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "A .cursorrules file is a project-level configuration file that provides custom instructions to Cursor IDE's AI assistant. It tells the AI how to format code, which conventions to follow, and what best practices to apply for your specific tech stack.",
+          text: "Project Rules (.mdc) is the modern format with frontmatter metadata, glob-based file targeting, and support for splitting rules into multiple files. AGENTS.md is a single markdown file at the project root — simpler but without glob targeting or metadata. Legacy .cursorrules is Cursor's original plain-text format, still supported but less flexible than Project Rules.",
         },
       },
       {
         "@type": "Question",
-        name: "Where do I place the .cursorrules file?",
+        name: "Which format should I use for my project?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Place the .cursorrules file in the root directory of your project (same level as package.json or go.mod). Cursor IDE automatically detects and applies the rules when you open the project.",
+          text: "Use Project Rules (.mdc) if you work in a team with multiple domains (frontend, backend, infra) and want per-directory rules. Use AGENTS.md for small projects, open-source repos, or when you want a single file that new contributors can read immediately. Use legacy .cursorrules if you are maintaining an existing project that already uses it.",
         },
       },
       {
         "@type": "Question",
-        name: "How do I use this generator?",
+        name: "Where do I place the generated files?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Select your tech stack (you can choose multiple), set your coding style preferences (indentation, quotes, naming conventions), add any custom rules, then preview and download your .cursorrules file. Place it in your project root and Cursor IDE will apply the rules automatically.",
+          text: "Project Rules (.mdc) go in the .cursor/rules/ directory. AGENTS.md and .cursorrules go in your project root directory. Cursor IDE automatically detects all three formats when you open the project.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Can I switch formats later?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes! You can regenerate your rules in any format at any time. The same configuration produces consistent output across all three formats — only the file structure and metadata differ.",
         },
       },
       {
@@ -158,7 +166,7 @@ export function getFAQPageSchema(): object {
         name: "Is Cursor Rules Generator free?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Yes, Cursor Rules Generator is completely free. No sign-up required, no usage limits. Generate as many .cursorrules files as you need for all your projects.",
+          text: "Yes, Cursor Rules Generator is completely free. No sign-up required, no usage limits. Generate as many rule files as you need for all your projects in any format.",
         },
       },
       {

@@ -8,12 +8,13 @@ export default function Home() {
         {/* Hero section */}
         <div className="text-center mb-10">
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-            Cursor Rules Generator
+            Customize Cursor AI Behavior — Generate Project Rules in Seconds
           </h1>
-          <p className="mt-4 text-lg text-zinc-600 dark:text-zinc-400 max-w-xl mx-auto">
-            Generate customized <code>.cursorrules</code> files for your tech
-            stack in minutes. Pick your stack, set your style, and get
-            production-ready AI rules.
+          <p className="mt-4 text-lg text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto">
+            Define exactly how Cursor IDE&apos;s AI writes code for your project.
+            Choose your tech stack, set your conventions, and get a complete rules
+            configuration in <strong>Project Rules</strong> (.mdc), <strong>AGENTS.md</strong>,
+            or legacy <strong>.cursorrules</strong> format — instantly.
           </p>
           <div className="mt-4">
             <Link
@@ -28,95 +29,142 @@ export default function Home() {
         {/* Generator Form (Client Component) */}
         <GeneratorForm />
 
-        {/* Educational Content Section */}
+        {/* Format Comparison + MDC Example */}
         <section className="mt-20 mb-12 border-t border-zinc-200 dark:border-zinc-800 pt-12">
-          {/* What Are Cursor Rules? */}
+          {/* Format Comparison */}
           <div className="mb-16">
-            <h2 className="text-2xl sm:text-3xl font-semibold text-zinc-900 dark:text-zinc-50 mb-4">
-              What Are Cursor Rules?
+            <h2 className="text-2xl sm:text-3xl font-semibold text-zinc-900 dark:text-zinc-50 mb-6">
+              Which Format Should You Choose?
             </h2>
-            <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed mb-4">
-              Cursor Rules are project-level configuration files that tell
-              Cursor IDE&apos;s AI assistant exactly how you want your code to
-              be written. When you open a project in Cursor, the AI reads your{" "}
-              <code>.cursorrules</code> file and automatically follows your
-              team&apos;s conventions — from indentation and naming to
-              architecture patterns and library preferences. This means every AI
-              suggestion is consistent with your codebase, reducing the time
-              spent fixing AI-generated code that doesn&apos;t match your
-              standards.
+            <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed mb-6">
+              Cursor IDE supports three formats for customizing AI behavior. Pick the
+              one that fits your workflow and team structure.
             </p>
-            <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed mb-4">
-              Unlike generic AI coding assistants that produce one-size-fits-all
-              output, Cursor with rules becomes a specialized team member who
-              understands your stack. Whether you&apos;re building a React
-              frontend, a Go microservice, or a Python data pipeline, the AI
-              generates code that fits seamlessly into your existing project.
-            </p>
-            <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed">
-              The best part? It&apos;s a single file. Drop it in your project
-              root, and Cursor picks it up instantly — no plugins, no
-              configuration panels, no complex setup. Just plain text rules that
-              work across your entire team.
-            </p>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm border-collapse">
+                <thead>
+                  <tr className="border-b border-zinc-300 dark:border-zinc-600 text-left">
+                    <th className="py-3 pr-4 font-semibold text-zinc-900 dark:text-zinc-50">Feature</th>
+                    <th className="py-3 px-4 font-semibold text-zinc-900 dark:text-zinc-50">Project Rules (.mdc)</th>
+                    <th className="py-3 px-4 font-semibold text-zinc-900 dark:text-zinc-50">AGENTS.md</th>
+                    <th className="py-3 pl-4 font-semibold text-zinc-900 dark:text-zinc-50">Legacy (.cursorrules)</th>
+                  </tr>
+                </thead>
+                <tbody className="text-zinc-600 dark:text-zinc-400">
+                  <tr className="border-b border-zinc-200 dark:border-zinc-700">
+                    <td className="py-3 pr-4 font-medium text-zinc-800 dark:text-zinc-200">File Location</td>
+                    <td className="py-3 px-4"><code>.cursor/rules/</code> directory</td>
+                    <td className="py-3 px-4">Project root</td>
+                    <td className="py-3 pl-4">Project root</td>
+                  </tr>
+                  <tr className="border-b border-zinc-200 dark:border-zinc-700">
+                    <td className="py-3 pr-4 font-medium text-zinc-800 dark:text-zinc-200">Split Rules</td>
+                    <td className="py-3 px-4">
+                      <span className="text-green-700 dark:text-green-400 font-medium">Yes</span>
+                      {" "}— multiple .mdc files per concern
+                    </td>
+                    <td className="py-3 px-4">
+                      <span className="text-amber-700 dark:text-amber-400 font-medium">Single file</span>
+                      {" "}— one AGENTS.md per repo
+                    </td>
+                    <td className="py-3 pl-4">
+                      <span className="text-amber-700 dark:text-amber-400 font-medium">Single file</span>
+                      {" "}— one .cursorrules
+                    </td>
+                  </tr>
+                  <tr className="border-b border-zinc-200 dark:border-zinc-700">
+                    <td className="py-3 pr-4 font-medium text-zinc-800 dark:text-zinc-200">Glob Targeting</td>
+                    <td className="py-3 px-4">
+                      <span className="text-green-700 dark:text-green-400 font-medium">Built-in</span>
+                      {" "}— <code>globs</code> in frontmatter
+                    </td>
+                    <td className="py-3 px-4">
+                      <span className="text-red-700 dark:text-red-400 font-medium">Not supported</span>
+                    </td>
+                    <td className="py-3 pl-4">
+                      <span className="text-red-700 dark:text-red-400 font-medium">Not supported</span>
+                    </td>
+                  </tr>
+                  <tr className="border-b border-zinc-200 dark:border-zinc-700">
+                    <td className="py-3 pr-4 font-medium text-zinc-800 dark:text-zinc-200">Always Apply</td>
+                    <td className="py-3 px-4">
+                      <span className="text-green-700 dark:text-green-400 font-medium">Configurable</span>
+                      {" "}— per-file via frontmatter
+                    </td>
+                    <td className="py-3 px-4">
+                      <span className="text-blue-700 dark:text-blue-400 font-medium">Always on</span>
+                      {" "}— whole file applies
+                    </td>
+                    <td className="py-3 pl-4">
+                      <span className="text-blue-700 dark:text-blue-400 font-medium">Always on</span>
+                      {" "}— whole file applies
+                    </td>
+                  </tr>
+                  <tr className="border-b border-zinc-200 dark:border-zinc-700">
+                    <td className="py-3 pr-4 font-medium text-zinc-800 dark:text-zinc-200">Best For</td>
+                    <td className="py-3 px-4">Large projects, monorepos, team conventions per domain</td>
+                    <td className="py-3 px-4">Simple projects, open-source repos, quick setup</td>
+                    <td className="py-3 pl-4">Existing Cursor users, backward compatibility</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 pr-4 font-medium text-zinc-800 dark:text-zinc-200">Frontmatter Metadata</td>
+                    <td className="py-3 px-4">
+                      <span className="text-green-700 dark:text-green-400 font-medium">Full</span>
+                      {" "}— description, globs, alwaysApply, version
+                    </td>
+                    <td className="py-3 px-4">
+                      <span className="text-red-700 dark:text-red-400 font-medium">None</span>
+                      {" "}— plain markdown only
+                    </td>
+                    <td className="py-3 pl-4">
+                      <span className="text-red-700 dark:text-red-400 font-medium">None</span>
+                      {" "}— plain text only
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
 
-          {/* What is a .cursorrules File? */}
+          {/* MDC Example */}
           <div className="mb-16">
             <h2 className="text-2xl sm:text-3xl font-semibold text-zinc-900 dark:text-zinc-50 mb-4">
-              What is a <code>.cursorrules</code> File?
+              Project Rules (.mdc) Example
             </h2>
             <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed mb-4">
-              A <code>.cursorrules</code> file is a plain-text configuration
-              file that lives in the root directory of your project, right
-              alongside files like <code>package.json</code>,{" "}
-              <code>go.mod</code>, or <code>Cargo.toml</code>. When you open a
-              project in Cursor IDE, the AI assistant automatically detects and
-              reads this file, using it to customize every code suggestion and
-              generation it produces. Think of it as a system prompt for the AI
-              that&apos;s specific to your project and your team&apos;s coding
-              standards.
+              Project Rules use YAML frontmatter to attach metadata like target file
+              patterns and application mode. Here is what a typical .mdc rule file
+              looks like:
             </p>
-            <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed mb-4">
-              The file format is flexible — it uses Markdown-style headings to
-              organize sections and plain text to describe rules. A typical{" "}
-              <code>.cursorrules</code> file defines your preferred code style
-              (indentation, quotes, semicolons), naming conventions (camelCase,
-              PascalCase, snake_case), framework-specific patterns (React
-              hooks rules, Go error handling, Python type hints), and
-              architectural constraints (file structure, import order, testing
-              requirements). The AI reads all of this context before generating
-              any code, ensuring every suggestion is consistent with your
-              codebase.
-            </p>
-            <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed mb-4">
-              Crucially, the leading dot in the filename makes it a hidden file
-              on Unix-based systems (macOS, Linux), keeping your workspace clean
-              while still being recognized by Cursor. The file is
-              project-specific — different projects can have different rule
-              sets, so your React frontend can enforce JSX best practices while
-              your Python backend enforces PEP 8 compliance, all without
-              conflicts.
-            </p>
-            <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed mb-4">
-              Cursor IDE introduced <code>.cursorrules</code> support to address
-              a fundamental challenge with AI coding assistants: context. Even
-              the most advanced models generate inconsistent code when they
-              don&apos;t know your conventions. By providing explicit rules, you
-              transform the AI from a generic code generator into a specialized
-              team member who writes code that looks like yours — following
-              your patterns, using your preferred libraries, and respecting your
-              architectural decisions.
-            </p>
-            <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed">
-              Unlike editor settings or ESLint configs that only validate code,{" "}
-              <code>.cursorrules</code> actively shapes code generation. Rules
-              can specify things like &quot;always use functional components with
-              TypeScript interfaces&quot; for React, or &quot;prefer
-              channels over mutexes for concurrent operations&quot; for Go —
-              guidance that goes beyond what traditional linters can express.
-              This makes it the single most impactful file for teams that
-              rely on AI-assisted development.
+            <pre className="bg-zinc-900 dark:bg-zinc-800 text-zinc-100 p-5 rounded-xl text-sm overflow-x-auto leading-relaxed">
+              <code>{`---
+description: React component conventions for the frontend team
+globs:
+  - "src/components/**/*.tsx"
+  - "src/pages/**/*.tsx"
+alwaysApply: false
+---
+
+# React Component Rules
+
+- Use functional components with TypeScript interfaces for props
+- Prefer named exports over default exports
+- Keep components under 200 lines; extract hooks and utilities
+- Use Tailwind CSS for styling — no inline styles or CSS modules
+- Every component file must include a JSDoc description
+
+## State Management
+
+- Use React Context + useReducer for shared state
+- Avoid prop drilling beyond 2 levels
+- Server state goes through React Query (TanStack Query)`}</code>
+            </pre>
+            <p className="text-sm text-zinc-500 dark:text-zinc-500 mt-3">
+              The frontmatter tells Cursor to apply these rules only to{" "}
+              <code>src/components/**/*.tsx</code> and{" "}
+              <code>src/pages/**/*.tsx</code> files, not globally. Set{" "}
+              <code>alwaysApply: true</code> for conventions that should apply
+              everywhere.
             </p>
           </div>
 
@@ -128,8 +176,8 @@ export default function Home() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               {[
                 {
-                  title: "Consistent Code",
-                  desc: "Ensure every AI suggestion follows your team's naming, formatting, and architectural conventions — no more fixing AI-generated code that doesn't match your standards.",
+                  title: "Multi-Format Output",
+                  desc: "Generate Project Rules (.mdc), AGENTS.md, or legacy .cursorrules from the same configuration. Switch formats anytime — your rules adapt automatically.",
                 },
                 {
                   title: "Stack-Aware Rules",
@@ -137,7 +185,7 @@ export default function Home() {
                 },
                 {
                   title: "Zero Setup",
-                  desc: "No configuration files, no dependencies, no accounts. Just pick your stack, customize your preferences, and download a ready-to-use .cursorrules file.",
+                  desc: "No configuration files, no dependencies, no accounts. Just pick your stack, customize your preferences, and download ready-to-use rules instantly.",
                 },
               ].map((feature) => (
                 <div
@@ -177,6 +225,14 @@ export default function Home() {
               </li>
               <li>
                 <strong className="text-zinc-900 dark:text-zinc-50">
+                  Pick Your Format
+                </strong>{" "}
+                — Choose Project Rules (.mdc) for multi-file team workflows,
+                AGENTS.md for simple single-file setup, or legacy .cursorrules
+                for existing projects.
+              </li>
+              <li>
+                <strong className="text-zinc-900 dark:text-zinc-50">
                   Add Custom Rules
                 </strong>{" "}
                 — Include project-specific rules like file structure
@@ -186,69 +242,10 @@ export default function Home() {
                 <strong className="text-zinc-900 dark:text-zinc-50">
                   Download &amp; Use
                 </strong>{" "}
-                — Preview your rules in real-time, then download the{" "}
-                <code>.cursorrules</code> file. Place it in your project root
-                and Cursor applies it instantly.
+                — Preview your rules in real-time, then download. Place the file
+                in your project and Cursor IDE applies it instantly.
               </li>
             </ol>
-          </div>
-
-          {/* Best Practices for Writing .cursorrules */}
-          <div className="mb-16">
-            <h2 className="text-2xl sm:text-3xl font-semibold text-zinc-900 dark:text-zinc-50 mb-4">
-              Best Practices for Writing .cursorrules
-            </h2>
-            <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed mb-4">
-              Writing effective <code>.cursorrules</code> files is both an art
-              and a science. The best rules are specific enough to guide the AI
-              but flexible enough to avoid over-constraining it. Here are the
-              key principles we follow when designing our templates:
-            </p>
-            <ul className="list-disc list-inside space-y-2 text-zinc-600 dark:text-zinc-400 leading-relaxed mb-4">
-              <li>
-                <strong className="text-zinc-900 dark:text-zinc-50">
-                  Be explicit about code style.
-                </strong>{" "}
-                Specify indentation (tabs vs. spaces, width), quote style
-                (single vs. double), semicolon usage, and trailing commas. The
-                AI is remarkably good at following these mechanical rules when
-                they are clearly stated.
-              </li>
-              <li>
-                <strong className="text-zinc-900 dark:text-zinc-50">
-                  Define naming conventions upfront.
-                </strong>{" "}
-                Tell the AI whether to use camelCase, PascalCase, snake_case, or
-                kebab-case for variables, functions, classes, and files.
-                Consistent naming is one of the highest-ROI rules you can set.
-              </li>
-              <li>
-                <strong className="text-zinc-900 dark:text-zinc-50">
-                  Include framework-specific patterns.
-                </strong>{" "}
-                For React, specify hooks rules and component structure. For Go,
-                define error handling idioms. For Python, set type hint
-                expectations. The more domain-specific your rules, the better
-                the AI output.
-              </li>
-              <li>
-                <strong className="text-zinc-900 dark:text-zinc-50">
-                  Keep rules concise and focused.
-                </strong>{" "}
-                A <code>.cursorrules</code> file should be comprehensive but not
-                bloated. Aim for 50-150 lines. If you exceed 200 lines,
-                consider whether some rules are redundant or better enforced by
-                a linter.
-              </li>
-              <li>
-                <strong className="text-zinc-900 dark:text-zinc-50">
-                  Version your rules alongside your code.
-                </strong>{" "}
-                Commit your <code>.cursorrules</code> file to version control so
-                your entire team uses the same AI configuration. Update it as
-                your conventions evolve.
-              </li>
-            </ul>
           </div>
 
           {/* FAQ */}
@@ -259,24 +256,24 @@ export default function Home() {
             <dl className="space-y-6">
               {[
                 {
-                  q: "Where do I place the .cursorrules file?",
-                  a: "Place it in the root directory of your project — the same folder that contains your package.json, go.mod, or other project config files. Cursor IDE automatically detects and applies it when you open the project.",
+                  q: "What is the difference between Project Rules, AGENTS.md, and .cursorrules?",
+                  a: "Project Rules (.mdc) is the modern format with frontmatter metadata, glob-based file targeting, and support for splitting rules into multiple files. AGENTS.md is a single markdown file at the project root — simpler but without glob targeting or metadata. Legacy .cursorrules is Cursor's original plain-text format, still supported but less flexible than Project Rules.",
                 },
                 {
-                  q: "Can I have multiple .cursorrules files for different projects?",
-                  a: "Yes! Each project gets its own .cursorrules file. This is the recommended approach since different tech stacks and teams have different conventions. Use our generator to create a unique rules file for each project.",
+                  q: "Which format should I use for my project?",
+                  a: "Use Project Rules (.mdc) if you work in a team with multiple domains (frontend, backend, infra) and want per-directory rules. Use AGENTS.md for small projects, open-source repos, or when you want a single file that new contributors can read immediately. Use legacy .cursorrules if you are maintaining an existing project that already uses it.",
                 },
                 {
-                  q: "Do .cursorrules files work with other AI coding tools?",
-                  a: ".cursorrules files are designed specifically for Cursor IDE. Similar concepts exist for other tools — for example, GitHub Copilot uses .github/copilot-instructions.md. Our generated rules focus on Cursor's format and features.",
+                  q: "Where do I place the generated files?",
+                  a: "Project Rules (.mdc) go in the .cursor/rules/ directory. AGENTS.md and .cursorrules go in your project root directory. Cursor IDE automatically detects all three formats when you open the project.",
+                },
+                {
+                  q: "Can I switch formats later?",
+                  a: "Yes! You can regenerate your rules in any format at any time. The same configuration produces consistent output across all three formats — only the file structure and metadata differ.",
                 },
                 {
                   q: "Is the generator really free?",
                   a: "Yes, completely free. No sign-up, no usage limits, no hidden costs. We believe every developer should have access to well-crafted AI rules. Generate as many files as you need.",
-                },
-                {
-                  q: "How often are templates updated?",
-                  a: "Templates are maintained to reflect current best practices for each framework. As frameworks evolve and new patterns emerge, we update our templates to keep your rules relevant and effective.",
                 },
               ].map(({ q, a }) => (
                 <div key={q}>

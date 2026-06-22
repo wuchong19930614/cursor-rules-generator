@@ -24,19 +24,21 @@ const siteUrl = "https://www.cursorgenerator.dev";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Cursor Rules Generator — Free .cursorrules File Generator",
+    default: "Cursor Rules Generator — Project Rules, AGENTS.md & .cursorrules Generator",
     template: "%s | Cursor Rules Generator",
   },
   description:
-    "Generate customized .cursorrules files for your tech stack in minutes. Choose from 26+ templates (React, Next.js, Python, Go, Rust & more), set your coding style, and download production-ready AI rules for Cursor IDE. Start generating in 30 seconds.",
+    "Generate Project Rules (.mdc), AGENTS.md, or legacy .cursorrules for Cursor IDE. Choose from 26+ templates (React, Next.js, Python, Go, Rust & more), set your coding style, and download production-ready AI rules in your preferred format.",
   keywords: [
     "cursor rules",
+    "project rules",
+    ".mdc",
+    "AGENTS.md",
     ".cursorrules",
     "cursor rules generator",
     "cursor ide",
     "cursor ai rules",
     "cursor configuration",
-    "cursorrules file",
     "ai coding rules",
     "cursor custom instructions",
   ],
@@ -53,15 +55,15 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: siteUrl,
     siteName: "Cursor Rules Generator",
-    title: "Cursor Rules Generator — Free .cursorrules File Generator",
+    title: "Cursor Rules Generator — Project Rules, AGENTS.md & .cursorrules Generator",
     description:
-      "Generate customized .cursorrules files for your tech stack in minutes. 26+ templates, real-time preview, one-click download. Start generating in 30 seconds.",
+      "Generate Project Rules (.mdc), AGENTS.md, or legacy .cursorrules for Cursor IDE. 26+ templates, real-time preview, one-click download in your preferred format.",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Cursor Rules Generator — Create custom .cursorrules files",
+        alt: "Cursor Rules Generator — Create Project Rules, AGENTS.md & .cursorrules files",
       },
     ],
   },
@@ -69,9 +71,9 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     site: "@cursorrulesgen",
     creator: "@cursorrulesgen",
-    title: "Cursor Rules Generator — Free .cursorrules File Generator",
+    title: "Cursor Rules Generator — Project Rules, AGENTS.md & .cursorrules Generator",
     description:
-      "Generate customized .cursorrules files for your tech stack in minutes. 26+ templates, real-time preview, one-click download. Start generating in 30 seconds.",
+      "Generate Project Rules (.mdc), AGENTS.md, or legacy .cursorrules for Cursor IDE. 26+ templates, real-time preview, one-click download in your preferred format.",
     images: ["/og-image.png"],
   },
   robots: {

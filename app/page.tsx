@@ -1,5 +1,6 @@
 import Link from "next/link";
 import GeneratorForm from "@/components/generator/generator-form";
+import UsageGuide from "@/components/generator/usage-guide";
 
 export default function Home() {
   return (
@@ -28,6 +29,9 @@ export default function Home() {
 
         {/* Generator Form (Client Component) */}
         <GeneratorForm />
+
+        {/* Usage Guide */}
+        <UsageGuide />
 
         {/* Format Comparison + MDC Example */}
         <section className="mt-20 mb-12 border-t border-zinc-200 dark:border-zinc-800 pt-12">

@@ -299,6 +299,83 @@ export default function HowToUseCursorRulesPage() {
             for maximum impact.
           </p>
 
+          {/* Choosing Your Format */}
+          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3">
+            Choosing Your Format: .mdc vs AGENTS.md vs .cursorrules
+          </h2>
+          <p>
+            Cursor IDE supports three formats for customizing AI behavior, each
+            with distinct capabilities. <strong>Project Rules (.mdc)</strong> is
+            the most powerful option — individual <code>.mdc</code> files in the
+            <code>.cursor/rules/</code> directory with YAML frontmatter that lets
+            you target specific file patterns via <code>globs</code>, toggle
+            <code>alwaysApply</code>, and split rules across multiple
+            domain-specific files. This is the recommended format for teams with
+            separate frontend, backend, and infrastructure concerns.
+          </p>
+          <p>
+            <strong>AGENTS.md</strong> is a single markdown file at your project
+            root. Simpler than Project Rules — no frontmatter, no glob targeting,
+            no splitting — but excellent for small projects, open-source repos,
+            and quick onboarding. Every contributor can read it immediately.
+            <strong>Legacy .cursorrules</strong> is the original plain-text format.
+            Still fully supported but offers the least flexibility. Use it for
+            existing projects that already depend on it, or migrate to Project
+            Rules for the benefits of frontmatter metadata and multi-file
+            organization.
+          </p>
+          <p>
+            You can generate all three formats from the same configuration on
+            our generator. Switch between them at any time without losing your
+            rules — the underlying conventions stay consistent across formats.
+          </p>
+
+          {/* Project Rules Frontmatter Deep Dive */}
+          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3">
+            Project Rules Frontmatter: A Deep Dive
+          </h2>
+          <p>
+            Every <code>.mdc</code> file starts with YAML frontmatter that tells
+            Cursor exactly when and where to apply its rules. The four key fields
+            are:
+          </p>
+          <ul className="list-disc list-inside space-y-2 text-zinc-600 dark:text-zinc-400">
+            <li>
+              <strong className="text-zinc-900 dark:text-zinc-50">description</strong>{" "}
+              — A short, human-readable summary of what this rule file covers.
+              Shown in Cursor&apos;s rules panel so teammates can understand the
+              purpose at a glance.
+            </li>
+            <li>
+              <strong className="text-zinc-900 dark:text-zinc-50">globs</strong>{" "}
+              — An array of file-matching patterns (e.g.,{" "}
+              <code>&quot;src/components/**/*.tsx&quot;</code>) that determine
+              which files this rule applies to. Leave empty or omit to apply
+              globally.
+            </li>
+            <li>
+              <strong className="text-zinc-900 dark:text-zinc-50">alwaysApply</strong>{" "}
+              — Boolean. When <code>true</code>, Cursor always includes these
+              rules in every AI interaction, regardless of which file you are
+              editing. Ideal for code style rules that should apply everywhere.
+              When <code>false</code>, only applies when editing files matching
+              the globs.
+            </li>
+            <li>
+              <strong className="text-zinc-900 dark:text-zinc-50">version</strong>{" "}
+              — Optional semantic version string (e.g., <code>&quot;1.0.0&quot;</code>).
+              Useful for tracking rule changes over time, especially in teams
+              where rules evolve with the codebase.
+            </li>
+          </ul>
+          <p>
+            A well-structured <code>.cursor/rules/</code> directory might look
+            like this: <code>react-components.mdc</code> for frontend conventions,
+            <code>go-backend.mdc</code> for API patterns, and{" "}
+            <code>testing-standards.mdc</code> with <code>alwaysApply: true</code>
+            {" "}for test requirements that span the entire codebase.
+          </p>
+
           {/* Navigation */}
           <div className="mt-10 pt-6 border-t border-zinc-200 dark:border-zinc-700 not-prose">
             <div className="flex flex-wrap gap-4">

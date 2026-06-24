@@ -242,6 +242,14 @@ Testing:
           </li>
           <li>
             <Link
+              href="/guides/migrate-cursorrules-to-cursor-rules"
+              className="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              Migrate .cursorrules to Project Rules (.mdc) &rarr;
+            </Link>
+          </li>
+          <li>
+            <Link
               href="/about"
               className="text-blue-600 dark:text-blue-400 hover:underline"
             >

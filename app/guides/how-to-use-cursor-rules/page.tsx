@@ -386,6 +386,12 @@ export default function HowToUseCursorRulesPage() {
                 &larr; Back to Generator
               </Link>
               <Link
+                href="/guides/migrate-cursorrules-to-cursor-rules"
+                className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium"
+              >
+                Migrate .cursorrules to Project Rules &rarr;
+              </Link>
+              <Link
                 href="/about"
                 className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium"
               >

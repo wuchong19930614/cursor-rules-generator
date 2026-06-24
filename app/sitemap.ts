@@ -18,6 +18,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.6,
     },
     {
+      url: `${baseUrl}/guides/migrate-cursorrules-to-cursor-rules`,
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
       url: `${baseUrl}/guides/how-to-use-cursor-rules`,
       lastModified,
       changeFrequency: "monthly",

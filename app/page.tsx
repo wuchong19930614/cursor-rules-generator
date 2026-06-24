@@ -307,6 +307,12 @@ alwaysApply: false
               >
                 How to Use Cursor Rules: Step-by-Step Guide &rarr;
               </Link>
+              <Link
+                href="/guides/migrate-cursorrules-to-cursor-rules"
+                className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium"
+              >
+                Migrate .cursorrules to Project Rules &rarr;
+              </Link>
             </div>
           </div>
         </section>

@@ -185,7 +185,15 @@ alwaysApply: false
                 },
                 {
                   title: "Stack-Aware Rules",
-                  desc: "Choose from 26+ tech stacks including React, Next.js, Vue, Python, Go, Rust, and more. Each template includes framework-specific best practices and patterns.",
+                  desc: (
+                    <>
+                      Choose from{' '}
+                      <Link href="/templates" className="text-blue-600 dark:text-blue-400 hover:underline">
+                        26+ tech stacks
+                      </Link>{' '}
+                      including React, Next.js, Vue, Python, Go, Rust, and more. Each template includes framework-specific best practices and patterns.
+                    </>
+                  ),
                 },
                 {
                   title: "Zero Setup",
@@ -295,6 +303,12 @@ alwaysApply: false
           {/* Navigation */}
           <div className="mt-10 pt-6 border-t border-zinc-200 dark:border-zinc-700">
             <div className="flex flex-wrap gap-4">
+              <Link
+                href="/templates"
+                className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium"
+              >
+                Browse all 26+ tech stack templates &rarr;
+              </Link>
               <Link
                 href="/about"
                 className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium"

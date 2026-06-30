@@ -327,6 +327,36 @@ alwaysApply: false
               >
                 Migrate .cursorrules to Project Rules &rarr;
               </Link>
+              <Link
+                href="/cursor-rules-generator"
+                className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium"
+              >
+                Cursor Rules Generator &rarr;
+              </Link>
+              <Link
+                href="/cursor-rules"
+                className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium"
+              >
+                What Are Cursor Rules &rarr;
+              </Link>
+              <Link
+                href="/cursor-project-rules"
+                className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium"
+              >
+                Cursor Project Rules &rarr;
+              </Link>
+              <Link
+                href="/agents-md-generator"
+                className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium"
+              >
+                AGENTS.md Generator &rarr;
+              </Link>
+              <Link
+                href="/cursorrules-generator"
+                className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium"
+              >
+                .cursorrules Generator &rarr;
+              </Link>
             </div>
           </div>
         </section>

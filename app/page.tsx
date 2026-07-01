@@ -1,6 +1,15 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import GeneratorForm from "@/components/generator/generator-form";
 import UsageGuide from "@/components/generator/usage-guide";
+
+const siteUrl = "https://www.cursorgenerator.dev";
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: siteUrl,
+  },
+};
 
 export default function Home() {
   return (

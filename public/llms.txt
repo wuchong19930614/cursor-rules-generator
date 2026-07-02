@@ -1,0 +1,22 @@
+# Cursor Rules Generator
+
+Cursor Rules Generator is a free developer tool for generating Cursor Project Rules (.mdc), AGENTS.md, and legacy .cursorrules files.
+
+## Primary pages
+
+- Generator: https://www.cursorgenerator.dev/
+- Templates: https://www.cursorgenerator.dev/templates
+- Cursor Rules guide: https://www.cursorgenerator.dev/cursor-rules
+- Project Rules guide: https://www.cursorgenerator.dev/cursor-project-rules
+- AGENTS.md generator: https://www.cursorgenerator.dev/agents-md-generator
+- .cursorrules generator: https://www.cursorgenerator.dev/cursorrules-generator
+- Migration guide: https://www.cursorgenerator.dev/guides/migrate-cursorrules-to-cursor-rules
+
+## Popular template pages
+
+- Next.js: https://www.cursorgenerator.dev/templates/nextjs
+- React: https://www.cursorgenerator.dev/templates/react
+- TypeScript: https://www.cursorgenerator.dev/templates/typescript
+- Python: https://www.cursorgenerator.dev/templates/python
+- Go: https://www.cursorgenerator.dev/templates/go
+- Docker: https://www.cursorgenerator.dev/templates/docker

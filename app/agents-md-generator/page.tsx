@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import JsonLd from "@/components/seo/json-ld";
+import { getBreadcrumbSchema, getFAQPageSchemaFromItems } from "@/lib/schema";
 
 export const metadata: Metadata = {
   title: "AGENTS.md Generator — AI Agent Instructions for Any Project",
@@ -10,10 +12,38 @@ export const metadata: Metadata = {
   },
 };
 
+const pageUrl = "https://www.cursorgenerator.dev/agents-md-generator";
+
+const faqItems = [
+  {
+    question: "Where should AGENTS.md live?",
+    answer:
+      "Place AGENTS.md in the project root so AI coding assistants can discover the repository-level instructions.",
+  },
+  {
+    question: "Is AGENTS.md a replacement for Cursor Project Rules?",
+    answer:
+      "Not always. AGENTS.md is ideal for portable high-level guidance, while Cursor Project Rules are better for file-specific behavior with globs and frontmatter.",
+  },
+  {
+    question: "What should an AGENTS.md generator include?",
+    answer:
+      "It should include project context, tech stack, commands, coding conventions, testing expectations, review rules, and boundaries for safe changes.",
+  },
+];
+
 export default function AgentsMdGeneratorPage() {
   return (
     <div className="flex flex-col flex-1 bg-zinc-50 font-sans dark:bg-black">
       <main className="flex-1 w-full max-w-3xl mx-auto py-12 px-4 sm:px-6">
+        <JsonLd
+          data={getBreadcrumbSchema([
+            { name: "Home", url: "https://www.cursorgenerator.dev" },
+            { name: "AGENTS.md Generator", url: pageUrl },
+          ])}
+        />
+        <JsonLd data={getFAQPageSchemaFromItems(faqItems)} />
+
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-6">
           AGENTS.md Generator
         </h1>
@@ -63,6 +93,48 @@ export default function AgentsMdGeneratorPage() {
 
           <section>
             <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3">
+              Example AGENTS.md Structure
+            </h2>
+            <p>
+              A useful AGENTS.md file gives AI tools the same context a new
+              contributor would need before changing code:
+            </p>
+            <pre className="bg-zinc-900 dark:bg-zinc-800 text-zinc-100 p-5 rounded-xl text-sm overflow-x-auto leading-relaxed mt-3">
+              <code>{`# AGENTS.md
+
+## Project Overview
+This repository is a Next.js application using TypeScript and Tailwind CSS.
+
+## Commands
+- npm run lint
+- npm run test
+- npm run build
+
+## Coding Rules
+- Prefer Server Components unless client interactivity is required.
+- Keep shared UI in components/.
+- Use named exports for reusable utilities.
+
+## Testing
+- Add tests for business logic and generated output.
+- Run lint and build before proposing large changes.`}</code>
+            </pre>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3">
+              When AGENTS.md Works Best
+            </h2>
+            <ul className="list-disc pl-6 mt-2 space-y-1">
+              <li>Open-source repositories where contributors use different AI coding tools.</li>
+              <li>Small projects that do not need per-directory Cursor rules yet.</li>
+              <li>Teams that want one readable source of truth for AI coding behavior.</li>
+              <li>Repos that already have Project Rules but need a tool-agnostic overview.</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3">
               Related Tools
             </h2>
             <p>
@@ -84,6 +156,22 @@ export default function AgentsMdGeneratorPage() {
               </Link>{" "}
               for the legacy format.
             </p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3">
+              Frequently Asked Questions
+            </h2>
+            <dl className="space-y-4">
+              {faqItems.map((item) => (
+                <div key={item.question}>
+                  <dt className="font-semibold text-zinc-900 dark:text-zinc-50">
+                    {item.question}
+                  </dt>
+                  <dd>{item.answer}</dd>
+                </div>
+              ))}
+            </dl>
           </section>
 
           {/* Navigation */}

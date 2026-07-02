@@ -75,12 +75,12 @@ export function getWebSiteSchema(): object {
     name: "Cursor Rules Generator",
     url: baseUrl,
     description:
-      "Generate customized .cursorrules files for your tech stack. 26+ templates with real-time preview.",
+      "Generate customized Cursor Project Rules, AGENTS.md, and .cursorrules files for your tech stack. 26+ templates with real-time preview.",
     potentialAction: {
       "@type": "SearchAction",
       target: {
         "@type": "EntryPoint",
-        urlTemplate: `${baseUrl}/?q={search_term_string}`,
+        urlTemplate: `${baseUrl}/templates?q={search_term_string}`,
       },
       "query-input": "required name=search_term_string",
     },
@@ -104,6 +104,41 @@ export function getWebApplicationSchema(): object {
       priceCurrency: "USD",
     },
     browserRequirements: "Requires JavaScript",
+  };
+}
+
+/** Template landing page schema */
+export function getTemplateWebPageSchema({
+  name,
+  description,
+  url,
+  templateName,
+  keywords,
+}: {
+  name: string;
+  description: string;
+  url: string;
+  templateName: string;
+  keywords: string[];
+}): object {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name,
+    description,
+    url,
+    about: {
+      "@type": "SoftwareSourceCode",
+      name: `${templateName} Cursor rules template`,
+      programmingLanguage: templateName,
+      codeSampleType: "AI coding assistant instructions",
+    },
+    isPartOf: {
+      "@type": "WebSite",
+      name: "Cursor Rules Generator",
+      url: baseUrl,
+    },
+    keywords,
   };
 }
 
@@ -178,5 +213,23 @@ export function getFAQPageSchema(): object {
         },
       },
     ],
+  };
+}
+
+/** Generic FAQPage schema from visible FAQ items */
+export function getFAQPageSchemaFromItems(
+  items: { question: string; answer: string }[]
+): object {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: items.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer,
+      },
+    })),
   };
 }

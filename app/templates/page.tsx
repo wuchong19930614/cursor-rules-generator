@@ -1,9 +1,14 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { Suspense, useMemo, useState } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { templateRegistry } from '@/lib/templates';
 import type { CursorRuleTemplate } from '@/lib/templates/types';
+import {
+  CATEGORY_LABELS,
+  TEMPLATE_DESCRIPTIONS,
+} from '@/lib/templates/seo';
 
 const CATEGORIES = [
   { value: 'all', label: 'All' },
@@ -16,56 +21,34 @@ const CATEGORIES = [
 
 type CategoryValue = (typeof CATEGORIES)[number]['value'];
 
-const CATEGORY_LABELS: Record<string, string> = {
-  frontend: 'Frontend',
-  backend: 'Backend',
-  fullstack: 'Fullstack',
-  mobile: 'Mobile',
-  library: 'Library',
-};
-
-/** Brief descriptions for each template */
-const TEMPLATE_DESCRIPTIONS: Record<string, string> = {
-  react: 'Component-based UI library with hooks, virtual DOM, and a vast ecosystem.',
-  nextjs: 'React framework with SSR, SSG, API routes, and file-based routing.',
-  vue: 'Progressive JavaScript framework with reactive data binding and composable APIs.',
-  svelte: 'Compile-time framework that converts declarative components into vanilla JS.',
-  angular: 'Full-featured TypeScript framework with dependency injection and RxJS.',
-  astro: 'Content-first web framework with island architecture and zero-JS by default.',
-  tailwind: 'Utility-first CSS framework for rapid UI development with design system tokens.',
-  remix: 'Full-stack React framework with nested routes, loaders, actions, and web standards.',
-  nuxt: 'Vue-based meta-framework with auto-imports, file-based routing, and server routes.',
-  go: 'Statically typed, compiled language with goroutines, channels, and built-in tooling.',
-  rust: 'Systems language with zero-cost abstractions, ownership model, and fearless concurrency.',
-  node: 'JavaScript runtime built on V8 with event-driven, non-blocking I/O.',
-  python: 'High-level language with dynamic typing, extensive stdlib, and rich data science ecosystem.',
-  django: 'Python web framework with ORM, admin panel, auth, and batteries-included philosophy.',
-  flask: 'Lightweight Python micro-framework with Jinja2 templates and Werkzeug routing.',
-  fastapi: 'Modern Python async web framework with auto OpenAPI docs and Pydantic validation.',
-  'react-native': 'React-based mobile framework for building native iOS and Android apps.',
-  flutter: 'Dart-based UI toolkit with hot reload, Material Design, and native compilation.',
-  typescript: 'Typed superset of JavaScript with interfaces, generics, and advanced tooling.',
-  prisma: 'Next-gen ORM with type-safe queries, schema-first design, and auto-generated clients.',
-  docker: 'Container platform for packaging apps with dependencies into portable runtime units.',
-  electron: 'Desktop app framework using Chromium and Node.js with native OS integration.',
-  tauri: 'Lightweight desktop framework with Rust backend and web frontend for small binaries.',
-  bun: 'All-in-one JavaScript runtime with bundler, test runner, and native TypeScript support.',
-  zig: 'Systems programming language with comptime, no hidden control flow, and C ABI interop.',
-  solidjs: 'Reactive UI library with fine-grained reactivity and no virtual DOM overhead.',
-};
-
 const TEMPLATES = Object.values(templateRegistry);
+
+function encodeBase64(value: string): string {
+  if (typeof window !== 'undefined') return window.btoa(value);
+
+  const globalWithBuffer = globalThis as typeof globalThis & {
+    Buffer?: {
+      from: (input: string) => {
+        toString: (encoding: 'base64') => string;
+      };
+    };
+  };
+
+  return globalWithBuffer.Buffer?.from(value).toString('base64') ?? '';
+}
 
 function buildPreSelectUrl(template: CursorRuleTemplate): string {
   const tag = template.tags[0] || template.id;
   const payload = JSON.stringify({ t: [tag] });
-  const encoded = typeof window !== 'undefined' ? btoa(payload) : '';
+  const encoded = encodeBase64(payload);
   return `/?s=${encoded}`;
 }
 
-export default function TemplatesHub() {
+function TemplatesHubInner() {
+  const searchParams = useSearchParams();
+  const initialSearch = searchParams?.get('q') ?? '';
   const [activeCategory, setActiveCategory] = useState<CategoryValue>('all');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(initialSearch);
 
   const filteredTemplates = useMemo(() => {
     return TEMPLATES.filter((tpl) => {
@@ -197,7 +180,7 @@ export default function TemplatesHub() {
                 {/* Template Name */}
                 <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50 mb-2">
                   <Link
-                    href={buildPreSelectUrl(tpl)}
+                    href={`/templates/${tpl.id}`}
                     className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                   >
                     {tpl.name}
@@ -226,16 +209,23 @@ export default function TemplatesHub() {
                   )}
                 </div>
 
-                {/* Generate CTA */}
-                <Link
-                  href={buildPreSelectUrl(tpl)}
-                  className="inline-flex items-center gap-1 text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
-                >
-                  Generate {tpl.name} Rules
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </Link>
+                <div className="flex flex-wrap gap-3">
+                  <Link
+                    href={`/templates/${tpl.id}`}
+                    className="inline-flex items-center gap-1 text-sm font-medium text-zinc-700 dark:text-zinc-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                  >
+                    View Template
+                  </Link>
+                  <Link
+                    href={buildPreSelectUrl(tpl)}
+                    className="inline-flex items-center gap-1 text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                  >
+                    Generate Rules
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </Link>
+                </div>
               </div>
             ))}
           </div>
@@ -255,5 +245,29 @@ export default function TemplatesHub() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function TemplatesHub() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex flex-col flex-1 bg-zinc-50 font-sans dark:bg-black">
+          <main id="main-content" className="flex-1 w-full max-w-5xl mx-auto py-12 px-4 sm:px-6">
+            <div className="h-10 w-64 rounded-lg bg-zinc-100 dark:bg-zinc-800 mx-auto animate-pulse" />
+            <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="h-48 rounded-xl border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900 animate-pulse"
+                />
+              ))}
+            </div>
+          </main>
+        </div>
+      }
+    >
+      <TemplatesHubInner />
+    </Suspense>
   );
 }

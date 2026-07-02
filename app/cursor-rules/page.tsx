@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import JsonLd from "@/components/seo/json-ld";
+import { getBreadcrumbSchema, getFAQPageSchemaFromItems } from "@/lib/schema";
 
 export const metadata: Metadata = {
   title: "What Are Cursor Rules — Complete Guide to Cursor AI Rules",
@@ -10,10 +12,38 @@ export const metadata: Metadata = {
   },
 };
 
+const pageUrl = "https://www.cursorgenerator.dev/cursor-rules";
+
+const faqItems = [
+  {
+    question: "What are Cursor rules used for?",
+    answer:
+      "Cursor rules give Cursor AI persistent project instructions, including style, architecture, testing, and framework-specific conventions.",
+  },
+  {
+    question: "Do Cursor rules replace linters and formatters?",
+    answer:
+      "No. Linters and formatters enforce code after it is written, while Cursor rules guide AI generation before code is produced.",
+  },
+  {
+    question: "Should Cursor rules be committed to git?",
+    answer:
+      "Project rules and team .cursorrules files should usually be committed so every contributor gets consistent AI behavior.",
+  },
+];
+
 export default function CursorRulesPage() {
   return (
     <div className="flex flex-col flex-1 bg-zinc-50 font-sans dark:bg-black">
       <main className="flex-1 w-full max-w-3xl mx-auto py-12 px-4 sm:px-6">
+        <JsonLd
+          data={getBreadcrumbSchema([
+            { name: "Home", url: "https://www.cursorgenerator.dev" },
+            { name: "What Are Cursor Rules", url: pageUrl },
+          ])}
+        />
+        <JsonLd data={getFAQPageSchemaFromItems(faqItems)} />
+
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-6">
           What Are Cursor Rules
         </h1>
@@ -73,6 +103,59 @@ export default function CursorRulesPage() {
 
           <section>
             <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3">
+              Cursor Rules vs Linters vs Documentation
+            </h2>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm border-collapse">
+                <thead>
+                  <tr className="border-b border-zinc-300 dark:border-zinc-600 text-left">
+                    <th className="py-3 pr-4 text-zinc-900 dark:text-zinc-50">Tool</th>
+                    <th className="py-3 px-4 text-zinc-900 dark:text-zinc-50">Primary job</th>
+                    <th className="py-3 pl-4 text-zinc-900 dark:text-zinc-50">When it helps</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b border-zinc-200 dark:border-zinc-700">
+                    <td className="py-3 pr-4">Cursor rules</td>
+                    <td className="py-3 px-4">Guide AI generation</td>
+                    <td className="py-3 pl-4">Before code is written</td>
+                  </tr>
+                  <tr className="border-b border-zinc-200 dark:border-zinc-700">
+                    <td className="py-3 pr-4">Linters</td>
+                    <td className="py-3 px-4">Detect violations</td>
+                    <td className="py-3 pl-4">After code is generated or edited</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 pr-4">Documentation</td>
+                    <td className="py-3 px-4">Explain intent</td>
+                    <td className="py-3 pl-4">For humans and onboarding</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3">
+              Example Rule Categories
+            </h2>
+            <pre className="bg-zinc-900 dark:bg-zinc-800 text-zinc-100 p-5 rounded-xl text-sm overflow-x-auto leading-relaxed mt-2">
+              <code>{`## Architecture
+- Keep business logic out of route handlers.
+- Use services/ for integrations and lib/ for pure helpers.
+
+## Testing
+- Add unit tests for parsing and generation logic.
+- Use integration tests for critical user flows.
+
+## Code Review
+- Prefer small focused changes.
+- Explain trade-offs when modifying shared abstractions.`}</code>
+            </pre>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3">
               Next Steps
             </h2>
             <p>
@@ -90,6 +173,22 @@ export default function CursorRulesPage() {
               </Link>{" "}
               to find pre-built rule sets for your tech stack.
             </p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3">
+              Frequently Asked Questions
+            </h2>
+            <dl className="space-y-4">
+              {faqItems.map((item) => (
+                <div key={item.question}>
+                  <dt className="font-semibold text-zinc-900 dark:text-zinc-50">
+                    {item.question}
+                  </dt>
+                  <dd>{item.answer}</dd>
+                </div>
+              ))}
+            </dl>
           </section>
 
           {/* Navigation */}

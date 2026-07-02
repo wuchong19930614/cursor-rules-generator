@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import JsonLd from "@/components/seo/json-ld";
+import { getBreadcrumbSchema, getFAQPageSchemaFromItems } from "@/lib/schema";
 
 export const metadata: Metadata = {
   title: "Cursor Project Rules — Guide to Project-Level Configuration",
@@ -10,10 +12,38 @@ export const metadata: Metadata = {
   },
 };
 
+const pageUrl = "https://www.cursorgenerator.dev/cursor-project-rules";
+
+const faqItems = [
+  {
+    question: "Where do Cursor Project Rules go?",
+    answer:
+      "Cursor Project Rules live under the .cursor/rules/ directory as .mdc files that can include frontmatter metadata and markdown instructions.",
+  },
+  {
+    question: "How many Project Rules files should a repo have?",
+    answer:
+      "Use one file per concern, such as frontend components, backend services, testing, documentation, or security. Small projects may only need two or three.",
+  },
+  {
+    question: "When should alwaysApply be true?",
+    answer:
+      "Use alwaysApply for universal rules like security boundaries, response style, or repository-wide testing expectations. Use globs for domain-specific rules.",
+  },
+];
+
 export default function CursorProjectRulesPage() {
   return (
     <div className="flex flex-col flex-1 bg-zinc-50 font-sans dark:bg-black">
       <main className="flex-1 w-full max-w-3xl mx-auto py-12 px-4 sm:px-6">
+        <JsonLd
+          data={getBreadcrumbSchema([
+            { name: "Home", url: "https://www.cursorgenerator.dev" },
+            { name: "Cursor Project Rules", url: pageUrl },
+          ])}
+        />
+        <JsonLd data={getFAQPageSchemaFromItems(faqItems)} />
+
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-6">
           Cursor Project Rules
         </h1>
@@ -58,6 +88,29 @@ Use the 'use client' directive only when necessary.`}</code>
 
           <section>
             <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3">
+              Recommended .cursor/rules Layout
+            </h2>
+            <p>
+              A practical rules directory groups instructions by domain. This makes
+              each file easier to review, update, and target with globs:
+            </p>
+            <pre className="bg-zinc-900 dark:bg-zinc-800 text-zinc-100 p-5 rounded-xl text-sm overflow-x-auto leading-relaxed mt-2">
+              <code>{`.cursor/rules/
+  code-style.mdc
+  frontend-components.mdc
+  api-routes.mdc
+  database-prisma.mdc
+  testing-standards.mdc
+  docs-and-readme.mdc`}</code>
+            </pre>
+            <p className="mt-3">
+              Keep global standards in one always-applied file, then use file-specific
+              rules for frontend, backend, database, tests, and documentation.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3">
               Common Project Rule Patterns
             </h2>
 
@@ -85,6 +138,18 @@ Use the 'use client' directive only when necessary.`}</code>
 
           <section>
             <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3">
+              Choosing the Right Application Mode
+            </h2>
+            <ul className="list-disc pl-6 mt-2 space-y-1">
+              <li><strong className="text-zinc-800 dark:text-zinc-200">Always Apply</strong> for repository-wide rules Cursor should always know.</li>
+              <li><strong className="text-zinc-800 dark:text-zinc-200">Intelligent</strong> when the rule should be available but not forced into every interaction.</li>
+              <li><strong className="text-zinc-800 dark:text-zinc-200">File Specific</strong> when globs define exactly where a rule belongs.</li>
+              <li><strong className="text-zinc-800 dark:text-zinc-200">Manual</strong> for specialized rules you invoke only when needed.</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3">
               Migration from .cursorrules to Project Rules
             </h2>
             <p>
@@ -105,6 +170,22 @@ Use the 'use client' directive only when necessary.`}</code>
               </Link>{" "}
               for ready-to-use rule sets.
             </p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3">
+              Frequently Asked Questions
+            </h2>
+            <dl className="space-y-4">
+              {faqItems.map((item) => (
+                <div key={item.question}>
+                  <dt className="font-semibold text-zinc-900 dark:text-zinc-50">
+                    {item.question}
+                  </dt>
+                  <dd>{item.answer}</dd>
+                </div>
+              ))}
+            </dl>
           </section>
 
           {/* Navigation */}

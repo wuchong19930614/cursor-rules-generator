@@ -219,7 +219,7 @@ export function generateProjectRules(config: GeneratorConfig): RuleFile[] {
       const sectionSlug = slugify(s.id);
       const filename = `${templateSlug}-${sectionSlug}.mdc`;
 
-      let globs = resolveGlobs(config, s);
+      const globs = resolveGlobs(config, s);
       if (config.ruleApplicationMode === 'file-specific' && (!globs || globs.length === 0)) {
         // file-specific 模式没有 globs → 回退到 manual
         return {
@@ -269,7 +269,7 @@ export function generateProjectRules(config: GeneratorConfig): RuleFile[] {
     sections.map((s) => s.title).join('; ')
   );
 
-  let globs = resolveGlobs(config, sections[0]);
+  const globs = resolveGlobs(config, sections[0]);
   if (config.ruleApplicationMode === 'file-specific' && (!globs || globs.length === 0)) {
     return [
       {

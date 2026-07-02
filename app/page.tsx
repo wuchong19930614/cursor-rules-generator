@@ -1,7 +1,9 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import JsonLd from "@/components/seo/json-ld";
 import GeneratorForm from "@/components/generator/generator-form";
 import UsageGuide from "@/components/generator/usage-guide";
+import { getFAQPageSchema, getWebApplicationSchema } from "@/lib/schema";
 
 const siteUrl = "https://www.cursorgenerator.dev";
 
@@ -15,6 +17,9 @@ export default function Home() {
   return (
     <div className="flex flex-col flex-1 bg-zinc-50 font-sans dark:bg-black">
       <main id="main-content" className="flex-1 w-full max-w-3xl mx-auto py-12 px-4 sm:px-6">
+        <JsonLd data={getWebApplicationSchema()} />
+        <JsonLd data={getFAQPageSchema()} />
+
         {/* Hero section */}
         <div className="text-center mb-10">
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
@@ -37,7 +42,9 @@ export default function Home() {
         </div>
 
         {/* Generator Form (Client Component) */}
-        <GeneratorForm />
+        <div id="generator">
+          <GeneratorForm />
+        </div>
 
         {/* Usage Guide */}
         <UsageGuide />

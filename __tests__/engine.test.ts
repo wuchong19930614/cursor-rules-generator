@@ -10,7 +10,11 @@ import {
 } from "@/lib/generator/engine";
 import type { GeneratorConfig } from "@/lib/templates/types";
 
-function makeConfig(overrides?: Partial<GeneratorConfig>): GeneratorConfig {
+type ConfigOverrides = Partial<Omit<GeneratorConfig, "style">> & {
+  style?: Partial<GeneratorConfig["style"]>;
+};
+
+function makeConfig(overrides?: ConfigOverrides): GeneratorConfig {
   return {
     selectedTags: overrides?.selectedTags ?? ["react"],
     style: {
@@ -113,7 +117,7 @@ describe("generateCursorRules", () => {
 
   it("replaces {{INDENT}} with spaces", () => {
     const output = generateCursorRules(
-      makeConfig({ selectedTags: ["react"], style: { indentSize: 4 } } as any)
+      makeConfig({ selectedTags: ["react"], style: { indentSize: 4 } })
     );
     expect(output).not.toContain("{{INDENT}}");
   });
@@ -122,7 +126,7 @@ describe("generateCursorRules", () => {
     const output = generateCursorRules(
       makeConfig({
         selectedTags: ["react"],
-        style: { useTabs: true } as any,
+        style: { useTabs: true },
       })
     );
     expect(output).toContain("Use \t spaces for indentation.");
@@ -132,7 +136,7 @@ describe("generateCursorRules", () => {
     const output = generateCursorRules(
       makeConfig({
         selectedTags: ["python"],
-        style: { quotes: "double" } as any,
+        style: { quotes: "double" },
       })
     );
     expect(output).not.toContain("{{QUOTE}}");
@@ -142,7 +146,7 @@ describe("generateCursorRules", () => {
     const output = generateCursorRules(
       makeConfig({
         selectedTags: ["react"],
-        style: { semicolons: true } as any,
+        style: { semicolons: true },
       })
     );
     expect(output).not.toContain("{{SEMICOLON}}");

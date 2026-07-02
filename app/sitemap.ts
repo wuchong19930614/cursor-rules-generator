@@ -1,8 +1,15 @@
 import type { MetadataRoute } from "next";
+import { templateRegistry } from "@/lib/templates";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://www.cursorgenerator.dev";
-  const lastModified = new Date("2026-06-30");
+  const lastModified = new Date("2026-07-02");
+  const templateUrls = Object.keys(templateRegistry).map((slug) => ({
+    url: `${baseUrl}/templates/${slug}`,
+    lastModified,
+    changeFrequency: "weekly" as const,
+    priority: 0.7,
+  }));
 
   return [
     {
@@ -17,6 +24,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 0.8,
     },
+    ...templateUrls,
     {
       url: `${baseUrl}/about`,
       lastModified,

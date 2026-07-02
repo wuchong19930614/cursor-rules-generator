@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import JsonLd from "@/components/seo/json-ld";
+import { getBreadcrumbSchema, getFAQPageSchemaFromItems } from "@/lib/schema";
 
 export const metadata: Metadata = {
   title: ".cursorrules Generator — Legacy Cursor Rules Made Easy",
@@ -10,10 +12,38 @@ export const metadata: Metadata = {
   },
 };
 
+const pageUrl = "https://www.cursorgenerator.dev/cursorrules-generator";
+
+const faqItems = [
+  {
+    question: "Is .cursorrules still supported?",
+    answer:
+      "Many existing Cursor projects still use .cursorrules, but new projects usually benefit from the more flexible .cursor/rules/*.mdc Project Rules format.",
+  },
+  {
+    question: "When should I choose .cursorrules instead of Project Rules?",
+    answer:
+      "Choose .cursorrules when you want one simple global instruction file or when maintaining a project that already uses the legacy format.",
+  },
+  {
+    question: "Can I migrate a generated .cursorrules file later?",
+    answer:
+      "Yes. The same guidance can be split into Project Rules later so frontend, backend, testing, and documentation rules can target different file patterns.",
+  },
+];
+
 export default function CursorrulesGeneratorPage() {
   return (
     <div className="flex flex-col flex-1 bg-zinc-50 font-sans dark:bg-black">
       <main className="flex-1 w-full max-w-3xl mx-auto py-12 px-4 sm:px-6">
+        <JsonLd
+          data={getBreadcrumbSchema([
+            { name: "Home", url: "https://www.cursorgenerator.dev" },
+            { name: ".cursorrules Generator", url: pageUrl },
+          ])}
+        />
+        <JsonLd data={getFAQPageSchemaFromItems(faqItems)} />
+
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-6">
           .cursorrules Generator
         </h1>
@@ -81,6 +111,53 @@ export default function CursorrulesGeneratorPage() {
 
           <section>
             <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3">
+              Common .cursorrules Mistakes
+            </h2>
+            <ul className="list-disc pl-6 mt-2 space-y-1">
+              <li>Writing vague rules like &quot;write clean code&quot; without concrete examples.</li>
+              <li>Mixing unrelated frontend, backend, and infrastructure rules without headings.</li>
+              <li>Forgetting test commands, lint commands, and project-specific safety checks.</li>
+              <li>Adding rules that conflict with the formatter, linter, or existing architecture.</li>
+              <li>Keeping stale instructions after migrating frameworks or changing folder structure.</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3">
+              Legacy vs Modern Cursor Rules
+            </h2>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm border-collapse">
+                <thead>
+                  <tr className="border-b border-zinc-300 dark:border-zinc-600 text-left">
+                    <th className="py-3 pr-4 text-zinc-900 dark:text-zinc-50">Need</th>
+                    <th className="py-3 px-4 text-zinc-900 dark:text-zinc-50">.cursorrules</th>
+                    <th className="py-3 pl-4 text-zinc-900 dark:text-zinc-50">Project Rules</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b border-zinc-200 dark:border-zinc-700">
+                    <td className="py-3 pr-4">Simple setup</td>
+                    <td className="py-3 px-4">Best</td>
+                    <td className="py-3 pl-4">Good</td>
+                  </tr>
+                  <tr className="border-b border-zinc-200 dark:border-zinc-700">
+                    <td className="py-3 pr-4">Per-file targeting</td>
+                    <td className="py-3 px-4">No</td>
+                    <td className="py-3 pl-4">Yes, with globs</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 pr-4">Large teams or monorepos</td>
+                    <td className="py-3 px-4">Limited</td>
+                    <td className="py-3 pl-4">Recommended</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3">
               Related Tools
             </h2>
             <p>
@@ -98,6 +175,22 @@ export default function CursorrulesGeneratorPage() {
               </Link>{" "}
               for a comprehensive overview.
             </p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3">
+              Frequently Asked Questions
+            </h2>
+            <dl className="space-y-4">
+              {faqItems.map((item) => (
+                <div key={item.question}>
+                  <dt className="font-semibold text-zinc-900 dark:text-zinc-50">
+                    {item.question}
+                  </dt>
+                  <dd>{item.answer}</dd>
+                </div>
+              ))}
+            </dl>
           </section>
 
           {/* Navigation */}

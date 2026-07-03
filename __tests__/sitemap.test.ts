@@ -3,6 +3,7 @@
 
 import { describe, it, expect } from 'vitest';
 import sitemap from '../app/sitemap';
+import { editorialRegistry } from '../lib/templates/editorial';
 
 const baseUrl = 'https://www.cursorgenerator.dev';
 
@@ -41,5 +42,20 @@ describe('sitemap lastModified', () => {
     for (const item of sitemap()) {
       expect(item.lastModified, `${item.url} 缺少 lastModified`).toBeDefined();
     }
+  });
+
+  it('有 editorial 内容的模板页使用 editorial.lastUpdated', () => {
+    for (const [slug, editorial] of Object.entries(editorialRegistry)) {
+      expect(
+        isoDate(getEntry(`${baseUrl}/templates/${slug}`).lastModified)
+      ).toBe(editorial.lastUpdated);
+    }
+  });
+
+  it('无 editorial 的模板页使用模板目录默认日期', () => {
+    expect(editorialRegistry.zig).toBeUndefined();
+    expect(isoDate(getEntry(`${baseUrl}/templates/zig`).lastModified)).toBe(
+      '2026-07-02'
+    );
   });
 });

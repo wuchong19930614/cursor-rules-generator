@@ -94,9 +94,11 @@ const _initialState = readInitialUrlState();
 interface GeneratorFormProps {
   /** 页面级预设输出格式(如 /agents-md-generator 预设 agents-md);URL 中的状态优先 */
   presetOutputMode?: OutputMode;
+  /** 页面级预选技术栈标签(如 /templates/react 预选 react);URL 中的状态优先 */
+  presetTags?: string[];
 }
 
-function GeneratorFormInner({ presetOutputMode }: GeneratorFormProps) {
+function GeneratorFormInner({ presetOutputMode, presetTags }: GeneratorFormProps) {
   const { syncToUrl } = useUrlState();
 
   const [step, setStep] = useState(0);
@@ -111,16 +113,22 @@ function GeneratorFormInner({ presetOutputMode }: GeneratorFormProps) {
     _initialState?.splitRules ?? false
   );
   const [selectedTags, setSelectedTags] = useState<string[]>(
-    _initialState?.selectedTags ?? []
+    _initialState?.selectedTags ?? presetTags ?? []
   );
   const [style, setStyle] = useState<StyleDefaults>(
-    _initialState?.style ?? DEFAULT_STYLE
+    _initialState?.style ??
+      (presetTags && presetTags.length > 0
+        ? getDefaultStyle(presetTags)
+        : DEFAULT_STYLE)
   );
   const [aiStrictness, setAiStrictness] = useState<
     'strict' | 'moderate' | 'relaxed'
   >(_initialState?.aiStrictness ?? 'moderate');
   const [namingConvention, setNamingConvention] = useState(
-    _initialState?.namingConvention ?? 'camelCase'
+    _initialState?.namingConvention ??
+      (presetTags && presetTags.length > 0
+        ? getDefaultNaming(presetTags)
+        : 'camelCase')
   );
   const [customRules, setCustomRules] = useState<
     { title: string; content: string }[]
@@ -203,10 +211,18 @@ function GeneratorFormInner({ presetOutputMode }: GeneratorFormProps) {
     setOutputMode(presetOutputMode ?? 'project-rules');
     setRuleApplicationMode('intelligent');
     setSplitRules(false);
-    setSelectedTags([]);
-    setStyle(DEFAULT_STYLE);
+    setSelectedTags(presetTags ?? []);
+    setStyle(
+      presetTags && presetTags.length > 0
+        ? getDefaultStyle(presetTags)
+        : DEFAULT_STYLE
+    );
     setAiStrictness('moderate');
-    setNamingConvention('camelCase');
+    setNamingConvention(
+      presetTags && presetTags.length > 0
+        ? getDefaultNaming(presetTags)
+        : 'camelCase'
+    );
     setCustomRules([]);
     setProjectType('web');
   };
@@ -426,7 +442,10 @@ function GeneratorFormInner({ presetOutputMode }: GeneratorFormProps) {
   );
 }
 
-export default function GeneratorForm({ presetOutputMode }: GeneratorFormProps = {}) {
+export default function GeneratorForm({
+  presetOutputMode,
+  presetTags,
+}: GeneratorFormProps = {}) {
   return (
     <Suspense
       fallback={
@@ -438,7 +457,10 @@ export default function GeneratorForm({ presetOutputMode }: GeneratorFormProps =
         </div>
       }
     >
-      <GeneratorFormInner presetOutputMode={presetOutputMode} />
+      <GeneratorFormInner
+        presetOutputMode={presetOutputMode}
+        presetTags={presetTags}
+      />
     </Suspense>
   );
 }

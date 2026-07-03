@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { templateRegistry } from "@/lib/templates";
+import { getEditorial } from "@/lib/templates/editorial";
 
 const baseUrl = "https://www.cursorgenerator.dev";
 
@@ -30,7 +31,10 @@ function lastModifiedFor(path: string): Date {
 export default function sitemap(): MetadataRoute.Sitemap {
   const templateUrls = Object.keys(templateRegistry).map((slug) => ({
     url: `${baseUrl}/templates/${slug}`,
-    lastModified: new Date(TEMPLATES_LAST_MODIFIED),
+    // editorial 内容有独立的更新日期;无 editorial 的模板以 lib/templates 目录为准
+    lastModified: new Date(
+      getEditorial(slug)?.lastUpdated ?? TEMPLATES_LAST_MODIFIED
+    ),
     changeFrequency: "weekly" as const,
     priority: 0.7,
   }));

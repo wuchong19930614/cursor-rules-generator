@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import JsonLd from "@/components/seo/json-ld";
+import GeneratorForm from "@/components/generator/generator-form";
+import RuleOutputTabs from "@/components/templates/rule-output-tabs";
 import {
   getBreadcrumbSchema,
   getFAQPageSchemaFromItems,
@@ -10,10 +12,11 @@ import {
 } from "@/lib/schema";
 import { templateRegistry } from "@/lib/templates";
 import type { CursorRuleTemplate } from "@/lib/templates/types";
+import { buildTemplateArtifacts } from "@/lib/generator/artifacts";
+import { getEditorial } from "@/lib/templates/editorial";
 import {
   CATEGORY_LABELS,
   buildTemplateFaq,
-  formatRuleContent,
   getTemplateDescription,
   getTemplateSearchIntents,
 } from "@/lib/templates/seo";
@@ -36,9 +39,9 @@ function getTemplate(slug: string): CursorRuleTemplate | null {
   return templateRegistry[slug] || null;
 }
 
-function buildPreselectUrl(template: CursorRuleTemplate): string {
-  const tag = template.tags[0] || template.id;
-  const encoded = Buffer.from(JSON.stringify({ t: [tag] })).toString("base64");
+/** 多标签组合的生成器预选 URL(指向首页生成器) */
+function buildComboUrl(tags: string[]): string {
+  const encoded = Buffer.from(JSON.stringify({ t: tags })).toString("base64");
   return `/?s=${encoded}`;
 }
 
@@ -66,11 +69,11 @@ export async function generateMetadata({
   const template = getTemplate(slug);
   if (!template) return {};
 
-  const description = `Generate ${template.name} Cursor rules, Project Rules (.mdc), AGENTS.md, or .cursorrules with stack-specific best practices. ${getTemplateDescription(template)}`;
+  const description = `Complete ${template.name} Cursor rules — copy the full Project Rules (.mdc), AGENTS.md, or .cursorrules file, or customize it in the generator. ${getTemplateDescription(template)}`;
   const url = `${siteUrl}/templates/${template.id}`;
 
   return {
-    title: `${template.name} Cursor Rules Template`,
+    title: `${template.name} Cursor Rules — Full Template (.mdc, AGENTS.md & .cursorrules)`,
     description,
     alternates: {
       canonical: url,
@@ -83,7 +86,7 @@ export async function generateMetadata({
     openGraph: {
       type: "website",
       url,
-      title: `${template.name} Cursor Rules Template`,
+      title: `${template.name} Cursor Rules — Full Template`,
       description,
       images: [
         {
@@ -96,7 +99,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: "summary_large_image",
-      title: `${template.name} Cursor Rules Template`,
+      title: `${template.name} Cursor Rules — Full Template`,
       description,
       images: ["/og-image.png"],
     },
@@ -111,12 +114,14 @@ export default async function TemplateDetailPage({ params }: TemplatePageProps) 
   const description = getTemplateDescription(template);
   const searchIntents = getTemplateSearchIntents(template);
   const relatedTemplates = getRelatedTemplates(template);
-  const faqItems = buildTemplateFaq(template);
+  const editorial = getEditorial(template.id);
+  const faqItems = editorial ? editorial.faq : buildTemplateFaq(template);
   const canonicalUrl = `${siteUrl}/templates/${template.id}`;
-  const generatorUrl = buildPreselectUrl(template);
+  const artifacts = buildTemplateArtifacts(template);
+  const presetTags = [template.tags[0] || template.id];
   const requiredSections = template.sections.filter((section) => !section.optional);
   const optionalSections = template.sections.filter((section) => section.optional);
-  const exampleSections = template.sections.slice(0, 3);
+  const lastUpdated = editorial?.lastUpdated;
 
   return (
     <div className="flex flex-col flex-1 bg-zinc-50 font-sans dark:bg-black">
@@ -132,7 +137,7 @@ export default async function TemplateDetailPage({ params }: TemplatePageProps) 
         <JsonLd
           data={getTemplateWebPageSchema({
             name: `${template.name} Cursor Rules Template`,
-            description: `Generate ${template.name} Cursor rules for Project Rules, AGENTS.md, and .cursorrules.`,
+            description: `Complete ${template.name} Cursor rules for Project Rules, AGENTS.md, and .cursorrules.`,
             url: canonicalUrl,
             templateName: template.name,
             keywords: searchIntents,
@@ -147,6 +152,7 @@ export default async function TemplateDetailPage({ params }: TemplatePageProps) 
           <span>{template.name}</span>
         </nav>
 
+        {/* Header */}
         <section className="mb-12">
           <div className="mb-4 flex flex-wrap items-center gap-2">
             <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
@@ -155,40 +161,84 @@ export default async function TemplateDetailPage({ params }: TemplatePageProps) 
             <span className="text-sm text-zinc-500 dark:text-zinc-400">
               {template.sections.length} sections
             </span>
+            {lastUpdated && (
+              <span className="text-sm text-zinc-500 dark:text-zinc-400">
+                · Last updated{" "}
+                <time dateTime={lastUpdated}>{lastUpdated}</time>
+              </span>
+            )}
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
             {template.name} Cursor Rules Template
           </h1>
-          <p className="mt-4 text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
-            Generate production-ready {template.name} Cursor rules for Project Rules (.mdc),
-            AGENTS.md, or legacy .cursorrules. This template encodes stack-specific
-            conventions for projects using {template.name}. {description}
-          </p>
+          {editorial ? (
+            <div className="mt-4 space-y-4">
+              {editorial.intro.map((paragraph) => (
+                <p
+                  key={paragraph.slice(0, 40)}
+                  className="text-lg leading-relaxed text-zinc-600 dark:text-zinc-400"
+                >
+                  {paragraph}
+                </p>
+              ))}
+            </div>
+          ) : (
+            <p className="mt-4 text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
+              Generate production-ready {template.name} Cursor rules for Project Rules (.mdc),
+              AGENTS.md, or legacy .cursorrules. This template encodes stack-specific
+              conventions for projects using {template.name}. {description}
+            </p>
+          )}
           <div className="mt-6 flex flex-wrap gap-3">
-            <Link
-              href={generatorUrl}
+            <a
+              href="#full-rules"
               className="inline-flex min-h-[44px] items-center rounded-xl bg-blue-600 px-5 py-3 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700"
             >
-              Generate {template.name} Rules
-            </Link>
-            <Link
-              href="/templates"
+              Copy the Full Rules
+            </a>
+            <a
+              href="#customize"
               className="inline-flex min-h-[44px] items-center rounded-xl border border-zinc-200 bg-white px-5 py-3 text-sm font-medium text-zinc-700 transition-colors hover:border-zinc-300 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:border-zinc-600"
             >
-              Browse All Templates
-            </Link>
+              Customize &amp; Download
+            </a>
           </div>
         </section>
 
+        {/* Full rules in all three formats */}
+        <section id="full-rules" className="mb-12 scroll-mt-6">
+          <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
+            The Complete {template.name} Cursor Rules
+          </h2>
+          <p className="mt-3 text-zinc-600 dark:text-zinc-400">
+            The full rule set in all three formats Cursor understands — copy the one
+            your project uses. Project Rules (.mdc) load per-file via globs, AGENTS.md
+            is portable across AI tools, and .cursorrules is the legacy single-file
+            format.
+          </p>
+          <div className="mt-6">
+            <RuleOutputTabs artifacts={artifacts} />
+          </div>
+        </section>
+
+        {/* Embedded generator preselected to this stack */}
+        <section id="customize" className="mb-12 scroll-mt-6">
+          <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
+            Customize These Rules
+          </h2>
+          <p className="mt-3 mb-6 text-zinc-600 dark:text-zinc-400">
+            The generator below is preloaded with the {template.name} template.
+            Adjust indentation, quotes, naming, add your own rules, then download —
+            no need to start from scratch on the homepage.
+          </p>
+          <GeneratorForm presetTags={presetTags} />
+        </section>
+
+        {/* What the template covers (real template data) */}
         <section className="mb-12 rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900">
           <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
             What This Template Covers
           </h2>
-          <p className="mt-3 text-zinc-600 dark:text-zinc-400">
-            The template focuses Cursor AI on concrete {template.name} practices instead of
-            generic coding advice. Required sections are always included; optional sections
-            can be enabled when they match your project.
-          </p>
           <div className="mt-6 grid gap-4 sm:grid-cols-2">
             <div>
               <h3 className="font-semibold text-zinc-900 dark:text-zinc-50">Required guidance</h3>
@@ -215,31 +265,67 @@ export default async function TemplateDetailPage({ params }: TemplatePageProps) 
           )}
         </section>
 
-        <section className="mb-12">
-          <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
-            Example {template.name} Rules
-          </h2>
-          <p className="mt-3 text-zinc-600 dark:text-zinc-400">
-            The generator turns these sections into Project Rules with frontmatter,
-            AGENTS.md, or a single .cursorrules file depending on the output format you choose.
-          </p>
-          <div className="mt-6 space-y-5">
-            {exampleSections.map((section) => (
-              <article
-                key={section.id}
-                className="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-700 dark:bg-zinc-900"
-              >
-                <h3 className="font-semibold text-zinc-900 dark:text-zinc-50">
-                  {section.title}
-                </h3>
-                <pre className="mt-3 overflow-x-auto rounded-lg bg-zinc-900 p-4 text-sm leading-relaxed text-zinc-100">
-                  <code>{formatRuleContent(template, section.content)}</code>
-                </pre>
-              </article>
-            ))}
-          </div>
-        </section>
+        {/* Editorial: why these rules */}
+        {editorial && (
+          <section className="mb-12">
+            <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
+              Why These Rules
+            </h2>
+            <div className="mt-6 space-y-8">
+              {editorial.designNotes.map((note) => (
+                <div key={note.heading}>
+                  <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+                    {note.heading}
+                  </h3>
+                  <div className="mt-3 space-y-3 text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                    {note.paragraphs.map((paragraph) => (
+                      <p key={paragraph.slice(0, 40)}>{paragraph}</p>
+                    ))}
+                  </div>
+                  {note.bullets && note.bullets.length > 0 && (
+                    <ul className="mt-3 list-disc pl-6 space-y-1 text-zinc-600 dark:text-zinc-400">
+                      {note.bullets.map((bullet) => (
+                        <li key={bullet.slice(0, 40)}>{bullet}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
+        {/* Editorial: common stack combos */}
+        {editorial && editorial.combos.length > 0 && (
+          <section className="mb-12">
+            <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
+              Common {template.name} Stack Combinations
+            </h2>
+            <p className="mt-3 text-zinc-600 dark:text-zinc-400">
+              Real projects rarely use {template.name} alone. Each combination below
+              opens the generator with the matching templates preselected, merged and
+              deduplicated into one rule set.
+            </p>
+            <div className="mt-5 grid gap-4 sm:grid-cols-2">
+              {editorial.combos.map((combo) => (
+                <Link
+                  key={combo.label}
+                  href={buildComboUrl(combo.tags)}
+                  className="rounded-xl border border-zinc-200 bg-white p-5 transition-colors hover:border-blue-300 dark:border-zinc-700 dark:bg-zinc-900 dark:hover:border-blue-700"
+                >
+                  <span className="font-semibold text-zinc-900 dark:text-zinc-50">
+                    {combo.label}
+                  </span>
+                  <span className="mt-2 block text-sm text-zinc-600 dark:text-zinc-400">
+                    {combo.description}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* FAQ */}
         <section className="mb-12">
           <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
             Frequently Asked Questions

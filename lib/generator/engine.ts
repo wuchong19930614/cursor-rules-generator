@@ -360,7 +360,7 @@ export async function generateZipBlob(files: RuleFile[]): Promise<Blob | null> {
 }
 
 /** 将 RuleFile 格式化为完整的 .mdc 文本（frontmatter + body） */
-function formatMdcFile(file: RuleFile): string {
+export function formatMdcFile(file: RuleFile): string {
   const fm = generateFrontmatterFromObject(file.frontmatter);
   if (file.content) {
     return `${fm}\n${file.content}`;

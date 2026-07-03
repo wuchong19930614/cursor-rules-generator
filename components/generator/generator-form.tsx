@@ -91,12 +91,17 @@ function readInitialUrlState(): Partial<GeneratorConfig> | null {
 /** Computed once per page load */
 const _initialState = readInitialUrlState();
 
-function GeneratorFormInner() {
+interface GeneratorFormProps {
+  /** 页面级预设输出格式(如 /agents-md-generator 预设 agents-md);URL 中的状态优先 */
+  presetOutputMode?: OutputMode;
+}
+
+function GeneratorFormInner({ presetOutputMode }: GeneratorFormProps) {
   const { syncToUrl } = useUrlState();
 
   const [step, setStep] = useState(0);
   const [outputMode, setOutputMode] = useState<OutputMode>(
-    _initialState?.outputMode ?? 'project-rules'
+    _initialState?.outputMode ?? presetOutputMode ?? 'project-rules'
   );
   const [ruleApplicationMode, setRuleApplicationMode] =
     useState<RuleApplicationMode>(
@@ -195,7 +200,7 @@ function GeneratorFormInner() {
 
   const restart = () => {
     setStep(0);
-    setOutputMode('project-rules');
+    setOutputMode(presetOutputMode ?? 'project-rules');
     setRuleApplicationMode('intelligent');
     setSplitRules(false);
     setSelectedTags([]);
@@ -421,7 +426,7 @@ function GeneratorFormInner() {
   );
 }
 
-export default function GeneratorForm() {
+export default function GeneratorForm({ presetOutputMode }: GeneratorFormProps = {}) {
   return (
     <Suspense
       fallback={
@@ -433,7 +438,7 @@ export default function GeneratorForm() {
         </div>
       }
     >
-      <GeneratorFormInner />
+      <GeneratorFormInner presetOutputMode={presetOutputMode} />
     </Suspense>
   );
 }

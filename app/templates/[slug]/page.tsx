@@ -242,22 +242,6 @@ export default async function TemplateDetailPage({ params }: TemplatePageProps) 
 
         <section className="mb-12">
           <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
-            Common Searches This Page Helps With
-          </h2>
-          <div className="mt-4 flex flex-wrap gap-2">
-            {searchIntents.map((intent) => (
-              <span
-                key={intent}
-                className="rounded-md bg-zinc-100 px-3 py-1 text-sm text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
-              >
-                {intent}
-              </span>
-            ))}
-          </div>
-        </section>
-
-        <section className="mb-12">
-          <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
             Frequently Asked Questions
           </h2>
           <dl className="mt-5 space-y-5">

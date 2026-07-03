@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import JsonLd from "@/components/seo/json-ld";
+import GeneratorForm from "@/components/generator/generator-form";
 import { getBreadcrumbSchema, getFAQPageSchemaFromItems } from "@/lib/schema";
 
 export const metadata: Metadata = {
@@ -44,9 +45,18 @@ export default function CursorRulesGeneratorPage() {
         />
         <JsonLd data={getFAQPageSchemaFromItems(faqItems)} />
 
-        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-6">
+        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-4">
           Cursor Rules Generator
         </h1>
+        <p className="text-lg text-zinc-600 dark:text-zinc-400 mb-8">
+          Create custom Cursor AI rules right here — pick your tech stack, set
+          your coding style, and export Project Rules (.mdc), AGENTS.md, or
+          legacy .cursorrules.
+        </p>
+
+        <div id="generator" className="mb-12">
+          <GeneratorForm />
+        </div>
 
         <div className="space-y-6 text-zinc-600 dark:text-zinc-400 leading-relaxed">
           <section>
@@ -161,9 +171,9 @@ alwaysApply: false
           {/* Navigation */}
           <div className="mt-10 pt-6 border-t border-zinc-200 dark:border-zinc-700">
             <div className="flex flex-wrap gap-4">
-              <Link href="/" className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium">
-                Back to Generator &rarr;
-              </Link>
+              <a href="#generator" className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium">
+                Generate your rules &rarr;
+              </a>
               <Link href="/cursor-rules" className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium">
                 What Are Cursor Rules &rarr;
               </Link>

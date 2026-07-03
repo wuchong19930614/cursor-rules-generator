@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import JsonLd from "@/components/seo/json-ld";
+import GeneratorForm from "@/components/generator/generator-form";
 import { getBreadcrumbSchema, getFAQPageSchemaFromItems } from "@/lib/schema";
 
 export const metadata: Metadata = {
@@ -44,9 +45,18 @@ export default function CursorrulesGeneratorPage() {
         />
         <JsonLd data={getFAQPageSchemaFromItems(faqItems)} />
 
-        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-6">
+        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-4">
           .cursorrules Generator
         </h1>
+        <p className="text-lg text-zinc-600 dark:text-zinc-400 mb-8">
+          Generate a legacy .cursorrules file directly on this page — choose
+          your tech stack and coding style, then download the result. The
+          output format is preset to .cursorrules.
+        </p>
+
+        <div id="generator" className="mb-12">
+          <GeneratorForm presetOutputMode="legacy" />
+        </div>
 
         <div className="space-y-6 text-zinc-600 dark:text-zinc-400 leading-relaxed">
           <section>
@@ -196,14 +206,11 @@ export default function CursorrulesGeneratorPage() {
           {/* Navigation */}
           <div className="mt-10 pt-6 border-t border-zinc-200 dark:border-zinc-700">
             <div className="flex flex-wrap gap-4">
-              <Link href="/" className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium">
-                Back to Generator &rarr;
-              </Link>
-              <Link href="/cursor-rules-generator" className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium">
-                Cursor Rules Generator &rarr;
-              </Link>
-              <Link href="/agents-md-generator" className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium">
-                AGENTS.md Generator &rarr;
+              <a href="#generator" className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium">
+                Generate your .cursorrules &rarr;
+              </a>
+              <Link href="/guides/migrate-cursorrules-to-cursor-rules" className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium">
+                Migrate to Project Rules &rarr;
               </Link>
             </div>
           </div>

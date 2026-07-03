@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import JsonLd from "@/components/seo/json-ld";
 import GeneratorForm from "@/components/generator/generator-form";
+import FadeScrollPre from "@/components/ui/fade-scroll-pre";
 import { getBreadcrumbSchema, getFAQPageSchemaFromItems } from "@/lib/schema";
 
 export const metadata: Metadata = {
@@ -105,7 +106,7 @@ export default function CursorRulesGeneratorPage() {
               A generated Project Rule can target only the files that need a specific
               instruction, which keeps Cursor responses more relevant:
             </p>
-            <pre className="bg-zinc-900 dark:bg-zinc-800 text-zinc-100 p-5 rounded-xl text-sm overflow-x-auto leading-relaxed mt-3">
+            <FadeScrollPre className="bg-zinc-900 dark:bg-zinc-800 text-zinc-100 p-5 rounded-xl text-sm overflow-x-auto leading-relaxed mt-3">
               <code>{`---
 description: Next.js App Router conventions
 globs:
@@ -119,7 +120,7 @@ alwaysApply: false
 - Use typed metadata exports on route pages.
 - Keep data fetching in Server Components or Route Handlers.
 - Use next/link and next/image for framework-aware navigation and media.`}</code>
-            </pre>
+            </FadeScrollPre>
           </section>
 
           <section>

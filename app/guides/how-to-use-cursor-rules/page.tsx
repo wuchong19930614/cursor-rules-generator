@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import TableOfContents from "@/components/ui/table-of-contents";
 
 export const metadata: Metadata = {
   title: "How to Use Cursor Rules — Complete Step-by-Step Guide",
@@ -52,16 +53,33 @@ const articleSchema = {
   },
 };
 
+const TOC_ITEMS = [
+  { id: "prerequisites", label: "Prerequisites" },
+  { id: "step-1", label: "1. Understand What It Does" },
+  { id: "step-2", label: "2. Generate Your File" },
+  { id: "step-3", label: "3. Place the File" },
+  { id: "step-4", label: "4. Test and Iterate" },
+  { id: "step-5", label: "5. Share with Your Team" },
+  { id: "common-pitfalls", label: "Common Pitfalls" },
+  { id: "advanced-tips", label: "Advanced Tips" },
+  { id: "troubleshooting", label: "Troubleshooting" },
+  { id: "choosing-format", label: "Choosing Your Format" },
+  { id: "frontmatter-deep-dive", label: "Frontmatter Deep Dive" },
+];
+
 export default function HowToUseCursorRulesPage() {
   return (
     <div className="flex flex-col flex-1 bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex-1 w-full max-w-2xl mx-auto py-16 px-4 sm:px-6">
+      <main className="flex-1 w-full max-w-5xl mx-auto py-16 px-4 sm:px-6">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(articleSchema),
           }}
         />
+
+        <div className="lg:grid lg:grid-cols-[minmax(0,42rem)_240px] lg:gap-16 lg:items-start lg:justify-center">
+        <div>
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-4">
           How to Use Cursor Rules
         </h1>
@@ -73,7 +91,10 @@ export default function HowToUseCursorRulesPage() {
 
         <div className="prose prose-zinc dark:prose-invert max-w-none space-y-4 text-zinc-600 dark:text-zinc-400 leading-relaxed">
           {/* Prerequisites */}
-          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3">
+          <h2
+            id="prerequisites"
+            className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3 scroll-mt-24"
+          >
             Before You Begin: Prerequisites
           </h2>
           <p>
@@ -102,7 +123,10 @@ export default function HowToUseCursorRulesPage() {
           </p>
 
           {/* Step 1 */}
-          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3">
+          <h2
+            id="step-1"
+            className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3 scroll-mt-24"
+          >
             Step 1: Understand What .cursorrules Does
           </h2>
           <p>
@@ -128,7 +152,10 @@ export default function HowToUseCursorRulesPage() {
           </p>
 
           {/* Step 2 */}
-          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3">
+          <h2
+            id="step-2"
+            className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3 scroll-mt-24"
+          >
             Step 2: Generate Your .cursorrules File
           </h2>
           <p>
@@ -158,7 +185,10 @@ export default function HowToUseCursorRulesPage() {
           </p>
 
           {/* Step 3 */}
-          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3">
+          <h2
+            id="step-3"
+            className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3 scroll-mt-24"
+          >
             Step 3: Place the File in Your Project
           </h2>
           <p>
@@ -179,7 +209,10 @@ export default function HowToUseCursorRulesPage() {
           </p>
 
           {/* Step 4 */}
-          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3">
+          <h2
+            id="step-4"
+            className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3 scroll-mt-24"
+          >
             Step 4: Test and Iterate
           </h2>
           <p>
@@ -203,7 +236,10 @@ export default function HowToUseCursorRulesPage() {
           </p>
 
           {/* Step 5 */}
-          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3">
+          <h2
+            id="step-5"
+            className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3 scroll-mt-24"
+          >
             Step 5: Share with Your Team
           </h2>
           <p>
@@ -225,7 +261,10 @@ export default function HowToUseCursorRulesPage() {
           </p>
 
           {/* Common Pitfalls */}
-          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3">
+          <h2
+            id="common-pitfalls"
+            className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3 scroll-mt-24"
+          >
             Common Pitfalls to Avoid
           </h2>
           <p>
@@ -254,7 +293,10 @@ export default function HowToUseCursorRulesPage() {
           </p>
 
           {/* Advanced Tips */}
-          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3">
+          <h2
+            id="advanced-tips"
+            className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3 scroll-mt-24"
+          >
             Advanced Configuration Tips
           </h2>
           <p>
@@ -283,7 +325,10 @@ export default function HowToUseCursorRulesPage() {
           </p>
 
           {/* Troubleshooting */}
-          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3">
+          <h2
+            id="troubleshooting"
+            className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3 scroll-mt-24"
+          >
             Troubleshooting: When Rules Do Not Work as Expected
           </h2>
           <p>
@@ -300,7 +345,10 @@ export default function HowToUseCursorRulesPage() {
           </p>
 
           {/* Choosing Your Format */}
-          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3">
+          <h2
+            id="choosing-format"
+            className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3 scroll-mt-24"
+          >
             Choosing Your Format: .mdc vs AGENTS.md vs .cursorrules
           </h2>
           <p>
@@ -331,7 +379,10 @@ export default function HowToUseCursorRulesPage() {
           </p>
 
           {/* Project Rules Frontmatter Deep Dive */}
-          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3">
+          <h2
+            id="frontmatter-deep-dive"
+            className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3 scroll-mt-24"
+          >
             Project Rules Frontmatter: A Deep Dive
           </h2>
           <p>
@@ -399,6 +450,13 @@ export default function HowToUseCursorRulesPage() {
               </Link>
             </div>
           </div>
+        </div>
+        </div>
+
+          <TableOfContents
+            items={TOC_ITEMS}
+            className="sticky top-24 hidden lg:block"
+          />
         </div>
       </main>
     </div>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import JsonLd from "@/components/seo/json-ld";
 import GeneratorForm from "@/components/generator/generator-form";
+import FadeScrollPre from "@/components/ui/fade-scroll-pre";
 import { getBreadcrumbSchema, getFAQPageSchemaFromItems } from "@/lib/schema";
 
 export const metadata: Metadata = {
@@ -82,7 +83,7 @@ export default function CursorrulesGeneratorPage() {
               .cursorrules File Structure
             </h2>
             <p>A typical <code>.cursorrules</code> file contains markdown-formatted instructions:</p>
-            <pre className="bg-zinc-900 dark:bg-zinc-800 text-zinc-100 p-5 rounded-xl text-sm overflow-x-auto leading-relaxed mt-2">
+            <FadeScrollPre className="bg-zinc-900 dark:bg-zinc-800 text-zinc-100 p-5 rounded-xl text-sm overflow-x-auto leading-relaxed mt-2">
               <code>{`# Project: My Next.js App
 # Tech Stack: Next.js 16, TypeScript, Tailwind CSS
 
@@ -99,7 +100,7 @@ export default function CursorrulesGeneratorPage() {
 ## Documentation
 - Document all public APIs with JSDoc
 - Keep README.md up to date`}</code>
-            </pre>
+            </FadeScrollPre>
           </section>
 
           <section>

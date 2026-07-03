@@ -262,6 +262,22 @@ describe("generateProjectRules", () => {
     }
   });
 
+  it("does not duplicate the template slug when the section id already starts with it", () => {
+    // react 模板的 section id 本身就是 "react-project-structure" 等,
+    // 文件名不应变成 "react-react-project-structure.mdc"
+    const files = generateProjectRules(
+      makeConfig({
+        selectedTags: ["react"],
+        outputMode: "project-rules",
+        splitRules: true,
+      })
+    );
+    for (const f of files) {
+      if (f.filename === "custom-rules.mdc") continue;
+      expect(f.filename).not.toMatch(/^react-react-/);
+    }
+  });
+
   it("always-apply mode includes alwaysApply: true", () => {
     const files = generateProjectRules(
       makeConfig({

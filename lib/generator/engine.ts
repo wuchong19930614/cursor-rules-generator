@@ -189,6 +189,18 @@ function slugify(text: string): string {
     .replace(/^-|-$/g, '');
 }
 
+/**
+ * 拼出 section 文件名。多数模板的 section id 本身已带模板名前缀
+ * （如 react 模板的 "react-project-structure"），此时不再重复拼接
+ * templateSlug，否则会产出 "react-react-project-structure.mdc"。
+ */
+function buildSectionFilename(templateSlug: string, sectionSlug: string): string {
+  if (sectionSlug === templateSlug || sectionSlug.startsWith(`${templateSlug}-`)) {
+    return `${sectionSlug}.mdc`;
+  }
+  return `${templateSlug}-${sectionSlug}.mdc`;
+}
+
 // ========== Day 1 新增：generateProjectRules ==========
 
 /**
@@ -217,7 +229,7 @@ export function generateProjectRules(config: GeneratorConfig): RuleFile[] {
     const files = sections.map((s) => {
       const templateSlug = slugify(s.templateId);
       const sectionSlug = slugify(s.id);
-      const filename = `${templateSlug}-${sectionSlug}.mdc`;
+      const filename = buildSectionFilename(templateSlug, sectionSlug);
 
       const globs = resolveGlobs(config, s);
       if (config.ruleApplicationMode === 'file-specific' && (!globs || globs.length === 0)) {

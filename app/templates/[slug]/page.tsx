@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import JsonLd from "@/components/seo/json-ld";
 import GeneratorForm from "@/components/generator/generator-form";
 import RuleOutputTabs from "@/components/templates/rule-output-tabs";
+import TableOfContents from "@/components/ui/table-of-contents";
 import {
   getBreadcrumbSchema,
   getFAQPageSchemaFromItems,
@@ -123,9 +124,23 @@ export default async function TemplateDetailPage({ params }: TemplatePageProps) 
   const optionalSections = template.sections.filter((section) => section.optional);
   const lastUpdated = editorial?.lastUpdated;
 
+  const tocItems = [
+    { id: "full-rules", label: "The Complete Rules" },
+    { id: "customize", label: "Customize These Rules" },
+    { id: "what-this-covers", label: "What This Template Covers" },
+    ...(editorial ? [{ id: "why-these-rules", label: "Why These Rules" }] : []),
+    ...(editorial && editorial.combos.length > 0
+      ? [{ id: "stack-combinations", label: "Stack Combinations" }]
+      : []),
+    { id: "faq", label: "FAQ" },
+    ...(relatedTemplates.length > 0
+      ? [{ id: "related-templates", label: "Related Templates" }]
+      : []),
+  ];
+
   return (
     <div className="flex flex-col flex-1 bg-zinc-50 font-sans dark:bg-black">
-      <main id="main-content" className="flex-1 w-full max-w-4xl mx-auto py-12 px-4 sm:px-6">
+      <main id="main-content" className="flex-1 w-full max-w-6xl mx-auto py-12 px-4 sm:px-6">
         <JsonLd
           data={getBreadcrumbSchema([
             { name: "Home", url: siteUrl },
@@ -151,6 +166,9 @@ export default async function TemplateDetailPage({ params }: TemplatePageProps) 
           <span className="px-2">/</span>
           <span>{template.name}</span>
         </nav>
+
+        <div className="lg:grid lg:grid-cols-[minmax(0,54rem)_240px] lg:gap-12 lg:items-start lg:justify-center">
+        <div>
 
         {/* Header */}
         <section className="mb-12">
@@ -235,7 +253,10 @@ export default async function TemplateDetailPage({ params }: TemplatePageProps) 
         </section>
 
         {/* What the template covers (real template data) */}
-        <section className="mb-12 rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900">
+        <section
+          id="what-this-covers"
+          className="mb-12 scroll-mt-6 rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900"
+        >
           <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
             What This Template Covers
           </h2>
@@ -267,7 +288,7 @@ export default async function TemplateDetailPage({ params }: TemplatePageProps) 
 
         {/* Editorial: why these rules */}
         {editorial && (
-          <section className="mb-12">
+          <section id="why-these-rules" className="mb-12 scroll-mt-6">
             <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
               Why These Rules
             </h2>
@@ -297,7 +318,7 @@ export default async function TemplateDetailPage({ params }: TemplatePageProps) 
 
         {/* Editorial: common stack combos */}
         {editorial && editorial.combos.length > 0 && (
-          <section className="mb-12">
+          <section id="stack-combinations" className="mb-12 scroll-mt-6">
             <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
               Common {template.name} Stack Combinations
             </h2>
@@ -326,7 +347,7 @@ export default async function TemplateDetailPage({ params }: TemplatePageProps) 
         )}
 
         {/* FAQ */}
-        <section className="mb-12">
+        <section id="faq" className="mb-12 scroll-mt-6">
           <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
             Frequently Asked Questions
           </h2>
@@ -345,7 +366,10 @@ export default async function TemplateDetailPage({ params }: TemplatePageProps) 
         </section>
 
         {relatedTemplates.length > 0 && (
-          <section className="border-t border-zinc-200 pt-8 dark:border-zinc-800">
+          <section
+            id="related-templates"
+            className="scroll-mt-6 border-t border-zinc-200 pt-8 dark:border-zinc-800"
+          >
             <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
               Related Cursor Rules Templates
             </h2>
@@ -367,6 +391,13 @@ export default async function TemplateDetailPage({ params }: TemplatePageProps) 
             </div>
           </section>
         )}
+        </div>
+
+          <TableOfContents
+            items={tocItems}
+            className="sticky top-24 hidden lg:block"
+          />
+        </div>
       </main>
     </div>
   );

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import JsonLd from "@/components/seo/json-ld";
+import FadeScrollPre from "@/components/ui/fade-scroll-pre";
+import TableOfContents from "@/components/ui/table-of-contents";
 import { getBreadcrumbSchema, getFAQPageSchemaFromItems } from "@/lib/schema";
 
 export const metadata: Metadata = {
@@ -13,6 +15,16 @@ export const metadata: Metadata = {
 };
 
 const pageUrl = "https://www.cursorgenerator.dev/cursor-rules";
+
+const TOC_ITEMS = [
+  { id: "understanding-cursor-rules", label: "Understanding Cursor Rules" },
+  { id: "types-of-cursor-rules", label: "Types of Cursor Rules" },
+  { id: "what-can-cursor-rules-control", label: "What Can Cursor Rules Control?" },
+  { id: "cursor-rules-vs-linters-vs-documentation", label: "Rules vs Linters vs Docs" },
+  { id: "example-rule-categories", label: "Example Rule Categories" },
+  { id: "next-steps", label: "Next Steps" },
+  { id: "frequently-asked-questions", label: "FAQ" },
+];
 
 const faqItems = [
   {
@@ -35,7 +47,7 @@ const faqItems = [
 export default function CursorRulesPage() {
   return (
     <div className="flex flex-col flex-1 bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex-1 w-full max-w-3xl mx-auto py-12 px-4 sm:px-6">
+      <main className="flex-1 w-full max-w-5xl mx-auto py-12 px-4 sm:px-6">
         <JsonLd
           data={getBreadcrumbSchema([
             { name: "Home", url: "https://www.cursorgenerator.dev" },
@@ -44,13 +56,18 @@ export default function CursorRulesPage() {
         />
         <JsonLd data={getFAQPageSchemaFromItems(faqItems)} />
 
+        <div className="lg:grid lg:grid-cols-[minmax(0,42rem)_240px] lg:gap-16 lg:items-start lg:justify-center">
+        <div>
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-6">
           What Are Cursor Rules
         </h1>
 
         <div className="space-y-6 text-zinc-600 dark:text-zinc-400 leading-relaxed">
           <section>
-            <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3">
+            <h2
+              id="understanding-cursor-rules"
+              className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3 scroll-mt-24"
+            >
               Understanding Cursor Rules
             </h2>
             <p>
@@ -59,7 +76,10 @@ export default function CursorRulesPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3">
+            <h2
+              id="types-of-cursor-rules"
+              className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3 scroll-mt-24"
+            >
               Types of Cursor Rules
             </h2>
 
@@ -87,7 +107,10 @@ export default function CursorRulesPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3">
+            <h2
+              id="what-can-cursor-rules-control"
+              className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3 scroll-mt-24"
+            >
               What Can Cursor Rules Control?
             </h2>
             <ul className="list-disc pl-6 mt-2 space-y-1">
@@ -102,7 +125,10 @@ export default function CursorRulesPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3">
+            <h2
+              id="cursor-rules-vs-linters-vs-documentation"
+              className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3 scroll-mt-24"
+            >
               Cursor Rules vs Linters vs Documentation
             </h2>
             <div className="overflow-x-auto">
@@ -136,10 +162,13 @@ export default function CursorRulesPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3">
+            <h2
+              id="example-rule-categories"
+              className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3 scroll-mt-24"
+            >
               Example Rule Categories
             </h2>
-            <pre className="bg-zinc-900 dark:bg-zinc-800 text-zinc-100 p-5 rounded-xl text-sm overflow-x-auto leading-relaxed mt-2">
+            <FadeScrollPre className="bg-zinc-900 dark:bg-zinc-800 text-zinc-100 p-5 rounded-xl text-sm overflow-x-auto leading-relaxed mt-2">
               <code>{`## Architecture
 - Keep business logic out of route handlers.
 - Use services/ for integrations and lib/ for pure helpers.
@@ -151,11 +180,14 @@ export default function CursorRulesPage() {
 ## Code Review
 - Prefer small focused changes.
 - Explain trade-offs when modifying shared abstractions.`}</code>
-            </pre>
+            </FadeScrollPre>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3">
+            <h2
+              id="next-steps"
+              className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3 scroll-mt-24"
+            >
               Next Steps
             </h2>
             <p>
@@ -176,7 +208,10 @@ export default function CursorRulesPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3">
+            <h2
+              id="frequently-asked-questions"
+              className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3 scroll-mt-24"
+            >
               Frequently Asked Questions
             </h2>
             <dl className="space-y-4">
@@ -205,6 +240,13 @@ export default function CursorRulesPage() {
               </Link>
             </div>
           </div>
+        </div>
+        </div>
+
+          <TableOfContents
+            items={TOC_ITEMS}
+            className="sticky top-24 hidden lg:block"
+          />
         </div>
       </main>
     </div>

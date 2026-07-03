@@ -1,5 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import FadeScrollPre from "@/components/ui/fade-scroll-pre";
+import TableOfContents from "@/components/ui/table-of-contents";
 
 export const metadata: Metadata = {
   title: "Migrate .cursorrules to Project Rules (.mdc) — Complete Migration Guide",
@@ -52,16 +54,27 @@ const articleSchema = {
   },
 };
 
+const TOC_ITEMS = [
+  { id: "why-migrate", label: "Why Migrate?" },
+  { id: "understanding-project-rules", label: "Understanding Project Rules" },
+  { id: "step-by-step", label: "Step-by-Step Migration" },
+  { id: "before-and-after", label: "Before and After Example" },
+  { id: "faq", label: "FAQ" },
+];
+
 export default function MigrateGuidePage() {
   return (
     <div className="flex flex-col flex-1 bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex-1 w-full max-w-2xl mx-auto py-16 px-4 sm:px-6">
+      <main className="flex-1 w-full max-w-5xl mx-auto py-16 px-4 sm:px-6">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(articleSchema),
           }}
         />
+
+        <div className="lg:grid lg:grid-cols-[minmax(0,42rem)_240px] lg:gap-16 lg:items-start lg:justify-center">
+        <div>
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-4">
           Migrate .cursorrules to Project Rules (.mdc)
         </h1>
@@ -74,7 +87,10 @@ export default function MigrateGuidePage() {
 
         <div className="prose prose-zinc dark:prose-invert max-w-none space-y-4 text-zinc-600 dark:text-zinc-400 leading-relaxed">
           {/* Why Migrate */}
-          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3">
+          <h2
+            id="why-migrate"
+            className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3 scroll-mt-24"
+          >
             Why Migrate from .cursorrules to Project Rules?
           </h2>
           <p>
@@ -107,7 +123,10 @@ export default function MigrateGuidePage() {
           </p>
 
           {/* Understanding Project Rules */}
-          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3">
+          <h2
+            id="understanding-project-rules"
+            className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3 scroll-mt-24"
+          >
             Understanding Project Rules: Cursor Rules V2
           </h2>
           <p>
@@ -149,7 +168,10 @@ export default function MigrateGuidePage() {
           </p>
 
           {/* Step-by-Step Migration */}
-          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3">
+          <h2
+            id="step-by-step"
+            className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3 scroll-mt-24"
+          >
             Step-by-Step Migration Guide
           </h2>
 
@@ -240,7 +262,7 @@ export default function MigrateGuidePage() {
             like code style, set <code>alwaysApply: true</code>. Here is a
             minimal frontmatter for a React component rules file:
           </p>
-          <pre className="bg-zinc-900 dark:bg-zinc-800 text-zinc-100 p-4 rounded-xl text-sm overflow-x-auto leading-relaxed">
+          <FadeScrollPre className="bg-zinc-900 dark:bg-zinc-800 text-zinc-100 p-4 rounded-xl text-sm overflow-x-auto leading-relaxed">
             <code>{`---
 description: React component conventions for the frontend team
 globs:
@@ -256,7 +278,7 @@ version: "1.0.0"
 - Prefer named exports over default exports
 - Keep components under 200 lines; extract hooks and utilities
 - Use Tailwind CSS for styling — no inline styles or CSS modules`}</code>
-          </pre>
+          </FadeScrollPre>
           <p>
             The <code>globs</code> field accepts standard glob patterns. You can
             target specific directories, file extensions, or even individual
@@ -345,7 +367,10 @@ version: "1.0.0"
           </p>
 
           {/* Before/After Comparison */}
-          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3">
+          <h2
+            id="before-and-after"
+            className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3 scroll-mt-24"
+          >
             Migration Example: Before and After
           </h2>
           <p>
@@ -360,7 +385,7 @@ version: "1.0.0"
           <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50 mt-6 mb-2">
             Before: Single .cursorrules File
           </h3>
-          <pre className="bg-zinc-900 dark:bg-zinc-800 text-zinc-100 p-4 rounded-xl text-sm overflow-x-auto leading-relaxed">
+          <FadeScrollPre className="bg-zinc-900 dark:bg-zinc-800 text-zinc-100 p-4 rounded-xl text-sm overflow-x-auto leading-relaxed">
             <code>{`You are an expert React, TypeScript, and Go developer.
 
 Code Style:
@@ -391,7 +416,7 @@ Architecture:
 - Backend in cmd/ and internal/ directories
 - Use React Query for server state
 - Use gorilla/mux for HTTP routing`}</code>
-          </pre>
+          </FadeScrollPre>
 
           <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50 mt-6 mb-2">
             After: Organized .cursor/rules/ Directory
@@ -405,7 +430,7 @@ Architecture:
           <h4 className="font-semibold text-zinc-900 dark:text-zinc-50 mt-4 mb-1">
             .cursor/rules/code-style.mdc
           </h4>
-          <pre className="bg-zinc-900 dark:bg-zinc-800 text-zinc-100 p-4 rounded-xl text-sm overflow-x-auto leading-relaxed">
+          <FadeScrollPre className="bg-zinc-900 dark:bg-zinc-800 text-zinc-100 p-4 rounded-xl text-sm overflow-x-auto leading-relaxed">
             <code>{`---
 description: Universal code style conventions
 alwaysApply: true
@@ -418,12 +443,12 @@ version: "1.0.0"
 - Single quotes, no semicolons
 - Arrow functions with explicit return types
 - Follow language-specific naming conventions`}</code>
-          </pre>
+          </FadeScrollPre>
 
           <h4 className="font-semibold text-zinc-900 dark:text-zinc-50 mt-4 mb-1">
             .cursor/rules/react-components.mdc
           </h4>
-          <pre className="bg-zinc-900 dark:bg-zinc-800 text-zinc-100 p-4 rounded-xl text-sm overflow-x-auto leading-relaxed">
+          <FadeScrollPre className="bg-zinc-900 dark:bg-zinc-800 text-zinc-100 p-4 rounded-xl text-sm overflow-x-auto leading-relaxed">
             <code>{`---
 description: React component conventions
 globs:
@@ -440,12 +465,12 @@ version: "1.0.0"
 - Keep components under 200 lines; extract hooks and utilities
 - Use Tailwind CSS for styling — no inline styles or CSS modules
 - Use React Query (TanStack Query) for server state`}</code>
-          </pre>
+          </FadeScrollPre>
 
           <h4 className="font-semibold text-zinc-900 dark:text-zinc-50 mt-4 mb-1">
             .cursor/rules/go-backend.mdc
           </h4>
-          <pre className="bg-zinc-900 dark:bg-zinc-800 text-zinc-100 p-4 rounded-xl text-sm overflow-x-auto leading-relaxed">
+          <FadeScrollPre className="bg-zinc-900 dark:bg-zinc-800 text-zinc-100 p-4 rounded-xl text-sm overflow-x-auto leading-relaxed">
             <code>{`---
 description: Go backend conventions
 globs:
@@ -462,12 +487,12 @@ version: "1.0.0"
 - Follow standard library naming conventions
 - Package names should be short, lowercase, single-word
 - Use gorilla/mux for HTTP routing`}</code>
-          </pre>
+          </FadeScrollPre>
 
           <h4 className="font-semibold text-zinc-900 dark:text-zinc-50 mt-4 mb-1">
             .cursor/rules/testing-standards.mdc
           </h4>
-          <pre className="bg-zinc-900 dark:bg-zinc-800 text-zinc-100 p-4 rounded-xl text-sm overflow-x-auto leading-relaxed">
+          <FadeScrollPre className="bg-zinc-900 dark:bg-zinc-800 text-zinc-100 p-4 rounded-xl text-sm overflow-x-auto leading-relaxed">
             <code>{`---
 description: Testing requirements across the entire codebase
 alwaysApply: true
@@ -481,7 +506,7 @@ version: "1.0.0"
 - Backend: Go standard testing package
 - Backend functions must use table-driven tests
 - Aim for meaningful coverage over percentage targets`}</code>
-          </pre>
+          </FadeScrollPre>
 
           <p>
             The migrated structure is cleaner, more maintainable, and more
@@ -495,7 +520,10 @@ version: "1.0.0"
           </p>
 
           {/* FAQ */}
-          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3">
+          <h2
+            id="faq"
+            className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3 scroll-mt-24"
+          >
             Frequently Asked Questions
           </h2>
           <dl className="space-y-6">
@@ -637,6 +665,13 @@ version: "1.0.0"
               </Link>
             </div>
           </div>
+        </div>
+        </div>
+
+          <TableOfContents
+            items={TOC_ITEMS}
+            className="sticky top-24 hidden lg:block"
+          />
         </div>
       </main>
     </div>

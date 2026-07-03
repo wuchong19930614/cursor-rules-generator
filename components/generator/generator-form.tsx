@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback, useMemo, useEffect, Suspense } from 'react';
+import { FolderIcon, DocumentIcon, ArchiveIcon } from './format-icons';
 import StepIndicator from './step-indicator';
 import StepTechStack from './step-tech-stack';
 import StepStyle from './step-style';
@@ -101,7 +102,10 @@ interface GeneratorFormProps {
 function GeneratorFormInner({ presetOutputMode, presetTags }: GeneratorFormProps) {
   const { syncToUrl } = useUrlState();
 
-  const [step, setStep] = useState(0);
+  // 页面已预选技术栈(如模板详情页)且非分享链接恢复时,跳过 Output Mode/Tech
+  // Stack 两步,直接进入 Style —— 避免用户重新选一遍已经确定的内容
+  const skipToStyle = !_initialState && !!presetTags && presetTags.length > 0;
+  const [step, setStep] = useState(skipToStyle ? 2 : 0);
   const [outputMode, setOutputMode] = useState<OutputMode>(
     _initialState?.outputMode ?? presetOutputMode ?? 'project-rules'
   );
@@ -207,7 +211,7 @@ function GeneratorFormInner({ presetOutputMode, presetTags }: GeneratorFormProps
   };
 
   const restart = () => {
-    setStep(0);
+    setStep(skipToStyle ? 2 : 0);
     setOutputMode(presetOutputMode ?? 'project-rules');
     setRuleApplicationMode('intelligent');
     setSplitRules(false);
@@ -256,19 +260,19 @@ function GeneratorFormInner({ presetOutputMode, presetTags }: GeneratorFormProps
                     value: 'project-rules' as OutputMode,
                     label: 'Project Rules',
                     desc: '.mdc files in .cursor/rules/',
-                    icon: '📁',
+                    Icon: FolderIcon,
                   },
                   {
                     value: 'agents-md' as OutputMode,
                     label: 'AGENTS.md',
                     desc: 'Single markdown file',
-                    icon: '📄',
+                    Icon: DocumentIcon,
                   },
                   {
                     value: 'legacy' as OutputMode,
                     label: 'Legacy',
                     desc: '.cursorrules (classic)',
-                    icon: '📜',
+                    Icon: ArchiveIcon,
                   },
                 ] as const
               ).map((mode) => (
@@ -284,7 +288,13 @@ function GeneratorFormInner({ presetOutputMode, presetTags }: GeneratorFormProps
                     }
                     focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500`}
                 >
-                  <div className="text-2xl mb-1">{mode.icon}</div>
+                  <mode.Icon
+                    className={`h-6 w-6 mb-1.5 ${
+                      outputMode === mode.value
+                        ? 'text-blue-600 dark:text-blue-400'
+                        : 'text-zinc-400 dark:text-zinc-500'
+                    }`}
+                  />
                   <div className="font-medium text-sm text-zinc-900 dark:text-zinc-100">
                     {mode.label}
                   </div>
@@ -434,8 +444,8 @@ function GeneratorFormInner({ presetOutputMode, presetTags }: GeneratorFormProps
         </div>
       )}
 
-      {/* Always-visible preview */}
-      {selectedTags.length > 0 && (
+      {/* 实时预览:Output 步骤(4)已经在 StepOutput 内自带预览,这里不重复渲染 */}
+      {selectedTags.length > 0 && step !== 4 && (
         <RulePreview config={config} className="mt-4" />
       )}
     </div>

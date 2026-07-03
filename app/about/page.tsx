@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import TableOfContents from "@/components/ui/table-of-contents";
 import { getAboutFAQPageSchema, getBreadcrumbSchema } from "@/lib/schema";
 
 const siteUrl = "https://www.cursorgenerator.dev";
@@ -41,6 +42,24 @@ export const metadata: Metadata = {
   },
 };
 
+const TOC_ITEMS = [
+  { id: "why-cursor-rules-matter", label: "Why Cursor Rules Matter" },
+  { id: "our-mission", label: "Our Mission" },
+  { id: "how-the-generator-works", label: "How the Generator Works" },
+  { id: "template-quality-maintenance", label: "Template Quality & Maintenance" },
+  { id: "supported-tech-stacks", label: "Supported Tech Stacks" },
+  { id: "open-source-community", label: "Open Source & Community" },
+  { id: "who-uses-cursor-rules-generator", label: "Who Uses This" },
+  { id: "getting-started", label: "Getting Started" },
+  { id: "privacy-data", label: "Privacy & Data" },
+];
+
+const statHighlights = [
+  { value: "26+", label: "Tech stack templates" },
+  { value: "100%", label: "Client-side, zero data collection" },
+  { value: "$0", label: "Free forever, no accounts" },
+];
+
 const frameworkList = [
   { name: "React", key: "react" },
   { name: "Next.js", key: "nextjs" },
@@ -73,7 +92,7 @@ const frameworkList = [
 export default function AboutPage() {
   return (
     <div className="flex flex-col flex-1 bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex-1 w-full max-w-2xl mx-auto py-16 px-4 sm:px-6">
+      <main className="flex-1 w-full max-w-5xl mx-auto py-16 px-4 sm:px-6">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -86,35 +105,58 @@ export default function AboutPage() {
             __html: JSON.stringify(aboutBreadcrumb),
           }}
         />
-        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-6">
-          About Cursor Rules Generator
-        </h1>
 
-        <div className="prose prose-zinc dark:prose-invert max-w-none space-y-4 text-zinc-600 dark:text-zinc-400 leading-relaxed">
-          {/* ---- Intro ---- */}
-          <p>
-            Cursor Rules Generator is a free, open-source tool that helps
-            developers create customized <code>.cursorrules</code> files for
-            Cursor IDE. Our interactive wizard lets you select your tech stack,
-            set coding style preferences, and generate production-ready AI rules
-            in seconds. Whether you are a solo developer working on a side
-            project or part of a large engineering team maintaining multiple
-            codebases, our generator gives you consistent, high-quality rules
-            that make Cursor&apos;s AI assistant work exactly the way you want.
-          </p>
-          <p>
-            Since our launch, thousands of developers have used Cursor Rules
-            Generator to create <code>.cursorrules</code> files for projects
-            ranging from small React components to enterprise Go microservices.
-            The tool runs entirely in your browser — no accounts, no server-side
-            processing, and no data collection — so you can generate rules
-            instantly, privately, and as many times as you need.
-          </p>
+        <div className="lg:grid lg:grid-cols-[minmax(0,42rem)_240px] lg:gap-16 lg:items-start lg:justify-center">
+          <div>
+            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-6">
+              About Cursor Rules Generator
+            </h1>
 
-          {/* ---- Topic 1: Why Cursor Rules Matter ---- */}
-          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3">
-            Why Cursor Rules Matter
-          </h2>
+            <div className="prose prose-zinc dark:prose-invert max-w-none space-y-4 text-zinc-600 dark:text-zinc-400 leading-relaxed">
+              {/* ---- Intro ---- */}
+              <p>
+                Cursor Rules Generator is a free, open-source tool that helps
+                developers create customized <code>.cursorrules</code> files for
+                Cursor IDE. Our interactive wizard lets you select your tech stack,
+                set coding style preferences, and generate production-ready AI rules
+                in seconds. Whether you are a solo developer working on a side
+                project or part of a large engineering team maintaining multiple
+                codebases, our generator gives you consistent, high-quality rules
+                that make Cursor&apos;s AI assistant work exactly the way you want.
+              </p>
+              <p>
+                Since our launch, thousands of developers have used Cursor Rules
+                Generator to create <code>.cursorrules</code> files for projects
+                ranging from small React components to enterprise Go microservices.
+                The tool runs entirely in your browser — no accounts, no server-side
+                processing, and no data collection — so you can generate rules
+                instantly, privately, and as many times as you need.
+              </p>
+
+              {/* ---- Stat highlights: 打破长文字段落的阅读疲劳 ---- */}
+              <div className="not-prose grid grid-cols-3 gap-3 my-8">
+                {statHighlights.map((stat) => (
+                  <div
+                    key={stat.label}
+                    className="rounded-xl border border-zinc-200 bg-white p-4 text-center dark:border-zinc-700 dark:bg-zinc-900"
+                  >
+                    <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                      {stat.value}
+                    </div>
+                    <div className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                      {stat.label}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* ---- Topic 1: Why Cursor Rules Matter ---- */}
+              <h2
+                id="why-cursor-rules-matter"
+                className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3 scroll-mt-24"
+              >
+                Why Cursor Rules Matter
+              </h2>
           <p>
             Modern AI coding assistants are powerful but generic by default.
             Without explicit guidance, they produce code in a one-size-fits-all
@@ -147,7 +189,10 @@ export default function AboutPage() {
           </p>
 
           {/* ---- Topic 2: Our Mission ---- */}
-          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3">
+          <h2
+            id="our-mission"
+            className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3 scroll-mt-24"
+          >
             Our Mission
           </h2>
           <p>
@@ -176,7 +221,10 @@ export default function AboutPage() {
           </p>
 
           {/* ---- Topic 2: How It Works ---- */}
-          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3">
+          <h2
+            id="how-the-generator-works"
+            className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3 scroll-mt-24"
+          >
             How the Generator Works
           </h2>
           <p>
@@ -221,7 +269,10 @@ export default function AboutPage() {
           </p>
 
           {/* ---- Topic: Template Quality &amp; Maintenance ---- */}
-          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3">
+          <h2
+            id="template-quality-maintenance"
+            className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3 scroll-mt-24"
+          >
             Template Quality &amp; Maintenance
           </h2>
           <p>
@@ -254,7 +305,10 @@ export default function AboutPage() {
           </p>
 
           {/* ---- Topic 3: Supported Tech Stacks ---- */}
-          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3">
+          <h2
+            id="supported-tech-stacks"
+            className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3 scroll-mt-24"
+          >
             Supported Tech Stacks
           </h2>
           <p>
@@ -279,7 +333,10 @@ export default function AboutPage() {
           </p>
 
           {/* ---- Topic 4: Open Source ---- */}
-          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3">
+          <h2
+            id="open-source-community"
+            className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3 scroll-mt-24"
+          >
             Open Source &amp; Community
           </h2>
           <p>
@@ -307,7 +364,10 @@ export default function AboutPage() {
           </p>
 
           {/* ---- Topic 5: Who Uses Cursor Rules Generator ---- */}
-          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3">
+          <h2
+            id="who-uses-cursor-rules-generator"
+            className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3 scroll-mt-24"
+          >
             Who Uses Cursor Rules Generator
           </h2>
           <p>
@@ -341,7 +401,10 @@ export default function AboutPage() {
           </p>
 
           {/* ---- Topic: Getting Started ---- */}
-          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3">
+          <h2
+            id="getting-started"
+            className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3 scroll-mt-24"
+          >
             Getting Started in Under a Minute
           </h2>
           <p>
@@ -368,7 +431,10 @@ export default function AboutPage() {
           </p>
 
           {/* ---- Topic 6: Privacy & Data ---- */}
-          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3">
+          <h2
+            id="privacy-data"
+            className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mt-8 mb-3 scroll-mt-24"
+          >
             Privacy &amp; Data
           </h2>
           <p>
@@ -407,6 +473,13 @@ export default function AboutPage() {
               </Link>
             </div>
           </div>
+            </div>
+          </div>
+
+          <TableOfContents
+            items={TOC_ITEMS}
+            className="sticky top-24 hidden lg:block"
+          />
         </div>
       </main>
     </div>

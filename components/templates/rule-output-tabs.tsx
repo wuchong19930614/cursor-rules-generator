@@ -4,6 +4,7 @@
 // 模板详情页:三格式完整产物的 tab 切换展示,每块带一键复制
 
 import { useState } from 'react';
+import FadeScrollPre from '@/components/ui/fade-scroll-pre';
 import type { TemplateArtifacts } from '@/lib/generator/artifacts';
 
 type TabKey = 'project-rules' | 'agents-md' | 'cursorrules';
@@ -46,9 +47,9 @@ function CodeBlock({ filename, text }: { filename: string; text: string }) {
         <span className="font-mono text-xs text-zinc-400">{filename}</span>
         <CopyButton text={text} label={filename} />
       </div>
-      <pre className="overflow-x-auto p-4 text-sm leading-relaxed text-zinc-100">
+      <FadeScrollPre className="overflow-x-auto p-4 text-sm leading-relaxed text-zinc-100">
         <code>{text}</code>
-      </pre>
+      </FadeScrollPre>
     </div>
   );
 }

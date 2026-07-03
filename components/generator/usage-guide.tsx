@@ -1,4 +1,5 @@
 import Link from "next/link";
+import FadeScrollPre from "@/components/ui/fade-scroll-pre";
 
 export default function UsageGuide() {
   return (
@@ -115,7 +116,7 @@ export default function UsageGuide() {
             <h4 className="font-semibold text-sm text-zinc-900 dark:text-zinc-50 mb-2">
               Project Rules (.mdc)
             </h4>
-            <pre className="bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 p-3 rounded-lg text-xs overflow-x-auto leading-relaxed">
+            <FadeScrollPre className="bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 p-3 rounded-lg text-xs overflow-x-auto leading-relaxed">
               <code>{`---
 description: React component conventions
 globs:
@@ -129,7 +130,7 @@ alwaysApply: false
 - Prefer named exports
 - Keep components under 200 lines
 - Use Tailwind CSS for styling`}</code>
-            </pre>
+            </FadeScrollPre>
             <p className="text-xs text-zinc-500 dark:text-zinc-500 mt-2">
               Multi-file with glob targeting. Best for teams and large
               projects.
@@ -141,7 +142,7 @@ alwaysApply: false
             <h4 className="font-semibold text-sm text-zinc-900 dark:text-zinc-50 mb-2">
               AGENTS.md
             </h4>
-            <pre className="bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 p-3 rounded-lg text-xs overflow-x-auto leading-relaxed">
+            <FadeScrollPre className="bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 p-3 rounded-lg text-xs overflow-x-auto leading-relaxed">
               <code>{`# AGENTS.md
 
 ## Code Style
@@ -158,7 +159,7 @@ alwaysApply: false
 - Jest with React Testing Library
 - Every component needs at least
   one render test`}</code>
-            </pre>
+            </FadeScrollPre>
             <p className="text-xs text-zinc-500 dark:text-zinc-500 mt-2">
               Single markdown file. Best for simple projects and open-source.
             </p>
@@ -169,7 +170,7 @@ alwaysApply: false
             <h4 className="font-semibold text-sm text-zinc-900 dark:text-zinc-50 mb-2">
               Legacy .cursorrules
             </h4>
-            <pre className="bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 p-3 rounded-lg text-xs overflow-x-auto leading-relaxed">
+            <FadeScrollPre className="bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 p-3 rounded-lg text-xs overflow-x-auto leading-relaxed">
               <code>{`You are an expert React and
 TypeScript developer.
 
@@ -186,7 +187,7 @@ Naming Conventions:
 
 Testing:
 - Jest + React Testing Library`}</code>
-            </pre>
+            </FadeScrollPre>
             <p className="text-xs text-zinc-500 dark:text-zinc-500 mt-2">
               Original plain-text format. For backward compatibility.
             </p>

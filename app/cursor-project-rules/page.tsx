@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import JsonLd from "@/components/seo/json-ld";
+import FadeScrollPre from "@/components/ui/fade-scroll-pre";
+import TableOfContents from "@/components/ui/table-of-contents";
 import { getBreadcrumbSchema, getFAQPageSchemaFromItems } from "@/lib/schema";
 
 export const metadata: Metadata = {
@@ -13,6 +15,16 @@ export const metadata: Metadata = {
 };
 
 const pageUrl = "https://www.cursorgenerator.dev/cursor-project-rules";
+
+const TOC_ITEMS = [
+  { id: "project-rules-vs-user-rules", label: "Project Rules vs. User Rules" },
+  { id: "directory-structure", label: "Directory Structure" },
+  { id: "recommended-layout", label: "Recommended Layout" },
+  { id: "common-patterns", label: "Common Rule Patterns" },
+  { id: "application-mode", label: "Choosing Application Mode" },
+  { id: "migration", label: "Migration from .cursorrules" },
+  { id: "faq", label: "FAQ" },
+];
 
 const faqItems = [
   {
@@ -35,7 +47,7 @@ const faqItems = [
 export default function CursorProjectRulesPage() {
   return (
     <div className="flex flex-col flex-1 bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex-1 w-full max-w-3xl mx-auto py-12 px-4 sm:px-6">
+      <main className="flex-1 w-full max-w-5xl mx-auto py-12 px-4 sm:px-6">
         <JsonLd
           data={getBreadcrumbSchema([
             { name: "Home", url: "https://www.cursorgenerator.dev" },
@@ -44,13 +56,18 @@ export default function CursorProjectRulesPage() {
         />
         <JsonLd data={getFAQPageSchemaFromItems(faqItems)} />
 
+        <div className="lg:grid lg:grid-cols-[minmax(0,42rem)_240px] lg:gap-16 lg:items-start lg:justify-center">
+        <div>
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-6">
           Cursor Project Rules
         </h1>
 
         <div className="space-y-6 text-zinc-600 dark:text-zinc-400 leading-relaxed">
           <section>
-            <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3">
+            <h2
+              id="project-rules-vs-user-rules"
+              className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3 scroll-mt-24"
+            >
               Project Rules vs. User Rules
             </h2>
             <p>
@@ -62,7 +79,10 @@ export default function CursorProjectRulesPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3">
+            <h2
+              id="directory-structure"
+              className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3 scroll-mt-24"
+            >
               The .cursor/rules Directory Structure
             </h2>
             <p>
@@ -74,7 +94,7 @@ export default function CursorProjectRulesPage() {
               <li><strong className="text-zinc-800 dark:text-zinc-200">description</strong> — Human-readable summary of what the rule does</li>
             </ul>
             <p className="mt-3">Example rule file structure:</p>
-            <pre className="bg-zinc-900 dark:bg-zinc-800 text-zinc-100 p-5 rounded-xl text-sm overflow-x-auto leading-relaxed mt-2">
+            <FadeScrollPre className="bg-zinc-900 dark:bg-zinc-800 text-zinc-100 p-5 rounded-xl text-sm overflow-x-auto leading-relaxed mt-2">
               <code>{`---
 globs: "**/*.tsx"
 alwaysApply: true
@@ -83,18 +103,21 @@ description: "React component conventions"
 Always use functional components with TypeScript interfaces.
 Prefer named exports over default exports.
 Use the 'use client' directive only when necessary.`}</code>
-            </pre>
+            </FadeScrollPre>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3">
+            <h2
+              id="recommended-layout"
+              className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3 scroll-mt-24"
+            >
               Recommended .cursor/rules Layout
             </h2>
             <p>
               A practical rules directory groups instructions by domain. This makes
               each file easier to review, update, and target with globs:
             </p>
-            <pre className="bg-zinc-900 dark:bg-zinc-800 text-zinc-100 p-5 rounded-xl text-sm overflow-x-auto leading-relaxed mt-2">
+            <FadeScrollPre className="bg-zinc-900 dark:bg-zinc-800 text-zinc-100 p-5 rounded-xl text-sm overflow-x-auto leading-relaxed mt-2">
               <code>{`.cursor/rules/
   code-style.mdc
   frontend-components.mdc
@@ -102,7 +125,7 @@ Use the 'use client' directive only when necessary.`}</code>
   database-prisma.mdc
   testing-standards.mdc
   docs-and-readme.mdc`}</code>
-            </pre>
+            </FadeScrollPre>
             <p className="mt-3">
               Keep global standards in one always-applied file, then use file-specific
               rules for frontend, backend, database, tests, and documentation.
@@ -110,7 +133,10 @@ Use the 'use client' directive only when necessary.`}</code>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3">
+            <h2
+              id="common-patterns"
+              className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3 scroll-mt-24"
+            >
               Common Project Rule Patterns
             </h2>
 
@@ -137,7 +163,10 @@ Use the 'use client' directive only when necessary.`}</code>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3">
+            <h2
+              id="application-mode"
+              className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3 scroll-mt-24"
+            >
               Choosing the Right Application Mode
             </h2>
             <ul className="list-disc pl-6 mt-2 space-y-1">
@@ -149,7 +178,10 @@ Use the 'use client' directive only when necessary.`}</code>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3">
+            <h2
+              id="migration"
+              className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3 scroll-mt-24"
+            >
               Migration from .cursorrules to Project Rules
             </h2>
             <p>
@@ -173,7 +205,10 @@ Use the 'use client' directive only when necessary.`}</code>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3">
+            <h2
+              id="faq"
+              className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3 scroll-mt-24"
+            >
               Frequently Asked Questions
             </h2>
             <dl className="space-y-4">
@@ -202,6 +237,13 @@ Use the 'use client' directive only when necessary.`}</code>
               </Link>
             </div>
           </div>
+        </div>
+        </div>
+
+          <TableOfContents
+            items={TOC_ITEMS}
+            className="sticky top-24 hidden lg:block"
+          />
         </div>
       </main>
     </div>

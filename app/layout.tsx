@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import Link from "next/link";
 import Script from "next/script";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import SiteHeader from "@/components/layout/site-header";
 import {
   getOrganizationSchema,
   getWebSiteSchema,
@@ -180,27 +181,7 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'G-2NM7XLC7H2');`}
         </Script>
-        <header className="border-b border-zinc-200 bg-white/90 backdrop-blur dark:border-zinc-800 dark:bg-black/90">
-          <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-4 sm:px-6 md:flex-row md:items-center md:justify-between">
-            <Link
-              href="/"
-              className="text-base font-semibold tracking-tight text-zinc-900 dark:text-zinc-50"
-            >
-              Cursor Rules Generator
-            </Link>
-            <nav className="flex flex-wrap gap-x-4 gap-y-2 text-sm text-zinc-600 dark:text-zinc-400" aria-label="Primary">
-              {primaryNav.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="hover:text-blue-600 dark:hover:text-blue-400"
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </nav>
-          </div>
-        </header>
+        <SiteHeader navItems={primaryNav} />
         {children}
         <footer className="border-t border-zinc-200 bg-white dark:border-zinc-800 dark:bg-black">
           <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 text-sm sm:px-6 md:grid-cols-3">

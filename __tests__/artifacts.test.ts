@@ -53,4 +53,17 @@ describe('buildTemplateArtifacts', () => {
       expect(artifacts.cursorrules.length, template.id).toBeGreaterThan(50);
     }
   });
+
+  it('全部 26 个模板的文件名都不重复拼接模板前缀', () => {
+    for (const template of Object.values(templateRegistry)) {
+      const { projectRules } = buildTemplateArtifacts(template);
+      const slug = template.id.toLowerCase();
+      for (const file of projectRules) {
+        expect(
+          file.filename,
+          `${template.id} 产出了重复前缀的文件名`
+        ).not.toMatch(new RegExp(`^${slug}-${slug}-`));
+      }
+    }
+  });
 });

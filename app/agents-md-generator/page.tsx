@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import JsonLd from "@/components/seo/json-ld";
 import GeneratorForm from "@/components/generator/generator-form";
+import FadeScrollPre from "@/components/ui/fade-scroll-pre";
 import { getBreadcrumbSchema, getFAQPageSchemaFromItems } from "@/lib/schema";
 
 export const metadata: Metadata = {
@@ -109,7 +110,7 @@ export default function AgentsMdGeneratorPage() {
               A useful AGENTS.md file gives AI tools the same context a new
               contributor would need before changing code:
             </p>
-            <pre className="bg-zinc-900 dark:bg-zinc-800 text-zinc-100 p-5 rounded-xl text-sm overflow-x-auto leading-relaxed mt-3">
+            <FadeScrollPre className="bg-zinc-900 dark:bg-zinc-800 text-zinc-100 p-5 rounded-xl text-sm overflow-x-auto leading-relaxed mt-3">
               <code>{`# AGENTS.md
 
 ## Project Overview
@@ -128,7 +129,7 @@ This repository is a Next.js application using TypeScript and Tailwind CSS.
 ## Testing
 - Add tests for business logic and generated output.
 - Run lint and build before proposing large changes.`}</code>
-            </pre>
+            </FadeScrollPre>
           </section>
 
           <section>

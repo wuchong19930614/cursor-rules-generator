@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import JsonLd from "@/components/seo/json-ld";
 import GeneratorForm from "@/components/generator/generator-form";
 import UsageGuide from "@/components/generator/usage-guide";
+import FadeScrollPre from "@/components/ui/fade-scroll-pre";
 import { getFAQPageSchema, getWebApplicationSchema } from "@/lib/schema";
 
 const siteUrl = "https://www.cursorgenerator.dev";
@@ -156,7 +157,7 @@ export default function Home() {
               patterns and application mode. Here is what a typical .mdc rule file
               looks like:
             </p>
-            <pre className="bg-zinc-900 dark:bg-zinc-800 text-zinc-100 p-5 rounded-xl text-sm overflow-x-auto leading-relaxed">
+            <FadeScrollPre className="bg-zinc-900 dark:bg-zinc-800 text-zinc-100 p-5 rounded-xl text-sm overflow-x-auto leading-relaxed">
               <code>{`---
 description: React component conventions for the frontend team
 globs:
@@ -178,7 +179,7 @@ alwaysApply: false
 - Use React Context + useReducer for shared state
 - Avoid prop drilling beyond 2 levels
 - Server state goes through React Query (TanStack Query)`}</code>
-            </pre>
+            </FadeScrollPre>
             <p className="text-sm text-zinc-500 dark:text-zinc-500 mt-3">
               The frontmatter tells Cursor to apply these rules only to{" "}
               <code>src/components/**/*.tsx</code> and{" "}

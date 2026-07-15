@@ -6,6 +6,8 @@
 import { useState } from 'react';
 import FadeScrollPre from '@/components/ui/fade-scroll-pre';
 import type { TemplateArtifacts } from '@/lib/generator/artifacts';
+import type { OutputMode } from '@/lib/templates/types';
+import { trackGeneratorEvent } from '@/lib/analytics';
 
 type TabKey = 'project-rules' | 'agents-md' | 'cursorrules';
 
@@ -15,12 +17,26 @@ const TABS: { key: TabKey; label: string; hint: string }[] = [
   { key: 'cursorrules', label: '.cursorrules', hint: 'legacy, project root' },
 ];
 
-function CopyButton({ text, label }: { text: string; label: string }) {
+function CopyButton({
+  text,
+  label,
+  outputMode,
+}: {
+  text: string;
+  label: string;
+  outputMode: OutputMode;
+}) {
   const [copied, setCopied] = useState(false);
 
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(text);
+      trackGeneratorEvent('rules_copy', {
+        output_mode: outputMode,
+        selected_tag_count: 1,
+        file_count: 1,
+        surface: 'template_detail',
+      });
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
@@ -40,12 +56,20 @@ function CopyButton({ text, label }: { text: string; label: string }) {
   );
 }
 
-function CodeBlock({ filename, text }: { filename: string; text: string }) {
+function CodeBlock({
+  filename,
+  text,
+  outputMode,
+}: {
+  filename: string;
+  text: string;
+  outputMode: OutputMode;
+}) {
   return (
     <div className="overflow-hidden rounded-xl bg-zinc-900">
       <div className="flex items-center justify-between border-b border-zinc-700 px-4 py-2">
         <span className="font-mono text-xs text-zinc-400">{filename}</span>
-        <CopyButton text={text} label={filename} />
+        <CopyButton text={text} label={filename} outputMode={outputMode} />
       </div>
       <FadeScrollPre className="overflow-x-auto p-4 text-sm leading-relaxed text-zinc-100">
         <code>{text}</code>
@@ -92,13 +116,22 @@ export default function RuleOutputTabs({
               key={file.filename}
               filename={`.cursor/rules/${file.filename}`}
               text={file.text}
+              outputMode="project-rules"
             />
           ))}
         {active === 'agents-md' && (
-          <CodeBlock filename="AGENTS.md" text={artifacts.agentsMd} />
+          <CodeBlock
+            filename="AGENTS.md"
+            text={artifacts.agentsMd}
+            outputMode="agents-md"
+          />
         )}
         {active === 'cursorrules' && (
-          <CodeBlock filename=".cursorrules" text={artifacts.cursorrules} />
+          <CodeBlock
+            filename=".cursorrules"
+            text={artifacts.cursorrules}
+            outputMode="legacy"
+          />
         )}
       </div>
     </div>

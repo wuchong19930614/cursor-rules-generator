@@ -440,20 +440,20 @@ export default function AboutPage() {
           <p>
             Privacy is a core design principle of Cursor Rules Generator. The
             entire tool runs client-side in your browser. We do not collect,
-            store, or transmit any of the following: your tech stack selections,
-            your style preferences, your custom rules content, any generated{" "}
-            <code>.cursorrules</code> output, your IP address, or any
-            personally identifiable information. There is no backend server
-            processing your rules data at any point in the workflow.
+            store, or transmit your custom rule titles, custom rule content, or
+            any generated <code>.cursorrules</code> output. There is no backend
+            server processing your rules data at any point in the workflow.
           </p>
           <p>
             We use Microsoft Clarity and Google Analytics solely to understand
-            aggregate usage patterns — such as which pages are most visited and
-            how users discover the tool. These services do not capture any
-            content you type or generate. No third party has access to your
-            rules data because it never leaves your browser. If you prefer
-            complete isolation, you can clone the repository and run the
-            generator entirely offline.
+            aggregate usage patterns — such as which pages are most visited,
+            how users discover the tool, the number of selected templates,
+            output formats, funnel completion, and copy or download actions.
+            Event tracking sends only fixed identifiers and aggregate counts;
+            it does not send rule text, rule titles, generated output, or search
+            input.
+            If you prefer complete isolation, you can clone the repository and
+            run the generator entirely offline.
           </p>
 
           {/* ---- Navigation ---- */}

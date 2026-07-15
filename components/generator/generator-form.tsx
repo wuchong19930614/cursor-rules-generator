@@ -1,6 +1,13 @@
 'use client';
 
-import { useState, useCallback, useMemo, useEffect, Suspense } from 'react';
+import {
+  useState,
+  useCallback,
+  useMemo,
+  useEffect,
+  useRef,
+  Suspense,
+} from 'react';
 import { FolderIcon, DocumentIcon, ArchiveIcon } from './format-icons';
 import StepIndicator from './step-indicator';
 import StepTechStack from './step-tech-stack';
@@ -9,6 +16,8 @@ import StepRules from './step-rules';
 import StepOutput from './step-output';
 import RulePreview from './rule-preview';
 import { useUrlState } from '@/lib/hooks/use-url-state';
+import { trackGeneratorEvent } from '@/lib/analytics';
+import { decodeGeneratorUrlState } from '@/lib/generator/url-state';
 import type {
   GeneratorConfig,
   StyleDefaults,
@@ -21,11 +30,11 @@ import { templateRegistry } from '@/lib/templates';
 const STEP_OFFSET = 1;
 
 const STEPS = [
-  { number: 0, label: 'Output Mode' },
-  { number: 1, label: 'Tech Stack' },
-  { number: 2, label: 'Style' },
-  { number: 3, label: 'Custom Rules' },
-  { number: 4, label: 'Output' },
+  { number: 0, label: 'Output Mode', analyticsName: 'output_mode' },
+  { number: 1, label: 'Tech Stack', analyticsName: 'tech_stack' },
+  { number: 2, label: 'Style', analyticsName: 'style' },
+  { number: 3, label: 'Custom Rules', analyticsName: 'custom_rules' },
+  { number: 4, label: 'Output', analyticsName: 'output' },
 ];
 
 const DEFAULT_STYLE: StyleDefaults = {
@@ -58,32 +67,7 @@ function readInitialUrlState(): Partial<GeneratorConfig> | null {
     const params = new URLSearchParams(window.location.search);
     const encoded = params.get('s');
     if (!encoded) return null;
-    const payload = JSON.parse(atob(encoded));
-    const customRules = (payload.cr || []).map((item: string) => {
-      const colonIdx = item.indexOf(':');
-      const title = colonIdx > -1 ? item.slice(0, colonIdx) : item;
-      const content = colonIdx > -1 ? item.slice(colonIdx + 1) : '';
-      return { title: decodeURIComponent(title), content: decodeURIComponent(content) };
-    });
-    return {
-      selectedTags: payload.t || [],
-      style: {
-        indentSize: payload.i ?? 2,
-        useTabs: payload.tb === 1,
-        quotes: payload.q || 'double',
-        semicolons: payload.sc === 1,
-        namingConvention: payload.n || 'camelCase',
-      },
-      aiStrictness: payload.as || 'moderate',
-      namingConvention: payload.n || 'camelCase',
-      customRules,
-      projectType: payload.pt || 'web',
-      outputMode: (payload.om as OutputMode) || 'project-rules',
-      ruleApplicationMode:
-        (payload.rm as RuleApplicationMode) || 'intelligent',
-      splitRules: payload.sr === 1,
-      globsPattern: Array.isArray(payload.gp) ? payload.gp : undefined,
-    };
+    return decodeGeneratorUrlState(encoded);
   } catch {
     return null;
   }
@@ -101,6 +85,9 @@ interface GeneratorFormProps {
 
 function GeneratorFormInner({ presetOutputMode, presetTags }: GeneratorFormProps) {
   const { syncToUrl } = useUrlState();
+  const startedRef = useRef(false);
+  const completedRef = useRef(false);
+  const completedStepsRef = useRef(new Set<number>());
 
   // 页面已预选技术栈(如模板详情页)且非分享链接恢复时,跳过 Output Mode/Tech
   // Stack 两步,直接进入 Style —— 避免用户重新选一遍已经确定的内容
@@ -175,15 +162,50 @@ function GeneratorFormInner({ presetOutputMode, presetTags }: GeneratorFormProps
     return () => clearTimeout(timer);
   }, [config, syncToUrl, selectedTags.length]);
 
+  const trackStart = useCallback(() => {
+    if (startedRef.current) return;
+    startedRef.current = true;
+    trackGeneratorEvent('generator_start', {
+      entry_step: step + STEP_OFFSET,
+      output_mode: outputMode,
+      selected_tag_count: selectedTags.length,
+      surface: 'generator',
+    });
+  }, [outputMode, selectedTags.length, step]);
+
+  const handleOutputModeChange = useCallback(
+    (nextMode: OutputMode) => {
+      trackStart();
+      if (nextMode !== outputMode) {
+        trackGeneratorEvent('output_mode_select', {
+          output_mode: nextMode,
+          previous_output_mode: outputMode,
+        });
+      }
+      setOutputMode(nextMode);
+    },
+    [outputMode, trackStart]
+  );
+
   const handleTagsChange = useCallback(
     (tags: string[]) => {
+      trackStart();
+      const added = tags.find((tag) => !selectedTags.includes(tag));
+      const removed = selectedTags.find((tag) => !tags.includes(tag));
+      const changedTag = added ?? removed;
+      if (changedTag) {
+        trackGeneratorEvent('template_select', {
+          selection_action: added ? 'select' : 'remove',
+          selected_tag_count: tags.length,
+        });
+      }
       if (tags.length > 0 && selectedTags.length === 0) {
         setStyle(getDefaultStyle(tags));
         setNamingConvention(getDefaultNaming(tags));
       }
       setSelectedTags(tags);
     },
-    [selectedTags]
+    [selectedTags, trackStart]
   );
 
   const canProceed = useMemo(() => {
@@ -203,7 +225,30 @@ function GeneratorFormInner({ presetOutputMode, presetTags }: GeneratorFormProps
 
   const totalSteps = 5; // 0-4
   const nextStep = () => {
-    if (step < totalSteps - 1 && canProceed) setStep(step + 1);
+    if (step >= totalSteps - 1 || !canProceed) return;
+
+    trackStart();
+    if (!completedStepsRef.current.has(step)) {
+      completedStepsRef.current.add(step);
+      trackGeneratorEvent('generator_step_complete', {
+        step_number: step + STEP_OFFSET,
+        step_name: STEPS[step].analyticsName,
+        output_mode: outputMode,
+        selected_tag_count: selectedTags.length,
+      });
+    }
+
+    if (step === 3 && !completedRef.current) {
+      completedRef.current = true;
+      trackGeneratorEvent('generator_complete', {
+        output_mode: outputMode,
+        selected_tag_count: selectedTags.length,
+        custom_rule_count: customRules.length,
+        split_rules: splitRules ? 1 : 0,
+      });
+    }
+
+    setStep(step + 1);
   };
 
   const prevStep = () => {
@@ -211,6 +256,9 @@ function GeneratorFormInner({ presetOutputMode, presetTags }: GeneratorFormProps
   };
 
   const restart = () => {
+    startedRef.current = false;
+    completedRef.current = false;
+    completedStepsRef.current.clear();
     setStep(skipToStyle ? 2 : 0);
     setOutputMode(presetOutputMode ?? 'project-rules');
     setRuleApplicationMode('intelligent');
@@ -279,7 +327,7 @@ function GeneratorFormInner({ presetOutputMode, presetTags }: GeneratorFormProps
                 <button
                   key={mode.value}
                   type="button"
-                  onClick={() => setOutputMode(mode.value)}
+                  onClick={() => handleOutputModeChange(mode.value)}
                   className={`p-4 rounded-xl border-2 text-left transition-all min-h-[44px]
                     ${
                       outputMode === mode.value

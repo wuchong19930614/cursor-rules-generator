@@ -3,13 +3,13 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import RulePreview from './rule-preview';
 import {
-  generateCursorRules,
   generateProjectRules,
   generateAgentsMd,
   generateLegacyRules,
   generateZipBlob,
 } from '@/lib/generator/engine';
 import type { GeneratorConfig, RuleFile } from '@/lib/templates/types';
+import { trackGeneratorEvent } from '@/lib/analytics';
 
 interface StepOutputProps {
   config: GeneratorConfig;
@@ -70,6 +70,15 @@ function downloadBlob(blob: Blob, filename: string): boolean {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
   return true;
+}
+
+function getFileType(
+  filename: string
+): 'mdc' | 'zip' | 'agents_md' | 'cursorrules' {
+  if (filename.endsWith('.zip')) return 'zip';
+  if (filename === 'AGENTS.md') return 'agents_md';
+  if (filename === '.cursorrules') return 'cursorrules';
+  return 'mdc';
 }
 
 export default function StepOutput({
@@ -138,9 +147,15 @@ export default function StepOutput({
     const ok = await copyToClipboard(content);
     setCopyState(ok ? 'copied' : 'error');
     if (ok) {
+      trackGeneratorEvent('rules_copy', {
+        output_mode: outputMode,
+        selected_tag_count: config.selectedTags.length,
+        file_count: Math.max(ruleFiles.length, 1),
+        surface: 'generator_action',
+      });
       setTimeout(() => setCopyState('idle'), 2500);
     }
-  }, [content]);
+  }, [config.selectedTags.length, content, outputMode, ruleFiles.length]);
 
   const handleDownloadSingle = useCallback(
     (filename: string, text: string) => {
@@ -149,6 +164,13 @@ export default function StepOutput({
         copyToClipboard(text).then((ok) => {
           setCopyState(ok ? 'copied' : 'error');
           if (ok) {
+            trackGeneratorEvent('rules_download', {
+              output_mode: outputMode,
+              selected_tag_count: config.selectedTags.length,
+              file_count: 1,
+              file_type: getFileType(filename),
+              delivery_method: 'clipboard_fallback',
+            });
             alert(
               'Copied to clipboard! On iOS, please paste and save the file manually.'
             );
@@ -159,10 +181,17 @@ export default function StepOutput({
       }
       const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
       downloadBlob(blob, filename);
+      trackGeneratorEvent('rules_download', {
+        output_mode: outputMode,
+        selected_tag_count: config.selectedTags.length,
+        file_count: 1,
+        file_type: getFileType(filename),
+        delivery_method: 'download',
+      });
       setDownloadState('downloaded');
       setTimeout(() => setDownloadState('idle'), 2500);
     },
-    []
+    [config.selectedTags.length, outputMode]
   );
 
   const handleDownloadZip = useCallback(async () => {
@@ -172,13 +201,20 @@ export default function StepOutput({
     if (blob) {
       const projectName = config.projectType || 'project';
       downloadBlob(blob, `${projectName}-cursor-rules.zip`);
+      trackGeneratorEvent('rules_download', {
+        output_mode: outputMode,
+        selected_tag_count: config.selectedTags.length,
+        file_count: ruleFiles.length,
+        file_type: 'zip',
+        delivery_method: 'download',
+      });
       setDownloadState('downloaded');
       setTimeout(() => setDownloadState('idle'), 2500);
     } else {
       setZipError(true);
       setDownloadState('idle');
     }
-  }, [ruleFiles, config.projectType]);
+  }, [ruleFiles, config.projectType, config.selectedTags.length, outputMode]);
 
   // Keyboard shortcut
   useEffect(() => {

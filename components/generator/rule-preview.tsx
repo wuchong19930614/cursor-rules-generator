@@ -7,6 +7,7 @@ import {
   generateAgentsMd,
 } from '@/lib/generator/engine';
 import type { GeneratorConfig, RuleFile } from '@/lib/templates/types';
+import { trackGeneratorEvent } from '@/lib/analytics';
 
 interface RulePreviewProps {
   config: GeneratorConfig;
@@ -14,15 +15,6 @@ interface RulePreviewProps {
 }
 
 type CopyState = 'idle' | 'copied' | 'error';
-
-/** 检测是否为 iOS */
-function isIOS(): boolean {
-  if (typeof navigator === 'undefined') return false;
-  return (
-    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
-  );
-}
 
 function fallbackCopy(text: string): boolean {
   const textarea = document.createElement('textarea');
@@ -165,13 +157,19 @@ export default function RulePreview({
     const ok = await copyToClipboard(currentOutput);
     setCopyState(ok ? 'copied' : 'error');
     if (ok) {
+      trackGeneratorEvent('rules_copy', {
+        output_mode: outputMode,
+        selected_tag_count: config.selectedTags.length,
+        file_count: Math.max(ruleFiles.length, 1),
+        surface: 'generator_preview',
+      });
       setShowToast(true);
       setTimeout(() => {
         setCopyState('idle');
         setShowToast(false);
       }, 2500);
     }
-  }, [currentOutput]);
+  }, [config.selectedTags.length, currentOutput, outputMode, ruleFiles.length]);
 
   const handleClickCopy = useCallback(async () => {
     await handleCopyAll();

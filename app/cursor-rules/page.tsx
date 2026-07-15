@@ -97,6 +97,13 @@ export default function CursorRulesPage() {
             <p>
               The older <code>.cursorrules</code> file is a single markdown document in the project root. It applies globally to all interactions within the project. While supported for backward compatibility, it lacks per-file targeting.
             </p>
+            <p>
+              If your project still uses this format, follow the{" "}
+              <Link href="/guides/migrate-cursorrules-to-cursor-rules" className="text-blue-600 dark:text-blue-400 hover:underline">
+                .cursorrules to Cursor Project Rules migration guide
+              </Link>{" "}
+              to split it into scoped <code>.mdc</code> files without losing your existing instructions.
+            </p>
 
             <h3 className="text-lg font-semibold text-zinc-800 dark:text-zinc-200 mt-4 mb-2">
               3. AGENTS.md

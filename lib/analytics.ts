@@ -95,6 +95,7 @@ declare global {
       eventName: string,
       params: Record<string, AnalyticsValue>
     ) => void;
+    clarity?: (command: 'event', eventName: GeneratorEventName) => void;
   }
 }
 
@@ -118,9 +119,15 @@ export function trackGeneratorEvent<Name extends GeneratorEventName>(
 
   if (typeof window.gtag === 'function') {
     window.gtag('event', name, safeParams);
-    return;
+  } else {
+    window.dataLayer = window.dataLayer ?? [];
+    window.dataLayer.push(['event', name, safeParams]);
   }
 
-  window.dataLayer = window.dataLayer ?? [];
-  window.dataLayer.push(['event', name, safeParams]);
+  // Clarity custom events intentionally receive only the allowlisted event name.
+  // Event metadata stays in GA4 so no generated or user-provided content can
+  // become a searchable Clarity session tag.
+  if (typeof window.clarity === 'function') {
+    window.clarity('event', name);
+  }
 }

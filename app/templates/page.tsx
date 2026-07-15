@@ -90,6 +90,16 @@ function TemplatesHubInner() {
             generate customized AI rules for your project in Project Rules (.mdc),
             AGENTS.md, or legacy .cursorrules format.
           </p>
+          <p className="mx-auto mt-4 max-w-2xl text-sm text-zinc-600 dark:text-zinc-400">
+            Converting an existing setup? Use our{" "}
+            <Link
+              href="/guides/migrate-cursorrules-to-cursor-rules"
+              className="font-medium text-blue-600 hover:underline dark:text-blue-400"
+            >
+              .cursorrules to Project Rules (.mdc) migration guide
+            </Link>{" "}
+            before choosing the template for your stack.
+          </p>
         </div>
 
         {/* Category Filters */}

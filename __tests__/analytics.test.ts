@@ -6,9 +6,10 @@ afterEach(() => {
 });
 
 describe('privacy-safe generator analytics', () => {
-  it('sends the allowlisted conversion metadata to gtag', () => {
+  it('sends the allowlisted conversion metadata to GA4 and the event name to Clarity', () => {
     const gtag = vi.fn();
-    vi.stubGlobal('window', { gtag });
+    const clarity = vi.fn();
+    vi.stubGlobal('window', { gtag, clarity });
 
     trackGeneratorEvent('rules_download', {
       output_mode: 'project-rules',
@@ -25,6 +26,7 @@ describe('privacy-safe generator analytics', () => {
       file_type: 'zip',
       delivery_method: 'download',
     });
+    expect(clarity).toHaveBeenCalledWith('event', 'rules_download');
   });
 
   it('drops unexpected fields at the runtime analytics boundary', () => {

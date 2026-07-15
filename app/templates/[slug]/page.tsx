@@ -234,6 +234,16 @@ export default async function TemplateDetailPage({ params }: TemplatePageProps) 
             is portable across AI tools, and .cursorrules is the legacy single-file
             format.
           </p>
+          <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400">
+            Replacing a legacy file? Read the{" "}
+            <Link
+              href="/guides/migrate-cursorrules-to-cursor-rules"
+              className="font-medium text-blue-600 hover:underline dark:text-blue-400"
+            >
+              guide to migrate .cursorrules to Cursor Project Rules (.mdc)
+            </Link>{" "}
+            before copying this template into your project.
+          </p>
           <div className="mt-6">
             <RuleOutputTabs artifacts={artifacts} />
           </div>

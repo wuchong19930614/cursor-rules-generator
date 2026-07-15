@@ -3,10 +3,13 @@ import type { Metadata } from "next";
 import FadeScrollPre from "@/components/ui/fade-scroll-pre";
 import TableOfContents from "@/components/ui/table-of-contents";
 
+const PAGE_TITLE = "Migrate .cursorrules to Cursor Project Rules (.mdc)";
+const PAGE_DESCRIPTION =
+  "Convert a legacy .cursorrules file into Cursor Project Rules (.mdc). Follow clear steps to split rules, add globs, and build your .cursor/rules folder safely.";
+
 export const metadata: Metadata = {
-  title: "Migrate .cursorrules to Project Rules (.mdc) — Complete Migration Guide",
-  description:
-    "Step-by-step guide to migrate from legacy .cursorrules to Cursor IDE's modern Project Rules (.mdc) format. Learn how to split rules by domain, add frontmatter metadata, and configure glob-based targeting.",
+  title: { absolute: PAGE_TITLE },
+  description: PAGE_DESCRIPTION,
   alternates: {
     canonical: "https://www.cursorgenerator.dev/guides/migrate-cursorrules-to-cursor-rules",
   },
@@ -15,9 +18,8 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://www.cursorgenerator.dev/guides/migrate-cursorrules-to-cursor-rules",
     siteName: "Cursor Rules Generator",
-    title: "Migrate .cursorrules to Project Rules (.mdc) — Complete Migration Guide",
-    description:
-      "Step-by-step guide to migrate from legacy .cursorrules to Cursor IDE's modern Project Rules (.mdc) format. Learn how to split rules by domain, add frontmatter metadata, and configure glob-based targeting.",
+    title: PAGE_TITLE,
+    description: PAGE_DESCRIPTION,
     images: [
       {
         url: "/og-image.png",
@@ -29,9 +31,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Migrate .cursorrules to Project Rules (.mdc) — Complete Migration Guide",
-    description:
-      "Step-by-step guide to migrate from legacy .cursorrules to Cursor IDE's modern Project Rules (.mdc) format. Learn how to split rules by domain, add frontmatter metadata, and configure glob-based targeting.",
+    title: PAGE_TITLE,
+    description: PAGE_DESCRIPTION,
     images: ["/og-image.png"],
   },
 };
@@ -39,11 +40,10 @@ export const metadata: Metadata = {
 const articleSchema = {
   "@context": "https://schema.org",
   "@type": "Article",
-  headline: "Migrate .cursorrules to Project Rules (.mdc) — Complete Migration Guide",
-  description:
-    "Step-by-step guide to migrate from legacy .cursorrules to Cursor IDE's modern Project Rules (.mdc) format. Learn how to split rules by domain, add frontmatter metadata, and configure glob-based targeting.",
+  headline: PAGE_TITLE,
+  description: PAGE_DESCRIPTION,
   datePublished: "2026-06-24",
-  dateModified: "2026-06-24",
+  dateModified: "2026-07-15",
   author: {
     "@type": "Organization",
     name: "Cursor Rules Generator",

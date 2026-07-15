@@ -145,6 +145,16 @@ export default function Home() {
                 </tbody>
               </table>
             </div>
+            <p className="mt-5 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+              Already using the legacy format? Follow the{" "}
+              <Link
+                href="/guides/migrate-cursorrules-to-cursor-rules"
+                className="font-medium text-blue-600 hover:underline dark:text-blue-400"
+              >
+                step-by-step guide to migrate .cursorrules to Cursor Project Rules (.mdc)
+              </Link>
+              {" "}and learn how to split one file into targeted rules safely.
+            </p>
           </div>
 
           {/* MDC Example */}

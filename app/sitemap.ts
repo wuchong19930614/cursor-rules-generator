@@ -9,20 +9,28 @@ const baseUrl = "https://www.cursorgenerator.dev";
  * 页面内容有实质更新时才修改对应日期 —— 虚假的统一 lastmod 会让搜索引擎忽略此字段。
  */
 const PAGE_LAST_MODIFIED: Record<string, string> = {
-  "/": "2026-07-02",
-  "/templates": "2026-07-02",
-  "/about": "2026-06-16",
-  "/guides/how-to-use-cursor-rules": "2026-06-24",
+  "/": "2026-07-16",
+  "/templates": "2026-07-16",
+  "/about": "2026-07-16",
+  "/guides/how-to-use-cursor-rules": "2026-07-16",
   "/guides/migrate-cursorrules-to-cursor-rules": "2026-06-24",
-  "/cursor-rules-generator": "2026-07-02",
-  "/cursor-rules": "2026-07-02",
-  "/cursor-project-rules": "2026-07-02",
-  "/agents-md-generator": "2026-07-02",
-  "/cursorrules-generator": "2026-07-02",
+  "/cursor-rules-generator": "2026-07-16",
+  "/cursor-rules": "2026-07-16",
+  "/cursor-project-rules": "2026-07-16",
+  "/agents-md-generator": "2026-07-16",
+  "/cursorrules-generator": "2026-07-16",
 };
 
 /** 模板详情页内容来源于 lib/templates,以该目录最后更新日期为准 */
-const TEMPLATES_LAST_MODIFIED = "2026-07-02";
+const TEMPLATES_LAST_MODIFIED = "2026-07-16";
+
+function latestModified(...dates: Array<string | undefined>): Date {
+  const timestamps = dates
+    .filter((date): date is string => Boolean(date))
+    .map((date) => new Date(date).getTime());
+
+  return new Date(Math.max(...timestamps));
+}
 
 function lastModifiedFor(path: string): Date {
   return new Date(PAGE_LAST_MODIFIED[path] ?? TEMPLATES_LAST_MODIFIED);
@@ -31,9 +39,10 @@ function lastModifiedFor(path: string): Date {
 export default function sitemap(): MetadataRoute.Sitemap {
   const templateUrls = Object.keys(templateRegistry).map((slug) => ({
     url: `${baseUrl}/templates/${slug}`,
-    // editorial 内容有独立的更新日期;无 editorial 的模板以 lib/templates 目录为准
-    lastModified: new Date(
-      getEditorial(slug)?.lastUpdated ?? TEMPLATES_LAST_MODIFIED
+    // 模板元数据和 editorial 任一更新时,都使用其中较新的真实日期
+    lastModified: latestModified(
+      getEditorial(slug)?.lastUpdated,
+      TEMPLATES_LAST_MODIFIED
     ),
     changeFrequency: "weekly" as const,
     priority: 0.7,

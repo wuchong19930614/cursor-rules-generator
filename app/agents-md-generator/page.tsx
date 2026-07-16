@@ -8,7 +8,7 @@ import { getBreadcrumbSchema, getFAQPageSchemaFromItems } from "@/lib/schema";
 export const metadata: Metadata = {
   title: "AGENTS.md Generator — AI Agent Instructions for Any Project",
   description:
-    "Generate AGENTS.md files for Cursor, Codex, Copilot, and other AI coding assistants. Choose from templates or build custom agent instructions. Free, open-source tool.",
+    "Generate AGENTS.md instructions for Cursor, Codex, Copilot, and other AI coding tools. Choose a stack template, customize the rules, and download the file free.",
   alternates: {
     canonical: "https://www.cursorgenerator.dev/agents-md-generator",
   },

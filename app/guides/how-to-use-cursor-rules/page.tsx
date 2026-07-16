@@ -2,10 +2,13 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import TableOfContents from "@/components/ui/table-of-contents";
 
+const PAGE_TITLE = "How to Use Cursor Rules — Complete Step-by-Step Guide";
+const PAGE_DESCRIPTION =
+  "Learn how to create, configure, and use Cursor Rules in .mdc, AGENTS.md, or .cursorrules format. Follow practical steps and examples for popular tech stacks.";
+
 export const metadata: Metadata = {
-  title: "How to Use Cursor Rules — Complete Step-by-Step Guide",
-  description:
-    "Learn how to create, configure, and use .cursorrules files to get the most out of Cursor IDE's AI assistant. Step-by-step tutorial with examples for React, Python, Go, and more.",
+  title: PAGE_TITLE,
+  description: PAGE_DESCRIPTION,
   alternates: {
     canonical: "https://www.cursorgenerator.dev/guides/how-to-use-cursor-rules",
   },
@@ -14,9 +17,8 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://www.cursorgenerator.dev/guides/how-to-use-cursor-rules",
     siteName: "Cursor Rules Generator",
-    title: "How to Use Cursor Rules — Complete Step-by-Step Guide",
-    description:
-      "Learn how to create, configure, and use .cursorrules files to get the most out of Cursor IDE's AI assistant. Step-by-step tutorial with examples for React, Python, Go, and more.",
+    title: PAGE_TITLE,
+    description: PAGE_DESCRIPTION,
     images: [
       {
         url: "/og-image.png",
@@ -28,9 +30,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "How to Use Cursor Rules — Complete Step-by-Step Guide",
-    description:
-      "Learn how to create, configure, and use .cursorrules files to get the most out of Cursor IDE's AI assistant. Step-by-step tutorial with examples for React, Python, Go, and more.",
+    title: PAGE_TITLE,
+    description: PAGE_DESCRIPTION,
     images: ["/og-image.png"],
   },
 };
@@ -38,11 +39,10 @@ export const metadata: Metadata = {
 const articleSchema = {
   "@context": "https://schema.org",
   "@type": "Article",
-  headline: "How to Use Cursor Rules — Complete Step-by-Step Guide",
-  description:
-    "Learn how to create, configure, and use .cursorrules files to get the most out of Cursor IDE's AI assistant. Step-by-step tutorial with examples for React, Python, Go, and more.",
+  headline: PAGE_TITLE,
+  description: PAGE_DESCRIPTION,
   datePublished: "2026-06-15",
-  dateModified: "2026-06-15",
+  dateModified: "2026-07-16",
   author: {
     "@type": "Organization",
     name: "Cursor Rules Generator",

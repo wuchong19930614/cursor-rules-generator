@@ -70,11 +70,12 @@ export async function generateMetadata({
   const template = getTemplate(slug);
   if (!template) return {};
 
-  const description = `Complete ${template.name} Cursor rules — copy the full Project Rules (.mdc), AGENTS.md, or .cursorrules file, or customize it in the generator. ${getTemplateDescription(template)}`;
+  const title = `${template.name} Cursor Rules Template — .mdc & AGENTS.md`;
+  const description = `Copy ${template.name} Cursor rules for Project Rules (.mdc), AGENTS.md, and .cursorrules. Customize a complete, ready-to-use template for your project.`;
   const url = `${siteUrl}/templates/${template.id}`;
 
   return {
-    title: `${template.name} Cursor Rules — Full Template (.mdc, AGENTS.md & .cursorrules)`,
+    title: { absolute: title },
     description,
     alternates: {
       canonical: url,
@@ -87,7 +88,7 @@ export async function generateMetadata({
     openGraph: {
       type: "website",
       url,
-      title: `${template.name} Cursor Rules — Full Template`,
+      title,
       description,
       images: [
         {
@@ -100,7 +101,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: "summary_large_image",
-      title: `${template.name} Cursor Rules — Full Template`,
+      title,
       description,
       images: ["/og-image.png"],
     },

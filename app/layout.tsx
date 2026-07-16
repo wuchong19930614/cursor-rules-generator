@@ -24,6 +24,9 @@ const geistMono = localFont({
 });
 
 const siteUrl = "https://www.cursorgenerator.dev";
+const siteTitle = "Cursor Rules Generator — .mdc, AGENTS.md & .cursorrules";
+const siteDescription =
+  "Generate Cursor Project Rules (.mdc), AGENTS.md, or .cursorrules from 26+ stack templates. Customize conventions and download ready-to-use files for free.";
 
 const primaryNav = [
   { href: "/", label: "Generator" },
@@ -55,12 +58,8 @@ const popularTemplateLinks = [
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: {
-    default: "Cursor Rules Generator — Project Rules, AGENTS.md & .cursorrules Generator",
-    template: "%s | Cursor Rules Generator",
-  },
-  description:
-    "Generate Project Rules (.mdc), AGENTS.md, or legacy .cursorrules for Cursor IDE. Choose from 26+ templates (React, Next.js, Python, Go, Rust & more), set your coding style, and download production-ready AI rules in your preferred format.",
+  title: siteTitle,
+  description: siteDescription,
   keywords: [
     "cursor rules",
     "project rules",
@@ -87,9 +86,8 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: siteUrl,
     siteName: "Cursor Rules Generator",
-    title: "Cursor Rules Generator — Project Rules, AGENTS.md & .cursorrules Generator",
-    description:
-      "Generate Project Rules (.mdc), AGENTS.md, or legacy .cursorrules for Cursor IDE. 26+ templates, real-time preview, one-click download in your preferred format.",
+    title: siteTitle,
+    description: siteDescription,
     images: [
       {
         url: "/og-image.png",
@@ -103,9 +101,8 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     site: "@cursorrulesgen",
     creator: "@cursorrulesgen",
-    title: "Cursor Rules Generator — Project Rules, AGENTS.md & .cursorrules Generator",
-    description:
-      "Generate Project Rules (.mdc), AGENTS.md, or legacy .cursorrules for Cursor IDE. 26+ templates, real-time preview, one-click download in your preferred format.",
+    title: siteTitle,
+    description: siteDescription,
     images: ["/og-image.png"],
   },
   robots: {

@@ -4,6 +4,8 @@ import TableOfContents from "@/components/ui/table-of-contents";
 import { getAboutFAQPageSchema, getBreadcrumbSchema } from "@/lib/schema";
 
 const siteUrl = "https://www.cursorgenerator.dev";
+const pageDescription =
+  "Learn how Cursor Rules Generator creates .mdc, AGENTS.md, and .cursorrules files from 26+ framework templates—free, open source, and fully client-side.";
 const aboutBreadcrumb = getBreadcrumbSchema([
   { name: "Home", url: siteUrl },
   { name: "About", url: `${siteUrl}/about` },
@@ -11,8 +13,7 @@ const aboutBreadcrumb = getBreadcrumbSchema([
 
 export const metadata: Metadata = {
   title: "What is a .cursorrules File? | Free Generator Guide",
-  description:
-    "Learn about Cursor Rules Generator — a free, open-source tool for creating .cursorrules files. 26+ framework templates, zero-setup, fully client-side with no data collection.",
+  description: pageDescription,
   alternates: {
     canonical: `${siteUrl}/about`,
   },
@@ -22,8 +23,7 @@ export const metadata: Metadata = {
     url: `${siteUrl}/about`,
     siteName: "Cursor Rules Generator",
     title: "What is a .cursorrules File? | Free Generator Guide",
-    description:
-      "Learn about Cursor Rules Generator — a free, open-source tool for creating .cursorrules files. 26+ framework templates, zero-setup, fully client-side with no data collection.",
+    description: pageDescription,
     images: [
       {
         url: "/og-image.png",
@@ -36,8 +36,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "What is a .cursorrules File? | Free Generator Guide",
-    description:
-      "Learn about Cursor Rules Generator — a free, open-source tool for creating .cursorrules files. 26+ framework templates, zero-setup, fully client-side with no data collection.",
+    description: pageDescription,
     images: ["/og-image.png"],
   },
 };

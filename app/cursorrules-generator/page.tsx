@@ -8,7 +8,7 @@ import { getBreadcrumbSchema, getFAQPageSchemaFromItems } from "@/lib/schema";
 export const metadata: Metadata = {
   title: ".cursorrules Generator — Legacy Cursor Rules Made Easy",
   description:
-    "Generate .cursorrules files for your Cursor AI projects. Convert between .cursorrules and project rules formats. Free, open-source .cursorrules generator with templates.",
+    "Generate a legacy .cursorrules file for Cursor AI from 26+ stack templates. Customize coding conventions, preview the result, and download it free.",
   alternates: {
     canonical: "https://www.cursorgenerator.dev/cursorrules-generator",
   },

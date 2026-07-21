@@ -13,7 +13,7 @@ const PAGE_LAST_MODIFIED: Record<string, string> = {
   "/templates": "2026-07-16",
   "/about": "2026-07-16",
   "/guides/how-to-use-cursor-rules": "2026-07-16",
-  "/guides/migrate-cursorrules-to-cursor-rules": "2026-06-24",
+  "/guides/migrate-cursorrules-to-cursor-rules": "2026-07-21",
   "/cursor-rules-generator": "2026-07-16",
   "/cursor-rules": "2026-07-16",
   "/cursor-project-rules": "2026-07-16",

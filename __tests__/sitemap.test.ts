@@ -30,7 +30,7 @@ describe('sitemap lastModified', () => {
       isoDate(
         getEntry(`${baseUrl}/guides/migrate-cursorrules-to-cursor-rules`).lastModified
       )
-    ).toBe('2026-06-24');
+    ).toBe('2026-07-21');
   });
 
   it('lastModified 不是全站统一的同一个日期', () => {

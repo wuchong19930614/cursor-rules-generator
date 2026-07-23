@@ -3,6 +3,10 @@ import localFont from "next/font/local";
 import Link from "next/link";
 import Script from "next/script";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import {
+  getGoogleAnalyticsInitScript,
+  GOOGLE_ANALYTICS_TAG_ID,
+} from "@/lib/analytics";
 import SiteHeader from "@/components/layout/site-header";
 import {
   getOrganizationSchema,
@@ -171,12 +175,12 @@ export default function RootLayout({
           Skip to content
         </a>
 
-        <Script src="https://www.googletagmanager.com/gtag/js?id=G-2NM7XLC7H2" strategy="afterInteractive" />
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ANALYTICS_TAG_ID}`}
+          strategy="afterInteractive"
+        />
         <Script id="gtag-init" strategy="afterInteractive">
-          {`window.dataLayer = window.dataLayer || [];
-window.gtag = window.gtag || function(){window.dataLayer.push(arguments);};
-window.gtag('js', new Date());
-window.gtag('config', 'G-2NM7XLC7H2');`}
+          {getGoogleAnalyticsInitScript(GOOGLE_ANALYTICS_TAG_ID)}
         </Script>
         <SiteHeader navItems={primaryNav} />
         {children}

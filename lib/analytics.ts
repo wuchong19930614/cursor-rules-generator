@@ -2,6 +2,52 @@ import type { OutputMode } from '@/lib/templates/types';
 
 type AnalyticsValue = string | number;
 
+export const GOOGLE_ANALYTICS_TAG_ID = 'G-2NM7XLC7H2';
+
+const TRANSIENT_ANALYTICS_QUERY_PARAMS = [
+  'state',
+  'code',
+  'session_state',
+] as const;
+
+/**
+ * Removes one-time authorization parameters from the URL sent to analytics.
+ * The visible browser URL and attribution parameters such as utm_* and gclid
+ * are intentionally left untouched.
+ */
+export function sanitizeAnalyticsPageLocation(pageLocation: string): string {
+  try {
+    const url = new URL(pageLocation);
+    for (const param of TRANSIENT_ANALYTICS_QUERY_PARAMS) {
+      url.searchParams.delete(param);
+    }
+    return url.toString();
+  } catch {
+    return pageLocation;
+  }
+}
+
+/**
+ * Generates the small inline bootstrap used by next/script in the root layout.
+ * Keeping the parameter list here ensures the browser bootstrap and tests share
+ * the same privacy boundary.
+ */
+export function getGoogleAnalyticsInitScript(tagId: string): string {
+  const serializedTagId = JSON.stringify(tagId);
+  const serializedTransientParams = JSON.stringify(
+    TRANSIENT_ANALYTICS_QUERY_PARAMS
+  );
+
+  return `window.dataLayer = window.dataLayer || [];
+window.gtag = window.gtag || function(){window.dataLayer.push(arguments);};
+window.gtag('js', new Date());
+var analyticsPageLocation = new URL(window.location.href);
+${serializedTransientParams}.forEach(function(param){analyticsPageLocation.searchParams.delete(param);});
+window.gtag('config', ${serializedTagId}, {
+  page_location: analyticsPageLocation.toString()
+});`;
+}
+
 type GeneratorEventParams = {
   generator_start: {
     entry_step: number;

@@ -11,10 +11,10 @@ afterEach(() => {
 });
 
 describe('privacy-safe generator analytics', () => {
-  it('removes transient authorization parameters while preserving attribution', () => {
+  it('removes generator state and transient authorization parameters while preserving attribution', () => {
     expect(
       sanitizeAnalyticsPageLocation(
-        'https://www.cursorgenerator.dev/?state=opaque&code=secret&session_state=session&utm_source=google&utm_campaign=rules&gclid=click-id#generator'
+        'https://www.cursorgenerator.dev/?s=encoded-generator-state&state=opaque&code=secret&session_state=session&utm_source=google&utm_campaign=rules&gclid=click-id#generator'
       )
     ).toBe(
       'https://www.cursorgenerator.dev/?utm_source=google&utm_campaign=rules&gclid=click-id#generator'
@@ -35,7 +35,7 @@ describe('privacy-safe generator analytics', () => {
   it('configures GA4 with a sanitized page_location', () => {
     const browserWindow = {
       location: {
-        href: 'https://www.cursorgenerator.dev/?state=opaque&code=secret&utm_medium=organic#generator',
+        href: 'https://www.cursorgenerator.dev/?s=encoded-generator-state&state=opaque&code=secret&utm_medium=organic#generator',
       },
       dataLayer: [] as IArguments[],
     };
@@ -52,6 +52,7 @@ describe('privacy-safe generator analytics', () => {
           'https://www.cursorgenerator.dev/?utm_medium=organic#generator',
       },
     ]);
+    expect(browserWindow.location.href).toContain('s=encoded-generator-state');
     expect(browserWindow.location.href).toContain('state=opaque');
     expect(browserWindow.location.href).toContain('code=secret');
   });

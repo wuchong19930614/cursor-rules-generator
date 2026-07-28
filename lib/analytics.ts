@@ -5,15 +5,16 @@ type AnalyticsValue = string | number;
 export const GOOGLE_ANALYTICS_TAG_ID = 'G-2NM7XLC7H2';
 
 const TRANSIENT_ANALYTICS_QUERY_PARAMS = [
+  's',
   'state',
   'code',
   'session_state',
 ] as const;
 
 /**
- * Removes one-time authorization parameters from the URL sent to analytics.
- * The visible browser URL and attribution parameters such as utm_* and gclid
- * are intentionally left untouched.
+ * Removes non-content state and one-time authorization parameters from the URL
+ * sent to analytics. The visible browser URL and attribution parameters such as
+ * utm_* and gclid are intentionally left untouched.
  */
 export function sanitizeAnalyticsPageLocation(pageLocation: string): string {
   try {

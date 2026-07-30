@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import localFont from "next/font/local";
 import Link from "next/link";
 import Script from "next/script";
@@ -8,6 +9,7 @@ import {
   GOOGLE_ANALYTICS_TAG_ID,
 } from "@/lib/analytics";
 import SiteHeader from "@/components/layout/site-header";
+import GoogleAnalyticsPageView from "@/components/analytics/google-analytics-page-view";
 import {
   getOrganizationSchema,
   getWebSiteSchema,
@@ -182,6 +184,9 @@ export default function RootLayout({
         <Script id="gtag-init" strategy="afterInteractive">
           {getGoogleAnalyticsInitScript(GOOGLE_ANALYTICS_TAG_ID)}
         </Script>
+        <Suspense fallback={null}>
+          <GoogleAnalyticsPageView />
+        </Suspense>
         <SiteHeader navItems={primaryNav} />
         {children}
         <footer className="border-t border-zinc-200 bg-white dark:border-zinc-800 dark:bg-black">

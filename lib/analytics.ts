@@ -3,6 +3,7 @@ import type { OutputMode } from '@/lib/templates/types';
 type AnalyticsValue = string | number;
 
 export const GOOGLE_ANALYTICS_TAG_ID = 'G-2NM7XLC7H2';
+export const GOOGLE_ANALYTICS_READY_EVENT = 'google-analytics-ready';
 
 const TRANSIENT_ANALYTICS_QUERY_PARAMS = [
   's',
@@ -35,6 +36,7 @@ export function sanitizeAnalyticsPageLocation(pageLocation: string): string {
  */
 export function getGoogleAnalyticsInitScript(tagId: string): string {
   const serializedTagId = JSON.stringify(tagId);
+  const serializedReadyEvent = JSON.stringify(GOOGLE_ANALYTICS_READY_EVENT);
   const serializedTransientParams = JSON.stringify(
     TRANSIENT_ANALYTICS_QUERY_PARAMS
   );
@@ -45,8 +47,12 @@ window.gtag('js', new Date());
 var analyticsPageLocation = new URL(window.location.href);
 ${serializedTransientParams}.forEach(function(param){analyticsPageLocation.searchParams.delete(param);});
 window.gtag('config', ${serializedTagId}, {
+  send_page_view: false,
   page_location: analyticsPageLocation.toString()
-});`;
+});
+if (typeof window.dispatchEvent === 'function' && typeof Event === 'function') {
+  window.dispatchEvent(new Event(${serializedReadyEvent}));
+}`;
 }
 
 type GeneratorEventParams = {
@@ -146,9 +152,52 @@ declare global {
   }
 }
 
+function sendGoogleAnalyticsEvent(
+  eventName: string,
+  params: Record<string, AnalyticsValue>
+): void {
+  if (typeof window.gtag === 'function') {
+    window.gtag('event', eventName, params);
+    return;
+  }
+
+  window.dataLayer = window.dataLayer ?? [];
+  window.dataLayer.push(['event', eventName, params]);
+}
+
+/**
+ * Sends a manual GA4 page view with transient state removed. The page location
+ * passed by the route tracker is also its deduplication key, so changing only
+ * generator state does not inflate page-view counts.
+ */
+export function trackPageView(
+  pageLocation?: string,
+  pageReferrer?: string
+): void {
+  if (typeof window === 'undefined') return;
+
+  const currentPageLocation = pageLocation ?? window.location?.href;
+  if (!currentPageLocation) return;
+
+  const pageViewParams: Record<string, AnalyticsValue> = {
+    page_location: sanitizeAnalyticsPageLocation(currentPageLocation),
+  };
+  const currentPageReferrer =
+    pageReferrer ??
+    (typeof document !== 'undefined' ? document.referrer : undefined);
+  if (currentPageReferrer) {
+    pageViewParams.page_referrer = sanitizeAnalyticsPageLocation(
+      currentPageReferrer
+    );
+  }
+
+  sendGoogleAnalyticsEvent('page_view', pageViewParams);
+}
+
 /**
  * Sends only allowlisted, aggregate product metadata. Rule titles, rule content,
- * generated output, search text, and URLs are never accepted by this boundary.
+ * generated output, search text, and caller-provided URLs are never accepted by
+ * this boundary; the current page location is attached only after sanitization.
  */
 export function trackGeneratorEvent<Name extends GeneratorEventName>(
   name: Name,
@@ -164,12 +213,14 @@ export function trackGeneratorEvent<Name extends GeneratorEventName>(
     }
   }
 
-  if (typeof window.gtag === 'function') {
-    window.gtag('event', name, safeParams);
-  } else {
-    window.dataLayer = window.dataLayer ?? [];
-    window.dataLayer.push(['event', name, safeParams]);
+  const currentPageLocation = window.location?.href;
+  if (currentPageLocation) {
+    safeParams.page_location = sanitizeAnalyticsPageLocation(
+      currentPageLocation
+    );
   }
+
+  sendGoogleAnalyticsEvent(name, safeParams);
 
   // Clarity custom events intentionally receive only the allowlisted event name.
   // Event metadata stays in GA4 so no generated or user-provided content can

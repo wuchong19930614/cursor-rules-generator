@@ -4,6 +4,7 @@ import {
   GOOGLE_ANALYTICS_TAG_ID,
   sanitizeAnalyticsPageLocation,
   trackGeneratorEvent,
+  trackPageView,
 } from '@/lib/analytics';
 
 afterEach(() => {
@@ -48,13 +49,60 @@ describe('privacy-safe generator analytics', () => {
       'config',
       GOOGLE_ANALYTICS_TAG_ID,
       {
+        send_page_view: false,
         page_location:
           'https://www.cursorgenerator.dev/?utm_medium=organic#generator',
       },
     ]);
+    expect(browserWindow.dataLayer).toHaveLength(2);
     expect(browserWindow.location.href).toContain('s=encoded-generator-state');
     expect(browserWindow.location.href).toContain('state=opaque');
     expect(browserWindow.location.href).toContain('code=secret');
+  });
+
+  it('sends a manual page view with transient state removed', () => {
+    const gtag = vi.fn();
+    vi.stubGlobal('window', {
+      gtag,
+      location: {
+        href: 'https://www.cursorgenerator.dev/?s=generator-state&utm_source=docs',
+      },
+    });
+
+    trackPageView(
+      undefined,
+      'https://oauth.example/callback?code=secret&utm_medium=referral'
+    );
+
+    expect(gtag).toHaveBeenCalledWith('event', 'page_view', {
+      page_location: 'https://www.cursorgenerator.dev/?utm_source=docs',
+      page_referrer: 'https://oauth.example/callback?utm_medium=referral',
+    });
+  });
+
+  it('attaches a sanitized page location to generator events', () => {
+    const gtag = vi.fn();
+    vi.stubGlobal('window', {
+      gtag,
+      location: {
+        href: 'https://www.cursorgenerator.dev/?s=generator-state&code=secret',
+      },
+    });
+
+    trackGeneratorEvent('generator_start', {
+      entry_step: 1,
+      output_mode: 'project-rules',
+      selected_tag_count: 0,
+      surface: 'generator',
+    });
+
+    expect(gtag).toHaveBeenCalledWith('event', 'generator_start', {
+      entry_step: 1,
+      output_mode: 'project-rules',
+      selected_tag_count: 0,
+      surface: 'generator',
+      page_location: 'https://www.cursorgenerator.dev/',
+    });
   });
 
   it('sends the allowlisted conversion metadata to GA4 and the event name to Clarity', () => {

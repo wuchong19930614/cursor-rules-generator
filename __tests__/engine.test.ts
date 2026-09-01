@@ -7,6 +7,7 @@ import {
   generateProjectRules,
   generateAgentsMd,
   generateLegacyRules,
+  formatMdcFile,
 } from "@/lib/generator/engine";
 import type { GeneratorConfig } from "@/lib/templates/types";
 
@@ -344,6 +345,20 @@ describe("generateProjectRules", () => {
     }
   });
 
+  it("serializes globs as quoted YAML values and preserves application mode", () => {
+    const [file] = generateProjectRules(
+      makeConfig({
+        selectedTags: ["react"],
+        ruleApplicationMode: "file-specific",
+        globsPattern: ["*.tsx", "src/**/*.ts"],
+      })
+    );
+
+    const output = formatMdcFile(file);
+    expect(output).toContain('globs: ["*.tsx", "src/**/*.ts"]');
+    expect(output).toContain("alwaysApply: false");
+  });
+
   it("description truncated at 120 chars", () => {
     // 使用多标签来生成长 description
     const files = generateProjectRules(
@@ -392,6 +407,22 @@ describe("generateProjectRules", () => {
     expect(crFile!.content).toContain("## Custom Rules");
     expect(crFile!.content).toContain("### Rule A");
     expect(crFile!.content).toContain("Content A");
+  });
+
+  it("applies file-specific frontmatter to split custom rules", () => {
+    const files = generateProjectRules(
+      makeConfig({
+        selectedTags: ["react"],
+        ruleApplicationMode: "file-specific",
+        splitRules: true,
+        globsPattern: ["src/**/*.tsx"],
+        customRules: [{ title: "Rule A", content: "Content A" }],
+      })
+    );
+
+    const customFile = files.find((file) => file.filename === "custom-rules.mdc");
+    expect(customFile?.frontmatter.globs).toEqual(["src/**/*.tsx"]);
+    expect(customFile?.frontmatter.alwaysApply).toBe(false);
   });
 
   it("split mode without customRules has no custom-rules.mdc", () => {

@@ -7,7 +7,6 @@ import {
   getTemplate,
   getTemplatesByTags,
 } from "@/lib/templates";
-import type { CursorRuleTemplate, RuleSection } from "@/lib/templates/types";
 
 describe("templateRegistry", () => {
   it("contains 20+ templates", () => {
@@ -185,7 +184,7 @@ describe("template frontmatter defaults", () => {
     for (const template of Object.values(templateRegistry)) {
       if (template.defaultGlobs !== undefined) {
         expect(typeof template.defaultGlobs).toBe("object");
-        for (const [key, val] of Object.entries(template.defaultGlobs!)) {
+        for (const val of Object.values(template.defaultGlobs)) {
           expect(Array.isArray(val)).toBe(true);
           for (const item of val) {
             expect(typeof item).toBe("string");

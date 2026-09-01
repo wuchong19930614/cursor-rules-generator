@@ -7,6 +7,7 @@ import {
   generateAgentsMd,
   generateLegacyRules,
   generateZipBlob,
+  formatMdcFile,
 } from '@/lib/generator/engine';
 import type { GeneratorConfig, RuleFile } from '@/lib/templates/types';
 import { trackGeneratorEvent } from '@/lib/analytics';
@@ -120,12 +121,7 @@ export default function StepOutput({
         return legacyContent;
       default:
         return ruleFiles.length > 0
-          ? ruleFiles
-              .map(
-                (f) =>
-                  `---\ndescription: "${f.frontmatter.description.replace(/"/g, '\\"')}"\n---\n\n${f.content}`
-              )
-              .join('\n\n')
+          ? ruleFiles.map(formatMdcFile).join('\n\n')
           : '# No rules generated yet.';
     }
   }, [outputMode, legacyContent, agentsMdContent, ruleFiles]);
@@ -281,7 +277,7 @@ export default function StepOutput({
                 onClick={() =>
                   handleDownloadSingle(
                     f.filename,
-                    `---\ndescription: "${f.frontmatter.description.replace(/"/g, '\\"')}"\n---\n\n${f.content}`
+                    formatMdcFile(f)
                   )
                 }
                 className="block mt-1 text-xs text-blue-600 dark:text-blue-400 underline hover:no-underline"
@@ -313,7 +309,7 @@ export default function StepOutput({
                   onClick={() =>
                     handleDownloadSingle(
                       f.filename,
-                      `---\ndescription: "${f.frontmatter.description.replace(/"/g, '\\"')}"\n---\n\n${f.content}`
+                      formatMdcFile(f)
                     )
                   }
                   className="text-blue-600 dark:text-blue-400 hover:underline shrink-0"
@@ -390,7 +386,7 @@ export default function StepOutput({
                           : 'cursor-rules.mdc';
                       const text =
                         ruleFiles.length > 0
-                          ? `---\ndescription: "${ruleFiles[0].frontmatter.description.replace(/"/g, '\\"')}"\n---\n\n${ruleFiles[0].content}`
+                          ? formatMdcFile(ruleFiles[0])
                           : '# No rules generated yet.';
                       handleDownloadSingle(filename, text);
                     }}

@@ -114,52 +114,9 @@ function escapeYamlString(value: string): string {
   return `"${value.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n')}"`;
 }
 
-/** 将 globs 字符串数组序列化为 YAML 数组格式 [*.tsx, *.ts] */
+/** 将 globs 字符串数组序列化为合法的 YAML flow sequence */
 function formatGlobsArray(globs: string[]): string {
-  return `[${globs.join(', ')}]`;
-}
-
-/**
- * 生成 MDC frontmatter YAML 块
- * 根据 ruleApplicationMode 决定字段集合
- */
-function generateFrontmatter(
-  description: string,
-  mode: GeneratorConfig['ruleApplicationMode'],
-  globs?: string[],
-): string {
-  const lines: string[] = ['---'];
-
-  // description 总是必填
-  lines.push(`description: ${escapeYamlString(description)}`);
-
-  switch (mode) {
-    case 'always-apply':
-      if (globs && globs.length > 0) {
-        lines.push(`globs: ${formatGlobsArray(globs)}`);
-      }
-      lines.push('alwaysApply: true');
-      break;
-    case 'intelligent':
-      if (globs && globs.length > 0) {
-        lines.push(`globs: ${formatGlobsArray(globs)}`);
-      }
-      lines.push('alwaysApply: false');
-      break;
-    case 'file-specific':
-      // 必须有 globs
-      if (globs && globs.length > 0) {
-        lines.push(`globs: ${formatGlobsArray(globs)}`);
-      }
-      lines.push('alwaysApply: false');
-      break;
-    case 'manual':
-      // 仅有 description，无 alwaysApply / globs
-      break;
-  }
-
-  lines.push('---');
-  return lines.join('\n');
+  return `[${globs.map(escapeYamlString).join(', ')}]`;
 }
 
 /** 格式化自定义规则为 markdown 内容块 */
@@ -253,11 +210,24 @@ export function generateProjectRules(config: GeneratorConfig): RuleFile[] {
 
     // 自定义规则追加为独立文件
     if (config.customRules && config.customRules.length > 0) {
+      const customFrontmatter: MdcFrontmatter = {
+        description: truncateDescription('Custom rules for your project'),
+      };
+      if (config.globsPattern && config.globsPattern.length > 0) {
+        customFrontmatter.globs = config.globsPattern;
+      }
+      if (config.ruleApplicationMode === 'always-apply') {
+        customFrontmatter.alwaysApply = true;
+      } else if (
+        config.ruleApplicationMode === 'intelligent' ||
+        (config.ruleApplicationMode === 'file-specific' && customFrontmatter.globs)
+      ) {
+        customFrontmatter.alwaysApply = false;
+      }
+
       files.push({
         filename: 'custom-rules.mdc',
-        frontmatter: {
-          description: truncateDescription('Custom rules for your project'),
-        },
+        frontmatter: customFrontmatter,
         content: formatCustomRulesContent(config.customRules),
       });
     }
@@ -408,10 +378,9 @@ function resolveGlobs(config: GeneratorConfig, section: CollectedSection): strin
     // 模板不存在，忽略
   }
 
-  // section 有 defaultGlobs → 使用
-  if (templateGlobs && templateGlobs.length > 0) return templateGlobs;
-  // config 有 globsPattern → 使用
+  // 用户配置优先于模板默认值
   if (config.globsPattern && config.globsPattern.length > 0) return config.globsPattern;
+  if (templateGlobs && templateGlobs.length > 0) return templateGlobs;
   // 都为空 → undefined
   return undefined;
 }

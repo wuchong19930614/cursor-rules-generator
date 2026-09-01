@@ -17,7 +17,6 @@ import StepOutput from './step-output';
 import RulePreview from './rule-preview';
 import { useUrlState } from '@/lib/hooks/use-url-state';
 import { trackGeneratorEvent } from '@/lib/analytics';
-import { decodeGeneratorUrlState } from '@/lib/generator/url-state';
 import type {
   GeneratorConfig,
   StyleDefaults,
@@ -60,21 +59,12 @@ function getDefaultNaming(selectedTags: string[]): string {
   return style.namingConvention;
 }
 
-/** Read URL state outside React lifecycle (safe in client components) */
-function readInitialUrlState(): Partial<GeneratorConfig> | null {
-  if (typeof window === 'undefined') return null;
-  try {
-    const params = new URLSearchParams(window.location.search);
-    const encoded = params.get('s');
-    if (!encoded) return null;
-    return decodeGeneratorUrlState(encoded);
-  } catch {
-    return null;
-  }
+function parseGlobsPattern(value: string): string[] {
+  return value
+    .split(/[,\n]/)
+    .map((glob) => glob.trim())
+    .filter(Boolean);
 }
-
-/** Computed once per page load */
-const _initialState = readInitialUrlState();
 
 interface GeneratorFormProps {
   /** 页面级预设输出格式(如 /agents-md-generator 预设 agents-md);URL 中的状态优先 */
@@ -84,49 +74,56 @@ interface GeneratorFormProps {
 }
 
 function GeneratorFormInner({ presetOutputMode, presetTags }: GeneratorFormProps) {
-  const { syncToUrl } = useUrlState();
+  const { restoreFromUrl, syncToUrl, hasUrlState } = useUrlState();
   const startedRef = useRef(false);
   const completedRef = useRef(false);
   const completedStepsRef = useRef(new Set<number>());
+  const [initialState] = useState<Partial<GeneratorConfig> | null>(
+    () => restoreFromUrl()
+  );
 
   // 页面已预选技术栈(如模板详情页)且非分享链接恢复时,跳过 Output Mode/Tech
   // Stack 两步,直接进入 Style —— 避免用户重新选一遍已经确定的内容
-  const skipToStyle = !_initialState && !!presetTags && presetTags.length > 0;
+  const skipToStyle = !hasUrlState && !!presetTags && presetTags.length > 0;
   const [step, setStep] = useState(skipToStyle ? 2 : 0);
   const [outputMode, setOutputMode] = useState<OutputMode>(
-    _initialState?.outputMode ?? presetOutputMode ?? 'project-rules'
+    initialState?.outputMode ?? presetOutputMode ?? 'project-rules'
   );
   const [ruleApplicationMode, setRuleApplicationMode] =
     useState<RuleApplicationMode>(
-      _initialState?.ruleApplicationMode ?? 'intelligent'
+      initialState?.ruleApplicationMode ?? 'intelligent'
     );
   const [splitRules, setSplitRules] = useState(
-    _initialState?.splitRules ?? false
+    initialState?.splitRules ?? false
   );
   const [selectedTags, setSelectedTags] = useState<string[]>(
-    _initialState?.selectedTags ?? presetTags ?? []
+    initialState?.selectedTags ?? presetTags ?? []
   );
   const [style, setStyle] = useState<StyleDefaults>(
-    _initialState?.style ??
+    initialState?.style ??
       (presetTags && presetTags.length > 0
         ? getDefaultStyle(presetTags)
         : DEFAULT_STYLE)
   );
   const [aiStrictness, setAiStrictness] = useState<
     'strict' | 'moderate' | 'relaxed'
-  >(_initialState?.aiStrictness ?? 'moderate');
+  >(initialState?.aiStrictness ?? 'moderate');
   const [namingConvention, setNamingConvention] = useState(
-    _initialState?.namingConvention ??
+    initialState?.namingConvention ??
       (presetTags && presetTags.length > 0
         ? getDefaultNaming(presetTags)
         : 'camelCase')
   );
   const [customRules, setCustomRules] = useState<
     { title: string; content: string }[]
-  >(_initialState?.customRules ?? []);
+  >(initialState?.customRules ?? []);
   const [projectType, setProjectType] = useState(
-    _initialState?.projectType ?? 'web'
+    initialState?.projectType ?? 'web'
   );
+  const [globsPatternInput, setGlobsPatternInput] = useState(
+    initialState?.globsPattern?.join(', ') ?? ''
+  );
+  const hasFilePatterns = parseGlobsPattern(globsPatternInput).length > 0;
 
   const config: GeneratorConfig = useMemo(
     () => ({
@@ -139,6 +136,7 @@ function GeneratorFormInner({ presetOutputMode, presetTags }: GeneratorFormProps
       outputMode,
       ruleApplicationMode,
       splitRules,
+      globsPattern: parseGlobsPattern(globsPatternInput),
     }),
     [
       selectedTags,
@@ -150,6 +148,7 @@ function GeneratorFormInner({ presetOutputMode, presetTags }: GeneratorFormProps
       outputMode,
       ruleApplicationMode,
       splitRules,
+      globsPatternInput,
     ]
   );
 
@@ -211,7 +210,7 @@ function GeneratorFormInner({ presetOutputMode, presetTags }: GeneratorFormProps
   const canProceed = useMemo(() => {
     switch (step) {
       case 0:
-        return true; // Step 0 总可继续
+        return ruleApplicationMode !== 'file-specific' || hasFilePatterns;
       case 1:
         return selectedTags.length > 0;
       case 2:
@@ -221,7 +220,7 @@ function GeneratorFormInner({ presetOutputMode, presetTags }: GeneratorFormProps
       default:
         return true;
     }
-  }, [step, selectedTags]);
+  }, [hasFilePatterns, ruleApplicationMode, step, selectedTags]);
 
   const totalSteps = 5; // 0-4
   const nextStep = () => {
@@ -277,6 +276,7 @@ function GeneratorFormInner({ presetOutputMode, presetTags }: GeneratorFormProps
     );
     setCustomRules([]);
     setProjectType('web');
+    setGlobsPatternInput('');
   };
 
   return (
@@ -422,6 +422,38 @@ function GeneratorFormInner({ presetOutputMode, presetTags }: GeneratorFormProps
                     />
                   </button>
                 </div>
+
+                {ruleApplicationMode === 'file-specific' && (
+                  <div>
+                    <label
+                      htmlFor="globs-pattern"
+                      className="text-sm font-medium text-zinc-700 dark:text-zinc-300 block mb-2"
+                    >
+                      File patterns
+                    </label>
+                    <input
+                      id="globs-pattern"
+                      type="text"
+                      value={globsPatternInput}
+                      onChange={(event) => setGlobsPatternInput(event.target.value)}
+                      placeholder="src/**/*.tsx, app/**/*.ts"
+                      className="w-full px-3 py-2.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm font-mono text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      aria-describedby="globs-pattern-help"
+                    />
+                    <p
+                      id="globs-pattern-help"
+                      className={`mt-1.5 text-xs ${
+                        hasFilePatterns
+                          ? 'text-zinc-500 dark:text-zinc-400'
+                          : 'text-red-600 dark:text-red-400'
+                      }`}
+                    >
+                      {hasFilePatterns
+                        ? 'Separate multiple glob patterns with commas.'
+                        : 'Enter at least one glob pattern to continue.'}
+                    </p>
+                  </div>
+                )}
               </div>
             )}
           </div>

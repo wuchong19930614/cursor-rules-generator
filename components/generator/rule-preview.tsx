@@ -5,6 +5,7 @@ import {
   generateCursorRules,
   generateProjectRules,
   generateAgentsMd,
+  formatMdcFile,
 } from '@/lib/generator/engine';
 import type { GeneratorConfig, RuleFile } from '@/lib/templates/types';
 import { trackGeneratorEvent } from '@/lib/analytics';
@@ -45,24 +46,6 @@ async function copyToClipboard(text: string): Promise<boolean> {
     // Fall through
   }
   return fallbackCopy(text);
-}
-
-/** 格式化 RuleFile 为完整 .mdc 文本（含 frontmatter） */
-function formatMdcPreview(file: RuleFile): string {
-  const lines: string[] = ['---'];
-  lines.push(`description: "${file.frontmatter.description.replace(/"/g, '\\"').replace(/\\/g, '\\\\')}"`);
-  if (file.frontmatter.globs && file.frontmatter.globs.length > 0) {
-    lines.push(`globs: [${file.frontmatter.globs.join(', ')}]`);
-  }
-  if (file.frontmatter.alwaysApply !== undefined) {
-    lines.push(`alwaysApply: ${file.frontmatter.alwaysApply}`);
-  }
-  lines.push('---');
-  if (file.content) {
-    lines.push('');
-    lines.push(file.content);
-  }
-  return lines.join('\n');
 }
 
 /** 对文本行应用 frontmatter CSS 高亮 */
@@ -131,7 +114,7 @@ export default function RulePreview({
   // 多文件预览数据
   const previewFiles = useMemo(() => {
     if (outputMode === 'project-rules' && ruleFiles.length > 0) {
-      return ruleFiles.map((f) => formatMdcPreview(f));
+      return ruleFiles.map(formatMdcFile);
     }
     return [];
   }, [outputMode, ruleFiles]);

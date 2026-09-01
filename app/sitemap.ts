@@ -11,8 +11,8 @@ const baseUrl = "https://www.cursorgenerator.dev";
 const PAGE_LAST_MODIFIED: Record<string, string> = {
   "/": "2026-07-16",
   "/templates": "2026-07-16",
-  "/about": "2026-07-16",
-  "/guides/how-to-use-cursor-rules": "2026-07-16",
+  "/about": "2026-06-16",
+  "/guides/how-to-use-cursor-rules": "2026-06-24",
   "/guides/migrate-cursorrules-to-cursor-rules": "2026-07-21",
   "/cursor-rules-generator": "2026-07-16",
   "/cursor-rules": "2026-07-16",
@@ -22,7 +22,7 @@ const PAGE_LAST_MODIFIED: Record<string, string> = {
 };
 
 /** 模板详情页内容来源于 lib/templates,以该目录最后更新日期为准 */
-const TEMPLATES_LAST_MODIFIED = "2026-07-16";
+const TEMPLATES_LAST_MODIFIED = "2026-07-02";
 
 function latestModified(...dates: Array<string | undefined>): Date {
   const timestamps = dates

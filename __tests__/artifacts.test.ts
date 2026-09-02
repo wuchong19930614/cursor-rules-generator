@@ -15,6 +15,8 @@ describe('buildTemplateArtifacts', () => {
     for (const file of projectRules) {
       expect(file.filename).toMatch(/\.mdc$/);
       expect(file.text.startsWith('---\ndescription:')).toBe(true);
+      expect(file.text).toContain('globs: [');
+      expect(file.text).toContain('alwaysApply: false');
       expect(file.text).toContain('---');
     }
   });

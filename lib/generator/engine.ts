@@ -188,7 +188,10 @@ export function generateProjectRules(config: GeneratorConfig): RuleFile[] {
       const sectionSlug = slugify(s.id);
       const filename = buildSectionFilename(templateSlug, sectionSlug);
 
-      const globs = resolveGlobs(config, s);
+      const globs =
+        config.ruleApplicationMode === 'file-specific'
+          ? resolveGlobs(config, s)
+          : undefined;
       if (config.ruleApplicationMode === 'file-specific' && (!globs || globs.length === 0)) {
         // file-specific 模式没有 globs → 回退到 manual
         return {
@@ -213,7 +216,11 @@ export function generateProjectRules(config: GeneratorConfig): RuleFile[] {
       const customFrontmatter: MdcFrontmatter = {
         description: truncateDescription('Custom rules for your project'),
       };
-      if (config.globsPattern && config.globsPattern.length > 0) {
+      if (
+        config.ruleApplicationMode === 'file-specific' &&
+        config.globsPattern &&
+        config.globsPattern.length > 0
+      ) {
         customFrontmatter.globs = config.globsPattern;
       }
       if (config.ruleApplicationMode === 'always-apply') {
@@ -251,7 +258,12 @@ export function generateProjectRules(config: GeneratorConfig): RuleFile[] {
     sections.map((s) => s.title).join('; ')
   );
 
-  const globs = resolveGlobs(config, sections[0]);
+  const globs =
+    config.ruleApplicationMode === 'file-specific'
+      ? Array.from(
+          new Set(sections.flatMap((section) => resolveGlobs(config, section) ?? []))
+        )
+      : undefined;
   if (config.ruleApplicationMode === 'file-specific' && (!globs || globs.length === 0)) {
     return [
       {
@@ -336,6 +348,25 @@ export async function generateZipBlob(files: RuleFile[]): Promise<Blob | null> {
 
     const blob = await zip.generateAsync({ type: 'blob' });
     return blob;
+  } catch {
+    return null;
+  }
+}
+
+/** 打包需要保留点文件名的单个文本文件（浏览器会改写直接下载的 .cursorrules） */
+export async function generateNamedFileZipBlob(
+  filename: string,
+  content: string
+): Promise<Blob | null> {
+  if (typeof window === 'undefined') return null;
+
+  try {
+    const JSZip = (await import('jszip')).default;
+    if (!JSZip.support || !JSZip.support.blob) return null;
+
+    const zip = new JSZip();
+    zip.file(filename, content);
+    return await zip.generateAsync({ type: 'blob' });
   } catch {
     return null;
   }

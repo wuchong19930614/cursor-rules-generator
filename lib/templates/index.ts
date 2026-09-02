@@ -39,44 +39,48 @@ import { tauriTemplate } from './tauri';
 import { bunTemplate } from './bun';
 import { zigTemplate } from './zig';
 import { solidjsTemplate } from './solidjs';
+import {
+  getDefaultGlobsForTemplates,
+  withDefaultGlobs,
+} from './default-globs';
 
 /** 模板注册表（26 个模板） */
 export const templateRegistry: Record<string, CursorRuleTemplate> = {
   // Frontend
-  react: reactTemplate,
-  nextjs: nextjsTemplate,
-  vue: vueTemplate,
-  svelte: svelteTemplate,
-  angular: angularTemplate,
-  astro: astroTemplate,
-  tailwind: tailwindTemplate,
+  react: withDefaultGlobs(reactTemplate),
+  nextjs: withDefaultGlobs(nextjsTemplate),
+  vue: withDefaultGlobs(vueTemplate),
+  svelte: withDefaultGlobs(svelteTemplate),
+  angular: withDefaultGlobs(angularTemplate),
+  astro: withDefaultGlobs(astroTemplate),
+  tailwind: withDefaultGlobs(tailwindTemplate),
   // Fullstack
-  remix: remixTemplate,
-  nuxt: nuxtTemplate,
+  remix: withDefaultGlobs(remixTemplate),
+  nuxt: withDefaultGlobs(nuxtTemplate),
   // Backend
-  go: goTemplate,
-  rust: rustTemplate,
-  node: nodeTemplate,
-  python: pythonTemplate,
-  django: djangoTemplate,
-  flask: flaskTemplate,
-  fastapi: fastapiTemplate,
+  go: withDefaultGlobs(goTemplate),
+  rust: withDefaultGlobs(rustTemplate),
+  node: withDefaultGlobs(nodeTemplate),
+  python: withDefaultGlobs(pythonTemplate),
+  django: withDefaultGlobs(djangoTemplate),
+  flask: withDefaultGlobs(flaskTemplate),
+  fastapi: withDefaultGlobs(fastapiTemplate),
   // Mobile
-  'react-native': reactNativeTemplate,
-  flutter: flutterTemplate,
+  'react-native': withDefaultGlobs(reactNativeTemplate),
+  flutter: withDefaultGlobs(flutterTemplate),
   // Library / Infrastructure
-  typescript: typescriptTemplate,
-  prisma: prismaTemplate,
-  docker: dockerTemplate,
+  typescript: withDefaultGlobs(typescriptTemplate),
+  prisma: withDefaultGlobs(prismaTemplate),
+  docker: withDefaultGlobs(dockerTemplate),
   // Desktop
-  electron: electronTemplate,
-  tauri: tauriTemplate,
+  electron: withDefaultGlobs(electronTemplate),
+  tauri: withDefaultGlobs(tauriTemplate),
   // Runtime
-  bun: bunTemplate,
+  bun: withDefaultGlobs(bunTemplate),
   // Systems
-  zig: zigTemplate,
+  zig: withDefaultGlobs(zigTemplate),
   // Frontend
-  solidjs: solidjsTemplate,
+  solidjs: withDefaultGlobs(solidjsTemplate),
 };
 
 /**
@@ -97,4 +101,8 @@ export function getTemplatesByTags(tags: string[]): CursorRuleTemplate[] {
   return Object.values(templateRegistry).filter((t) =>
     t.tags.some((tag) => tags.includes(tag))
   );
+}
+
+export function getDefaultGlobsByTags(tags: string[]): string[] {
+  return getDefaultGlobsForTemplates(getTemplatesByTags(tags));
 }

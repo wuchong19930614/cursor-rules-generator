@@ -6,6 +6,7 @@ import {
   generateProjectRules,
   generateAgentsMd,
   generateLegacyRules,
+  generateNamedFileZipBlob,
   generateZipBlob,
   formatMdcFile,
 } from '@/lib/generator/engine';
@@ -212,6 +213,46 @@ export default function StepOutput({
     }
   }, [ruleFiles, config.projectType, config.selectedTags.length, outputMode]);
 
+  const handleDownloadLegacyZip = useCallback(async () => {
+    if (isIOS()) {
+      const copied = await copyToClipboard(legacyContent);
+      setCopyState(copied ? 'copied' : 'error');
+      if (copied) {
+        trackGeneratorEvent('rules_download', {
+          output_mode: 'legacy',
+          selected_tag_count: config.selectedTags.length,
+          file_count: 1,
+          file_type: 'cursorrules',
+          delivery_method: 'clipboard_fallback',
+        });
+        alert(
+          'Copied to clipboard! On iOS, paste the content into a file named .cursorrules.'
+        );
+      }
+      return;
+    }
+
+    setDownloadState('loading');
+    const blob = await generateNamedFileZipBlob('.cursorrules', legacyContent);
+    if (blob) {
+      downloadBlob(blob, 'cursorrules.zip');
+      trackGeneratorEvent('rules_download', {
+        output_mode: 'legacy',
+        selected_tag_count: config.selectedTags.length,
+        file_count: 1,
+        file_type: 'zip',
+        delivery_method: 'download',
+      });
+      setDownloadState('downloaded');
+      setTimeout(() => setDownloadState('idle'), 2500);
+      return;
+    }
+
+    const copied = await copyToClipboard(legacyContent);
+    setCopyState(copied ? 'copied' : 'error');
+    setDownloadState('idle');
+  }, [config.selectedTags.length, legacyContent]);
+
   // Keyboard shortcut
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -415,11 +456,11 @@ export default function StepOutput({
                   role="menuitem"
                   onClick={() => {
                     setShowDropdown(false);
-                    handleDownloadSingle('.cursorrules', legacyContent);
+                    handleDownloadLegacyZip();
                   }}
                   className="w-full text-left px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800"
                 >
-                  Download .cursorrules
+                  Download .cursorrules ZIP
                 </button>
               )}
             </div>

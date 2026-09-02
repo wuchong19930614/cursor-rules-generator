@@ -8,6 +8,7 @@ import {
   formatMdcFile,
 } from './engine';
 import type { CursorRuleTemplate, GeneratorConfig } from '../templates/types';
+import { getDefaultGlobsForTemplates } from '../templates/default-globs';
 
 export interface RenderedRuleFile {
   filename: string;
@@ -31,8 +32,9 @@ export function buildDefaultConfig(template: CursorRuleTemplate): GeneratorConfi
     customRules: [],
     projectType: 'web',
     outputMode: 'project-rules',
-    ruleApplicationMode: 'intelligent',
+    ruleApplicationMode: 'file-specific',
     splitRules: true,
+    globsPattern: getDefaultGlobsForTemplates([template]),
   };
 }
 

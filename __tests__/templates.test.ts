@@ -180,15 +180,14 @@ describe("template frontmatter defaults", () => {
     }
   });
 
-  it("defaultGlobs is undefined or Record<string, string[]>", () => {
+  it("every template section has non-empty default globs", () => {
     for (const template of Object.values(templateRegistry)) {
-      if (template.defaultGlobs !== undefined) {
-        expect(typeof template.defaultGlobs).toBe("object");
-        for (const val of Object.values(template.defaultGlobs)) {
-          expect(Array.isArray(val)).toBe(true);
-          for (const item of val) {
-            expect(typeof item).toBe("string");
-          }
+      expect(template.defaultGlobs, template.id).toBeDefined();
+      for (const section of template.sections) {
+        const patterns = template.defaultGlobs?.[section.id];
+        expect(patterns?.length, `${template.id}/${section.id}`).toBeGreaterThan(0);
+        for (const pattern of patterns ?? []) {
+          expect(pattern.trim().length).toBeGreaterThan(0);
         }
       }
     }

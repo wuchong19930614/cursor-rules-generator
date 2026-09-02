@@ -23,7 +23,7 @@ import type {
   OutputMode,
   RuleApplicationMode,
 } from '@/lib/templates/types';
-import { templateRegistry } from '@/lib/templates';
+import { getDefaultGlobsByTags, templateRegistry } from '@/lib/templates';
 
 /** Step 0 引入的索引偏移量 */
 const STEP_OFFSET = 1;
@@ -60,10 +60,42 @@ function getDefaultNaming(selectedTags: string[]): string {
 }
 
 function parseGlobsPattern(value: string): string[] {
-  return value
-    .split(/[,\n]/)
-    .map((glob) => glob.trim())
-    .filter(Boolean);
+  const patterns: string[] = [];
+  let current = '';
+  let braceDepth = 0;
+
+  for (const character of value) {
+    if (character === '{') braceDepth += 1;
+    if (character === '}') braceDepth = Math.max(0, braceDepth - 1);
+
+    if ((character === ',' && braceDepth === 0) || character === '\n') {
+      if (current.trim()) patterns.push(current.trim());
+      current = '';
+    } else {
+      current += character;
+    }
+  }
+
+  if (current.trim()) patterns.push(current.trim());
+  return patterns;
+}
+
+function formatGlobsInput(patterns: string[]): string {
+  return patterns.join('\n');
+}
+
+function getInitialGlobsInput(
+  initialState: Partial<GeneratorConfig> | null
+): string {
+  if (initialState?.globsPattern?.length) {
+    return formatGlobsInput(initialState.globsPattern);
+  }
+  if (initialState?.ruleApplicationMode === 'file-specific') {
+    return formatGlobsInput(
+      getDefaultGlobsByTags(initialState.selectedTags ?? [])
+    );
+  }
+  return '';
 }
 
 interface GeneratorFormProps {
@@ -121,8 +153,9 @@ function GeneratorFormInner({ presetOutputMode, presetTags }: GeneratorFormProps
     initialState?.projectType ?? 'web'
   );
   const [globsPatternInput, setGlobsPatternInput] = useState(
-    initialState?.globsPattern?.join(', ') ?? ''
+    () => getInitialGlobsInput(initialState)
   );
+  const globsCustomizedRef = useRef(Boolean(initialState?.globsPattern?.length));
   const hasFilePatterns = parseGlobsPattern(globsPatternInput).length > 0;
 
   const config: GeneratorConfig = useMemo(
@@ -186,6 +219,21 @@ function GeneratorFormInner({ presetOutputMode, presetTags }: GeneratorFormProps
     [outputMode, trackStart]
   );
 
+  const handleApplicationModeChange = useCallback(
+    (nextMode: RuleApplicationMode) => {
+      setRuleApplicationMode(nextMode);
+      if (
+        nextMode === 'file-specific' &&
+        !globsCustomizedRef.current
+      ) {
+        setGlobsPatternInput(
+          formatGlobsInput(getDefaultGlobsByTags(selectedTags))
+        );
+      }
+    },
+    [selectedTags]
+  );
+
   const handleTagsChange = useCallback(
     (tags: string[]) => {
       trackStart();
@@ -202,17 +250,26 @@ function GeneratorFormInner({ presetOutputMode, presetTags }: GeneratorFormProps
         setStyle(getDefaultStyle(tags));
         setNamingConvention(getDefaultNaming(tags));
       }
+      if (
+        ruleApplicationMode === 'file-specific' &&
+        !globsCustomizedRef.current
+      ) {
+        setGlobsPatternInput(formatGlobsInput(getDefaultGlobsByTags(tags)));
+      }
       setSelectedTags(tags);
     },
-    [selectedTags, trackStart]
+    [ruleApplicationMode, selectedTags, trackStart]
   );
 
   const canProceed = useMemo(() => {
     switch (step) {
       case 0:
-        return ruleApplicationMode !== 'file-specific' || hasFilePatterns;
+        return true;
       case 1:
-        return selectedTags.length > 0;
+        return (
+          selectedTags.length > 0 &&
+          (ruleApplicationMode !== 'file-specific' || hasFilePatterns)
+        );
       case 2:
         return true;
       case 3:
@@ -277,6 +334,7 @@ function GeneratorFormInner({ presetOutputMode, presetTags }: GeneratorFormProps
     setCustomRules([]);
     setProjectType('web');
     setGlobsPatternInput('');
+    globsCustomizedRef.current = false;
   };
 
   return (
@@ -384,7 +442,7 @@ function GeneratorFormInner({ presetOutputMode, presetTags }: GeneratorFormProps
                       <button
                         key={am.value}
                         type="button"
-                        onClick={() => setRuleApplicationMode(am.value)}
+                        onClick={() => handleApplicationModeChange(am.value)}
                         className={`px-3 py-2 rounded-lg text-xs font-medium border transition-all min-h-[44px]
                           ${
                             ruleApplicationMode === am.value
@@ -431,26 +489,31 @@ function GeneratorFormInner({ presetOutputMode, presetTags }: GeneratorFormProps
                     >
                       File patterns
                     </label>
-                    <input
+                    <textarea
                       id="globs-pattern"
-                      type="text"
+                      rows={3}
                       value={globsPatternInput}
-                      onChange={(event) => setGlobsPatternInput(event.target.value)}
-                      placeholder="src/**/*.tsx, app/**/*.ts"
-                      className="w-full px-3 py-2.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm font-mono text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      onChange={(event) => {
+                        globsCustomizedRef.current = true;
+                        setGlobsPatternInput(event.target.value);
+                      }}
+                      placeholder={'src/**/*.tsx\napp/**/*.ts'}
+                      className="w-full resize-y px-3 py-2.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm font-mono text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                       aria-describedby="globs-pattern-help"
                     />
                     <p
                       id="globs-pattern-help"
                       className={`mt-1.5 text-xs ${
-                        hasFilePatterns
+                        hasFilePatterns || selectedTags.length === 0
                           ? 'text-zinc-500 dark:text-zinc-400'
                           : 'text-red-600 dark:text-red-400'
                       }`}
                     >
                       {hasFilePatterns
-                        ? 'Separate multiple glob patterns with commas.'
-                        : 'Enter at least one glob pattern to continue.'}
+                        ? 'Use one pattern per line, or separate patterns with commas.'
+                        : selectedTags.length === 0
+                          ? 'Select a tech stack next to load recommended patterns.'
+                          : 'Enter at least one glob pattern to continue.'}
                     </p>
                   </div>
                 )}

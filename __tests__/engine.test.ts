@@ -244,6 +244,7 @@ describe("generateProjectRules", () => {
     expect(files[0].filename).toContain(".mdc");
     expect(files[0].frontmatter.description.length).toBeGreaterThan(0);
     expect(files[0].frontmatter.alwaysApply).toBe(false);
+    expect(files[0].frontmatter.globs).toBeUndefined();
     expect(files[0].content.length).toBeGreaterThan(0);
   });
 
@@ -289,6 +290,7 @@ describe("generateProjectRules", () => {
       })
     );
     expect(files[0].frontmatter.alwaysApply).toBe(true);
+    expect(files[0].frontmatter.globs).toBeUndefined();
   });
 
   it("manual mode has no alwaysApply field", () => {
@@ -303,7 +305,7 @@ describe("generateProjectRules", () => {
     expect(files[0].frontmatter.alwaysApply).toBeUndefined();
   });
 
-  it("file-specific mode without globs falls back to manual", () => {
+  it("file-specific mode uses template default globs", () => {
     const files = generateProjectRules(
       makeConfig({
         selectedTags: ["react"],
@@ -312,9 +314,23 @@ describe("generateProjectRules", () => {
         splitRules: false,
       })
     );
-    // 没有 globs 时回退到 manual
-    expect(files[0].frontmatter.alwaysApply).toBeUndefined();
-    expect(files[0].frontmatter.globs).toBeUndefined();
+    expect(files[0].frontmatter.alwaysApply).toBe(false);
+    expect(files[0].frontmatter.globs).toContain(
+      "src/**/*.{js,jsx,ts,tsx}"
+    );
+  });
+
+  it("merged file-specific output unions defaults from multiple stacks", () => {
+    const files = generateProjectRules(
+      makeConfig({
+        selectedTags: ["react", "python"],
+        ruleApplicationMode: "file-specific",
+      })
+    );
+
+    expect(files[0].frontmatter.globs).toEqual(
+      expect.arrayContaining(["src/**/*.{js,jsx,ts,tsx}", "**/*.py"])
+    );
   });
 
   it("empty selectedTags returns single empty mdc", () => {

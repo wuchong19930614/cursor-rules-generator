@@ -9,6 +9,7 @@ import {
 } from '@/lib/generator/engine';
 import type { GeneratorConfig, RuleFile } from '@/lib/templates/types';
 import { trackGeneratorEvent } from '@/lib/analytics';
+import { copyTextToClipboard } from '@/lib/browser/clipboard';
 
 interface RulePreviewProps {
   config: GeneratorConfig;
@@ -16,37 +17,6 @@ interface RulePreviewProps {
 }
 
 type CopyState = 'idle' | 'copied' | 'error';
-
-function fallbackCopy(text: string): boolean {
-  const textarea = document.createElement('textarea');
-  textarea.value = text;
-  textarea.style.position = 'fixed';
-  textarea.style.left = '-9999px';
-  textarea.style.top = '-9999px';
-  textarea.setAttribute('readonly', '');
-  document.body.appendChild(textarea);
-  textarea.select();
-  textarea.setSelectionRange(0, text.length);
-  try {
-    return document.execCommand('copy');
-  } catch {
-    return false;
-  } finally {
-    document.body.removeChild(textarea);
-  }
-}
-
-async function copyToClipboard(text: string): Promise<boolean> {
-  try {
-    if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
-      await navigator.clipboard.writeText(text);
-      return true;
-    }
-  } catch {
-    // Fall through
-  }
-  return fallbackCopy(text);
-}
 
 /** 对文本行应用 frontmatter CSS 高亮 */
 function renderWithHighlight(text: string): React.ReactNode[] {
@@ -137,7 +107,7 @@ export default function RulePreview({
 
   const handleCopyAll = useCallback(async () => {
     setCopyState('idle');
-    const ok = await copyToClipboard(currentOutput);
+    const ok = await copyTextToClipboard(currentOutput);
     setCopyState(ok ? 'copied' : 'error');
     if (ok) {
       trackGeneratorEvent('rules_copy', {

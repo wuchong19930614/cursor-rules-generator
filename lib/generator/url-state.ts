@@ -88,6 +88,16 @@ export function encodeGeneratorUrlState(config: GeneratorConfig): string {
   });
 }
 
+export function buildGeneratorShareUrl(
+  config: GeneratorConfig,
+  currentUrl: string
+): string {
+  const url = new URL('/', currentUrl);
+  url.searchParams.set('s', encodeGeneratorUrlState(config));
+  url.hash = 'generator';
+  return url.toString();
+}
+
 export function decodeGeneratorUrlState(
   encoded: string
 ): Partial<GeneratorConfig> | null {

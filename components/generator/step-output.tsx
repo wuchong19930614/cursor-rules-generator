@@ -12,6 +12,7 @@ import {
 } from '@/lib/generator/engine';
 import type { GeneratorConfig, RuleFile } from '@/lib/templates/types';
 import { trackGeneratorEvent } from '@/lib/analytics';
+import { copyTextToClipboard } from '@/lib/browser/clipboard';
 
 interface StepOutputProps {
   config: GeneratorConfig;
@@ -28,38 +29,6 @@ function isIOS(): boolean {
     /iPad|iPhone|iPod/.test(navigator.userAgent) ||
     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
   );
-}
-
-/** fallback: execCommand('copy') via hidden textarea */
-function fallbackCopy(text: string): boolean {
-  const textarea = document.createElement('textarea');
-  textarea.value = text;
-  textarea.style.position = 'fixed';
-  textarea.style.left = '-9999px';
-  textarea.style.top = '-9999px';
-  textarea.setAttribute('readonly', '');
-  document.body.appendChild(textarea);
-  textarea.select();
-  textarea.setSelectionRange(0, text.length);
-  try {
-    return document.execCommand('copy');
-  } catch {
-    return false;
-  } finally {
-    document.body.removeChild(textarea);
-  }
-}
-
-async function copyToClipboard(text: string): Promise<boolean> {
-  try {
-    if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
-      await navigator.clipboard.writeText(text);
-      return true;
-    }
-  } catch {
-    // Fall through to execCommand
-  }
-  return fallbackCopy(text);
 }
 
 function downloadBlob(blob: Blob, filename: string): boolean {
@@ -141,7 +110,7 @@ export default function StepOutput({
 
   const handleCopy = useCallback(async () => {
     setCopyState('idle');
-    const ok = await copyToClipboard(content);
+    const ok = await copyTextToClipboard(content);
     setCopyState(ok ? 'copied' : 'error');
     if (ok) {
       trackGeneratorEvent('rules_copy', {
@@ -158,7 +127,7 @@ export default function StepOutput({
     (filename: string, text: string) => {
       const ios = isIOS();
       if (ios) {
-        copyToClipboard(text).then((ok) => {
+        copyTextToClipboard(text).then((ok) => {
           setCopyState(ok ? 'copied' : 'error');
           if (ok) {
             trackGeneratorEvent('rules_download', {
@@ -215,7 +184,7 @@ export default function StepOutput({
 
   const handleDownloadLegacyZip = useCallback(async () => {
     if (isIOS()) {
-      const copied = await copyToClipboard(legacyContent);
+      const copied = await copyTextToClipboard(legacyContent);
       setCopyState(copied ? 'copied' : 'error');
       if (copied) {
         trackGeneratorEvent('rules_download', {
@@ -248,7 +217,7 @@ export default function StepOutput({
       return;
     }
 
-    const copied = await copyToClipboard(legacyContent);
+    const copied = await copyTextToClipboard(legacyContent);
     setCopyState(copied ? 'copied' : 'error');
     setDownloadState('idle');
   }, [config.selectedTags.length, legacyContent]);

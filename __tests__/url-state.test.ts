@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  buildGeneratorShareUrl,
   decodeGeneratorUrlState,
   encodeGeneratorUrlState,
   sanitizeEncodedGeneratorState,
@@ -30,6 +31,24 @@ const config: GeneratorConfig = {
 };
 
 describe('generator URL state privacy', () => {
+  it('builds a canonical share URL without custom rule content', () => {
+    const url = new URL(
+      buildGeneratorShareUrl(
+        config,
+        'https://www.cursorgenerator.dev/templates/react?utm_source=test'
+      )
+    );
+
+    expect(url.pathname).toBe('/');
+    expect(url.hash).toBe('#generator');
+    expect(url.searchParams.has('utm_source')).toBe(false);
+    expect(atob(url.searchParams.get('s')!)).not.toContain('Internal API');
+    expect(decodeGeneratorUrlState(url.searchParams.get('s')!)).toMatchObject({
+      selectedTags: ['nextjs', 'typescript'],
+      outputMode: 'project-rules',
+    });
+  });
+
   it('never serializes custom rule titles or content', () => {
     const encoded = encodeGeneratorUrlState(config);
     const payload = JSON.parse(atob(encoded)) as Record<string, unknown>;

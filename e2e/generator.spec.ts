@@ -57,6 +57,31 @@ test('restores shared state without a hydration error', async ({ page }) => {
   expect(pageErrors).toEqual([]);
 });
 
+test('copies a privacy-safe share link', async ({ page, context }) => {
+  await context.grantPermissions(['clipboard-read', 'clipboard-write'], {
+    origin: 'http://127.0.0.1:3100',
+  });
+  await page.goto(generatorUrl({ t: ['react'], om: 'agents-md' }));
+
+  const shareButton = page.getByRole('button', {
+    name: 'Copy a shareable configuration link',
+  });
+  await shareButton.click();
+  await expect(shareButton).toContainText('Link copied');
+
+  const copiedUrl = new URL(
+    await page.evaluate(() => navigator.clipboard.readText())
+  );
+  expect(copiedUrl.pathname).toBe('/');
+  expect(copiedUrl.hash).toBe('#generator');
+  const sharedState = JSON.parse(
+    Buffer.from(copiedUrl.searchParams.get('s')!, 'base64').toString('utf8')
+  );
+  expect(sharedState.t).toEqual(['react']);
+  expect(sharedState.om).toBe('agents-md');
+  expect(sharedState).not.toHaveProperty('cr');
+});
+
 test('downloads file-specific Project Rules with recommended globs', async ({
   page,
 }) => {

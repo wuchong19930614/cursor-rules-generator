@@ -9,9 +9,7 @@ export default defineConfig({
   reporter: process.env.CI ? 'github' : 'list',
   use: {
     baseURL: 'http://127.0.0.1:3100',
-    channel:
-      process.env.PLAYWRIGHT_CHANNEL ??
-      (process.env.CI ? undefined : 'chrome'),
+    channel: process.env.PLAYWRIGHT_CHANNEL || undefined,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },

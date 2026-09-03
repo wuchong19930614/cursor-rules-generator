@@ -15,6 +15,7 @@ import StepStyle from './step-style';
 import StepRules from './step-rules';
 import StepOutput from './step-output';
 import RulePreview from './rule-preview';
+import ShareButton from './share-button';
 import { useUrlState } from '@/lib/hooks/use-url-state';
 import { trackGeneratorEvent } from '@/lib/analytics';
 import type {
@@ -587,9 +588,11 @@ function GeneratorFormInner({ presetOutputMode, presetTags }: GeneratorFormProps
         </div>
       )}
 
+      {selectedTags.length > 0 && <ShareButton config={config} />}
+
       {/* 实时预览:Output 步骤(4)已经在 StepOutput 内自带预览,这里不重复渲染 */}
       {selectedTags.length > 0 && step !== 4 && (
-        <RulePreview config={config} className="mt-4" />
+        <RulePreview config={config} className="mt-2" />
       )}
     </div>
   );

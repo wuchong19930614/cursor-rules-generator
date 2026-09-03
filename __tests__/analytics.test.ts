@@ -128,6 +128,21 @@ describe('privacy-safe generator analytics', () => {
     expect(clarity).toHaveBeenCalledWith('event', 'rules_download');
   });
 
+  it('tracks sharing without accepting URL or custom-rule content', () => {
+    const gtag = vi.fn();
+    vi.stubGlobal('window', { gtag });
+
+    trackGeneratorEvent('generator_share', {
+      output_mode: 'agents-md',
+      selected_tag_count: 2,
+    });
+
+    expect(gtag).toHaveBeenCalledWith('event', 'generator_share', {
+      output_mode: 'agents-md',
+      selected_tag_count: 2,
+    });
+  });
+
   it('drops unexpected fields at the runtime analytics boundary', () => {
     const gtag = vi.fn();
     vi.stubGlobal('window', { gtag });

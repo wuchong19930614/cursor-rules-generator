@@ -82,6 +82,10 @@ type GeneratorEventParams = {
     custom_rule_count: number;
     split_rules: number;
   };
+  generator_share: {
+    output_mode: OutputMode;
+    selected_tag_count: number;
+  };
   rules_copy: {
     output_mode: OutputMode;
     selected_tag_count: number;
@@ -125,6 +129,7 @@ const PARAM_ALLOWLIST: {
     'custom_rule_count',
     'split_rules',
   ],
+  generator_share: ['output_mode', 'selected_tag_count'],
   rules_copy: [
     'output_mode',
     'selected_tag_count',

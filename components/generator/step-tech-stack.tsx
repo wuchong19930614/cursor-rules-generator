@@ -152,7 +152,7 @@ export default function StepTechStack({
               aria-pressed={isSelected}
             >
               <span className="font-medium">{tag}</span>
-              <span className="text-[10px] text-zinc-400 dark:text-zinc-500">
+              <span className="text-[10px] text-zinc-600 dark:text-zinc-400">
                 {templates.length} template{templates.length !== 1 ? 's' : ''}
               </span>
             </button>
@@ -161,7 +161,7 @@ export default function StepTechStack({
       </div>
 
       {filteredTags.length === 0 && (
-        <p className="text-sm text-zinc-400 dark:text-zinc-500 text-center py-4">
+        <p className="text-sm text-zinc-600 dark:text-zinc-400 text-center py-4">
           No tech stacks match your search.
         </p>
       )}

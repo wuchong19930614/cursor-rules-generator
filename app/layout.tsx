@@ -163,13 +163,6 @@ export default function RootLayout({
             __html: JSON.stringify(homeBreadcrumb),
           }}
         />
-        <Script id="clarity-script" strategy="afterInteractive">
-          {`(function(c,l,a,r,i,t,y){
-    c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-    t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-    y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-})(window, document, "clarity", "script", "x58f26t4cc");`}
-        </Script>
       </head>
       <body className="min-h-full flex flex-col">
         {/* Skip-to-content for keyboard users */}
@@ -179,10 +172,17 @@ export default function RootLayout({
 
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ANALYTICS_TAG_ID}`}
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
-        <Script id="gtag-init" strategy="afterInteractive">
+        <Script id="gtag-init" strategy="lazyOnload">
           {getGoogleAnalyticsInitScript(GOOGLE_ANALYTICS_TAG_ID)}
+        </Script>
+        <Script id="clarity-script" strategy="lazyOnload">
+          {`(function(c,l,a,r,i,t,y){
+    c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+    t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+    y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+})(window, document, "clarity", "script", "x58f26t4cc");`}
         </Script>
         <Suspense fallback={null}>
           <GoogleAnalyticsPageView />
@@ -223,16 +223,20 @@ export default function RootLayout({
                   <Link
                     key={item.href}
                     href={item.href}
+                    aria-label={`${item.label} Cursor Rules template`}
                     className="rounded-md bg-zinc-100 px-2.5 py-1 text-zinc-600 hover:text-blue-600 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:text-blue-400"
                   >
                     {item.label}
+                    {item.label === "Go" && (
+                      <span className="sr-only"> programming language template</span>
+                    )}
                   </Link>
                 ))}
               </div>
             </nav>
           </div>
         </footer>
-        <SpeedInsights />
+        {process.env.VERCEL === "1" && <SpeedInsights />}
       </body>
     </html>
   );

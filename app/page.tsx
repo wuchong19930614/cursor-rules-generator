@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <div className="flex flex-col flex-1 bg-zinc-50 font-sans dark:bg-black">
-      <main id="main-content" className="flex-1 w-full max-w-3xl mx-auto py-12 px-4 sm:px-6">
+      <main id="main-content" tabIndex={-1} className="flex-1 w-full max-w-3xl mx-auto py-12 px-4 sm:px-6">
         <JsonLd data={getWebApplicationSchema()} />
         <JsonLd data={getFAQPageSchema()} />
 
@@ -190,7 +190,7 @@ alwaysApply: false
 - Avoid prop drilling beyond 2 levels
 - Server state goes through React Query (TanStack Query)`}</code>
             </FadeScrollPre>
-            <p className="text-sm text-zinc-500 dark:text-zinc-500 mt-3">
+            <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-3">
               The frontmatter tells Cursor to apply these rules only to{" "}
               <code>src/components/**/*.tsx</code> and{" "}
               <code>src/pages/**/*.tsx</code> files, not globally. Set{" "}

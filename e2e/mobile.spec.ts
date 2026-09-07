@@ -12,6 +12,14 @@ test('completes the generator without horizontal overflow on mobile', async ({
 }) => {
   await page.goto(generatorUrl());
 
+  const menuButton = page.getByRole('button', { name: 'Open menu' });
+  await menuButton.tap();
+  await expect(
+    page.getByRole('link', { name: 'Generator', exact: true })
+  ).toHaveAttribute('aria-current', 'page');
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('button', { name: 'Open menu' })).toBeFocused();
+
   await expect(page.getByRole('heading', { name: 'Choose Output Format' })).toBeVisible();
   await expect
     .poll(() =>

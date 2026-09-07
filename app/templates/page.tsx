@@ -39,7 +39,14 @@ function encodeBase64(value: string): string {
 
 function buildPreSelectUrl(template: CursorRuleTemplate): string {
   const tag = template.tags[0] || template.id;
-  const payload = JSON.stringify({ t: [tag] });
+  const payload = JSON.stringify({
+    t: [tag],
+    i: template.defaults.indentSize,
+    tb: template.defaults.useTabs ? 1 : 0,
+    q: template.defaults.quotes,
+    sc: template.defaults.semicolons ? 1 : 0,
+    n: template.defaults.namingConvention,
+  });
   const encoded = encodeBase64(payload);
   return `/?s=${encoded}`;
 }
@@ -79,7 +86,7 @@ function TemplatesHubInner() {
 
   return (
     <div className="flex flex-col flex-1 bg-zinc-50 font-sans dark:bg-black">
-      <main id="main-content" className="flex-1 w-full max-w-5xl mx-auto py-12 px-4 sm:px-6">
+      <main id="main-content" tabIndex={-1} className="flex-1 w-full max-w-5xl mx-auto py-12 px-4 sm:px-6">
         {/* Page Header */}
         <div className="text-center mb-10">
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
@@ -103,12 +110,17 @@ function TemplatesHubInner() {
         </div>
 
         {/* Category Filters */}
-        <div className="flex flex-wrap justify-center gap-2 mb-6">
+        <div
+          className="flex flex-wrap justify-center gap-2 mb-6"
+          role="group"
+          aria-label="Filter templates by category"
+        >
           {CATEGORIES.map((cat) => (
             <button
               key={cat.value}
               type="button"
               onClick={() => setActiveCategory(cat.value)}
+              aria-pressed={activeCategory === cat.value}
               className={`px-4 py-2 rounded-full text-sm font-medium border transition-all min-h-[44px]
                 ${
                   activeCategory === cat.value
@@ -118,7 +130,7 @@ function TemplatesHubInner() {
                 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500`}
             >
               {cat.label}
-              <span className="ml-1.5 text-xs opacity-70">
+              <span className="ml-1.5 text-xs">
                 ({countByCategory[cat.value]})
               </span>
             </button>
@@ -133,6 +145,7 @@ function TemplatesHubInner() {
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"
@@ -143,6 +156,7 @@ function TemplatesHubInner() {
             </svg>
             <input
               type="text"
+              aria-label="Search templates"
               placeholder="Search templates by name, tag, or keyword..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -182,20 +196,20 @@ function TemplatesHubInner() {
                   <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
                     {CATEGORY_LABELS[tpl.category] || tpl.category}
                   </span>
-                  <span className="text-xs text-zinc-400 dark:text-zinc-500">
+                  <span className="text-xs text-zinc-600 dark:text-zinc-400">
                     {tpl.sections.length} sections
                   </span>
                 </div>
 
                 {/* Template Name */}
-                <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50 mb-2">
+                <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50 mb-2">
                   <Link
                     href={`/templates/${tpl.id}`}
                     className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                   >
                     {tpl.name}
                   </Link>
-                </h3>
+                </h2>
 
                 {/* Description */}
                 <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed mb-4 line-clamp-3">
@@ -213,7 +227,7 @@ function TemplatesHubInner() {
                     </span>
                   ))}
                   {tpl.tags.length > 5 && (
-                    <span className="text-xs px-2 py-0.5 text-zinc-400">
+                    <span className="text-xs px-2 py-0.5 text-zinc-600 dark:text-zinc-400">
                       +{tpl.tags.length - 5}
                     </span>
                   )}
@@ -263,7 +277,7 @@ export default function TemplatesHub() {
     <Suspense
       fallback={
         <div className="flex flex-col flex-1 bg-zinc-50 font-sans dark:bg-black">
-          <main id="main-content" className="flex-1 w-full max-w-5xl mx-auto py-12 px-4 sm:px-6">
+          <main id="main-content" tabIndex={-1} className="flex-1 w-full max-w-5xl mx-auto py-12 px-4 sm:px-6">
             <div className="h-10 w-64 rounded-lg bg-zinc-100 dark:bg-zinc-800 mx-auto animate-pulse" />
             <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {Array.from({ length: 6 }).map((_, index) => (

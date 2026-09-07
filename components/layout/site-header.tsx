@@ -3,7 +3,7 @@
 // components/layout/site-header.tsx
 // 站点顶部导航:桌面端横向导航,移动端汉堡按钮 + 下拉抽屉
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -15,6 +15,7 @@ interface NavItem {
 export default function SiteHeader({ navItems }: { navItems: NavItem[] }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   // 路由切换后自动收起抽屉 —— 渲染期间对比并调整状态,而非在 effect 里
   // setState,避免级联渲染(参考 https://react.dev/learn/you-might-not-need-an-effect)
@@ -23,6 +24,22 @@ export default function SiteHeader({ navItems }: { navItems: NavItem[] }) {
     setPrevPathname(pathname);
     setOpen(false);
   }
+
+  useEffect(() => {
+    if (!open) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      setOpen(false);
+      menuButtonRef.current?.focus();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [open]);
+
+  const isCurrentPage = (href: string) =>
+    href === '/'
+      ? pathname === '/'
+      : pathname === href || pathname.startsWith(`${href}/`);
 
   return (
     <header className="border-b border-zinc-200 bg-white/90 backdrop-blur dark:border-zinc-800 dark:bg-black/90">
@@ -43,7 +60,12 @@ export default function SiteHeader({ navItems }: { navItems: NavItem[] }) {
             <Link
               key={item.href}
               href={item.href}
-              className="hover:text-blue-600 dark:hover:text-blue-400"
+              aria-current={isCurrentPage(item.href) ? 'page' : undefined}
+              className={
+                isCurrentPage(item.href)
+                  ? 'font-medium text-blue-700 dark:text-blue-400'
+                  : 'hover:text-blue-600 dark:hover:text-blue-400'
+              }
             >
               {item.label}
             </Link>
@@ -52,6 +74,7 @@ export default function SiteHeader({ navItems }: { navItems: NavItem[] }) {
 
         {/* 移动端汉堡按钮 */}
         <button
+          ref={menuButtonRef}
           type="button"
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
@@ -90,7 +113,13 @@ export default function SiteHeader({ navItems }: { navItems: NavItem[] }) {
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  className="flex min-h-[44px] items-center text-sm text-zinc-600 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-400"
+                  onClick={() => setOpen(false)}
+                  aria-current={isCurrentPage(item.href) ? 'page' : undefined}
+                  className={`flex min-h-[44px] items-center text-sm ${
+                    isCurrentPage(item.href)
+                      ? 'font-medium text-blue-700 dark:text-blue-400'
+                      : 'text-zinc-600 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-400'
+                  }`}
                 >
                   {item.label}
                 </Link>

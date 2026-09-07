@@ -141,7 +141,7 @@ export default async function TemplateDetailPage({ params }: TemplatePageProps) 
 
   return (
     <div className="flex flex-col flex-1 bg-zinc-50 font-sans dark:bg-black">
-      <main id="main-content" className="flex-1 w-full max-w-6xl mx-auto py-12 px-4 sm:px-6">
+      <main id="main-content" tabIndex={-1} className="flex-1 w-full max-w-6xl mx-auto py-12 px-4 sm:px-6">
         <JsonLd
           data={getBreadcrumbSchema([
             { name: "Home", url: siteUrl },

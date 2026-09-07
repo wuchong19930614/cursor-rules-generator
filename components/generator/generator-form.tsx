@@ -339,7 +339,10 @@ function GeneratorFormInner({ presetOutputMode, presetTags }: GeneratorFormProps
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto space-y-6 min-h-[500px]">
+    <div
+      className="w-full max-w-2xl mx-auto space-y-6 min-h-[500px]"
+      data-clarity-mask="true"
+    >
       {/* Step Indicator */}
       <StepIndicator
         currentStep={step + STEP_OFFSET}
@@ -466,19 +469,22 @@ function GeneratorFormInner({ presetOutputMode, presetTags }: GeneratorFormProps
                     type="button"
                     role="switch"
                     aria-checked={splitRules}
+                    aria-label="Split rules into multiple files"
                     onClick={() => setSplitRules(!splitRules)}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors
-                      ${
-                        splitRules
-                          ? 'bg-blue-600'
-                          : 'bg-zinc-200 dark:bg-zinc-700'
-                      }
-                      focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500`}
+                    className="inline-flex h-11 w-14 items-center justify-center rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
                   >
                     <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform
-                        ${splitRules ? 'translate-x-6' : 'translate-x-1'}`}
-                    />
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                        splitRules ? 'bg-blue-600' : 'bg-zinc-200 dark:bg-zinc-700'
+                      }`}
+                      aria-hidden="true"
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                          splitRules ? 'translate-x-6' : 'translate-x-1'
+                        }`}
+                      />
+                    </span>
                   </button>
                 </div>
 

@@ -70,7 +70,7 @@ const TOC_ITEMS = [
 export default function HowToUseCursorRulesPage() {
   return (
     <div className="flex flex-col flex-1 bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex-1 w-full max-w-5xl mx-auto py-16 px-4 sm:px-6">
+      <main id="main-content" tabIndex={-1} className="flex-1 w-full max-w-5xl mx-auto py-16 px-4 sm:px-6">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

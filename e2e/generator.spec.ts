@@ -54,6 +54,7 @@ test('restores shared state without a hydration error', async ({ page }) => {
   });
   await expect(agentsMode).toHaveClass(/border-blue-500/);
   await expect(page.locator('pre').first()).toContainText('# Cursor Rules');
+  await expect(page.locator('[data-clarity-mask="true"]')).toBeVisible();
   expect(pageErrors).toEqual([]);
 });
 
@@ -133,4 +134,24 @@ test('downloads legacy .cursorrules output', async ({ page }) => {
   expect(content).toContain('# Cursor Rules');
   expect(content).toContain('# Tech stack: go');
   expect(content).not.toContain('alwaysApply:');
+});
+
+test('preserves template defaults when generating from the templates hub', async ({
+  page,
+}) => {
+  await page.goto('/templates?q=python');
+  const pythonCard = page.locator('#template-python');
+  await pythonCard.getByRole('link', { name: 'Generate Rules' }).click();
+
+  await page.getByRole('button', { name: 'Next →' }).click();
+  await page.getByRole('button', { name: 'Next →' }).click();
+
+  await expect(page.getByRole('radio', { name: '4 spaces' })).toHaveAttribute(
+    'aria-checked',
+    'true'
+  );
+  await expect(page.getByRole('radio', { name: 'snake_case' })).toHaveAttribute(
+    'aria-checked',
+    'true'
+  );
 });

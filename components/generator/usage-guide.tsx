@@ -131,7 +131,7 @@ alwaysApply: false
 - Keep components under 200 lines
 - Use Tailwind CSS for styling`}</code>
             </FadeScrollPre>
-            <p className="text-xs text-zinc-500 dark:text-zinc-500 mt-2">
+            <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-2">
               Multi-file with glob targeting. Best for teams and large
               projects.
             </p>
@@ -160,7 +160,7 @@ alwaysApply: false
 - Every component needs at least
   one render test`}</code>
             </FadeScrollPre>
-            <p className="text-xs text-zinc-500 dark:text-zinc-500 mt-2">
+            <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-2">
               Single markdown file. Best for simple projects and open-source.
             </p>
           </div>
@@ -188,7 +188,7 @@ Naming Conventions:
 Testing:
 - Jest + React Testing Library`}</code>
             </FadeScrollPre>
-            <p className="text-xs text-zinc-500 dark:text-zinc-500 mt-2">
+            <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-2">
               Original plain-text format. For backward compatibility.
             </p>
           </div>

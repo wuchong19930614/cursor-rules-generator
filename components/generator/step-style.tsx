@@ -65,7 +65,7 @@ function SegmentedControl<T extends string>({
         >
           <span className="font-medium">{opt.label}</span>
           {opt.description && (
-            <span className="block text-[10px] text-zinc-400 dark:text-zinc-500 mt-0.5">
+            <span className="block text-[10px] text-zinc-600 dark:text-zinc-400 mt-0.5">
               {opt.description}
             </span>
           )}
@@ -172,22 +172,22 @@ export default function StepStyle({
           type="button"
           role="switch"
           aria-checked={style.useTabs}
+          aria-label="Use tabs instead of spaces"
           onClick={() => onStyleChange({ ...style, useTabs: !style.useTabs })}
-          className={`
-            relative inline-flex h-6 w-11 items-center rounded-full
-            transition-colors duration-200
-            focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500
-            ${style.useTabs ? 'bg-blue-600' : 'bg-zinc-200 dark:bg-zinc-700'}
-          `}
+          className="inline-flex h-11 w-14 items-center justify-center rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
         >
           <span
-            className={`
-              inline-block h-4 w-4 transform rounded-full bg-white shadow-sm
-              transition-transform duration-200
-              ${style.useTabs ? 'translate-x-6' : 'translate-x-1'}
-            `}
+            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${
+              style.useTabs ? 'bg-blue-600' : 'bg-zinc-200 dark:bg-zinc-700'
+            }`}
             aria-hidden="true"
-          />
+          >
+            <span
+              className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform duration-200 ${
+                style.useTabs ? 'translate-x-6' : 'translate-x-1'
+              }`}
+            />
+          </span>
         </button>
       </fieldset>
 
@@ -230,22 +230,22 @@ export default function StepStyle({
           type="button"
           role="switch"
           aria-checked={style.semicolons}
+          aria-label="Use semicolons"
           onClick={() => onStyleChange({ ...style, semicolons: !style.semicolons })}
-          className={`
-            relative inline-flex h-6 w-11 items-center rounded-full
-            transition-colors duration-200
-            focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500
-            ${style.semicolons ? 'bg-blue-600' : 'bg-zinc-200 dark:bg-zinc-700'}
-          `}
+          className="inline-flex h-11 w-14 items-center justify-center rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
         >
           <span
-            className={`
-              inline-block h-4 w-4 transform rounded-full bg-white shadow-sm
-              transition-transform duration-200
-              ${style.semicolons ? 'translate-x-6' : 'translate-x-1'}
-            `}
+            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${
+              style.semicolons ? 'bg-blue-600' : 'bg-zinc-200 dark:bg-zinc-700'
+            }`}
             aria-hidden="true"
-          />
+          >
+            <span
+              className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform duration-200 ${
+                style.semicolons ? 'translate-x-6' : 'translate-x-1'
+              }`}
+            />
+          </span>
         </button>
       </fieldset>
 

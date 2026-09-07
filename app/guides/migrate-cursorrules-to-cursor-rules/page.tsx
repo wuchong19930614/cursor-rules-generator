@@ -72,7 +72,7 @@ const TOC_ITEMS = [
 export default function MigrateGuidePage() {
   return (
     <div className="flex flex-col flex-1 bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex-1 w-full max-w-5xl mx-auto py-16 px-4 sm:px-6">
+      <main id="main-content" tabIndex={-1} className="flex-1 w-full max-w-5xl mx-auto py-16 px-4 sm:px-6">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -124,7 +124,7 @@ export default function MigrateGuidePage() {
           <div className="mt-5 flex flex-wrap items-center gap-3">
             <Link
               href="/#generator"
-              className="inline-flex min-h-11 items-center justify-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-400"
+              className="inline-flex min-h-11 items-center justify-center rounded-lg bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-800 dark:bg-blue-700 dark:hover:bg-blue-600"
             >
               Generate Project Rules
             </Link>

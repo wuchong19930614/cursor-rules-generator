@@ -3,11 +3,12 @@
 // components/templates/rule-output-tabs.tsx
 // 模板详情页:三格式完整产物的 tab 切换展示,每块带一键复制
 
-import { useState } from 'react';
+import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import FadeScrollPre from '@/components/ui/fade-scroll-pre';
 import type { TemplateArtifacts } from '@/lib/generator/artifacts';
 import type { OutputMode } from '@/lib/templates/types';
 import { trackGeneratorEvent } from '@/lib/analytics';
+import { copyTextToClipboard } from '@/lib/browser/clipboard';
 
 type TabKey = 'project-rules' | 'agents-md' | 'cursorrules';
 
@@ -26,32 +27,49 @@ function CopyButton({
   label: string;
   outputMode: OutputMode;
 }) {
-  const [copied, setCopied] = useState(false);
+  const [copyState, setCopyState] = useState<'idle' | 'copied' | 'error'>('idle');
+  const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
+    };
+  }, []);
 
   const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(text);
+    const copied = await copyTextToClipboard(text);
+    if (copied) {
       trackGeneratorEvent('rules_copy', {
         output_mode: outputMode,
         selected_tag_count: 1,
         file_count: 1,
         surface: 'template_detail',
       });
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // 剪贴板不可用时静默失败
     }
+    setCopyState(copied ? 'copied' : 'error');
+    if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
+    resetTimerRef.current = setTimeout(() => setCopyState('idle'), 2000);
   };
 
   return (
     <button
       type="button"
       onClick={copy}
-      aria-label={`Copy ${label}`}
-      className="rounded-md border border-zinc-600 px-2.5 py-1 text-xs font-medium text-zinc-300 transition-colors hover:border-zinc-400 hover:text-white"
+      aria-label={
+        copyState === 'copied'
+          ? `${label} copied`
+          : copyState === 'error'
+            ? `Failed to copy ${label}`
+            : `Copy ${label}`
+      }
+      aria-live="polite"
+      className="min-h-11 rounded-md border border-zinc-600 px-3 py-2 text-xs font-medium text-zinc-300 transition-colors hover:border-zinc-400 hover:text-white"
     >
-      {copied ? 'Copied ✓' : 'Copy'}
+      {copyState === 'copied'
+        ? 'Copied ✓'
+        : copyState === 'error'
+          ? 'Copy failed'
+          : 'Copy'}
     </button>
   );
 }
@@ -84,6 +102,28 @@ export default function RuleOutputTabs({
   artifacts: TemplateArtifacts;
 }) {
   const [active, setActive] = useState<TabKey>('project-rules');
+  const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
+
+  const handleTabKeyDown = (
+    event: KeyboardEvent<HTMLButtonElement>,
+    index: number
+  ) => {
+    let nextIndex: number | null = null;
+    if (event.key === 'ArrowRight') nextIndex = (index + 1) % TABS.length;
+    if (event.key === 'ArrowLeft') {
+      nextIndex = (index - 1 + TABS.length) % TABS.length;
+    }
+    if (event.key === 'Home') nextIndex = 0;
+    if (event.key === 'End') nextIndex = TABS.length - 1;
+    if (nextIndex === null) return;
+
+    event.preventDefault();
+    setActive(TABS[nextIndex].key);
+    tabRefs.current[nextIndex]?.focus();
+  };
+
+  const activeTabId = `output-tab-${active}`;
+  const activePanelId = `output-panel-${active}`;
 
   return (
     <div>
@@ -93,8 +133,15 @@ export default function RuleOutputTabs({
             key={tab.key}
             type="button"
             role="tab"
+            id={`output-tab-${tab.key}`}
+            aria-controls={`output-panel-${tab.key}`}
             aria-selected={active === tab.key}
+            tabIndex={active === tab.key ? 0 : -1}
+            ref={(element) => {
+              tabRefs.current[TABS.indexOf(tab)] = element;
+            }}
             onClick={() => setActive(tab.key)}
+            onKeyDown={(event) => handleTabKeyDown(event, TABS.indexOf(tab))}
             className={`rounded-lg border px-4 py-2 text-sm font-medium transition-colors min-h-[44px] ${
               active === tab.key
                 ? 'border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300'
@@ -102,14 +149,20 @@ export default function RuleOutputTabs({
             }`}
           >
             {tab.label}
-            <span className="ml-2 hidden text-xs text-zinc-400 sm:inline">
+            <span className="ml-2 hidden text-xs text-zinc-600 dark:text-zinc-400 sm:inline">
               {tab.hint}
             </span>
           </button>
         ))}
       </div>
 
-      <div className="mt-4 space-y-4">
+      <div
+        id={activePanelId}
+        role="tabpanel"
+        aria-labelledby={activeTabId}
+        tabIndex={0}
+        className="mt-4 space-y-4"
+      >
         {active === 'project-rules' &&
           artifacts.projectRules.map((file) => (
             <CodeBlock

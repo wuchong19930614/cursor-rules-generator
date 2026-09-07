@@ -131,7 +131,7 @@ export default function RulePreview({
   return (
     <div className={`space-y-2 ${className}`}>
       <div className="flex items-center justify-between flex-wrap gap-2">
-        <div className="flex items-center gap-2 text-xs text-zinc-400 dark:text-zinc-500">
+        <div className="flex items-center gap-2 text-xs text-zinc-600 dark:text-zinc-400">
           <span>Preview</span>
           <span className="hidden sm:inline">
             {lineCount} lines &middot; {charCount.toLocaleString()} chars
@@ -182,11 +182,11 @@ export default function RulePreview({
         <button
           type="button"
           onClick={handleClickCopy}
-          className="absolute top-2 right-2 z-10 p-1.5 rounded-md
+          className="absolute top-2 right-2 z-10 inline-flex h-11 w-11 items-center justify-center rounded-md
             bg-zinc-800/70 dark:bg-zinc-200/70 text-zinc-200 dark:text-zinc-800
             opacity-0 group-hover/preview:opacity-100 transition-opacity duration-150
             hover:bg-zinc-800 dark:hover:bg-zinc-200
-            focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+            focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
           aria-label="Click to copy rules"
           title="Click to copy"
         >
@@ -239,7 +239,7 @@ export default function RulePreview({
             className="hidden sm:block absolute left-0 top-0 bottom-0 w-12 bg-zinc-100 dark:bg-zinc-800 border-r border-zinc-200 dark:border-zinc-700 pointer-events-none select-none"
             aria-hidden="true"
           >
-            <div className="p-4 text-[10px] font-mono text-zinc-300 dark:text-zinc-600 text-right leading-relaxed">
+            <div className="p-4 text-[10px] font-mono text-zinc-500 dark:text-zinc-400 text-right leading-relaxed">
               {Array.from({ length: lineCount }, (_, i) => (
                 <div key={i}>{i + 1}</div>
               ))}

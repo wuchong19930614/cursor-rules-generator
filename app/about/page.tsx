@@ -55,7 +55,7 @@ const TOC_ITEMS = [
 
 const statHighlights = [
   { value: "26+", label: "Tech stack templates" },
-  { value: "100%", label: "Client-side, zero data collection" },
+  { value: "100%", label: "Rule generation stays client-side" },
   { value: "$0", label: "Free forever, no accounts" },
 ];
 
@@ -91,7 +91,7 @@ const frameworkList = [
 export default function AboutPage() {
   return (
     <div className="flex flex-col flex-1 bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex-1 w-full max-w-5xl mx-auto py-16 px-4 sm:px-6">
+      <main id="main-content" tabIndex={-1} className="flex-1 w-full max-w-5xl mx-auto py-16 px-4 sm:px-6">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -127,9 +127,11 @@ export default function AboutPage() {
                 Since our launch, thousands of developers have used Cursor Rules
                 Generator to create <code>.cursorrules</code> files for projects
                 ranging from small React components to enterprise Go microservices.
-                The tool runs entirely in your browser — no accounts, no server-side
-                processing, and no data collection — so you can generate rules
-                instantly, privately, and as many times as you need.
+                Rule generation runs entirely in your browser — no accounts, no
+                server-side processing of your rules, and no rule-content uploads —
+                so you can generate rules instantly and as many times as you need.
+                Anonymous usage analytics are described in the Privacy &amp; Data
+                section below.
               </p>
 
               {/* ---- Stat highlights: 打破长文字段落的阅读疲劳 ---- */}
@@ -326,7 +328,7 @@ export default function AboutPage() {
               </div>
             ))}
           </div>
-          <p className="text-sm text-zinc-500 dark:text-zinc-500 mt-2">
+          <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-2">
             {frameworkList.length} templates total — select one or combine
             multiple for full-stack projects.
           </p>
@@ -450,7 +452,8 @@ export default function AboutPage() {
             output formats, funnel completion, and copy or download actions.
             Event tracking sends only fixed identifiers and aggregate counts;
             it does not send rule text, rule titles, generated output, or search
-            input.
+            input. The generator interface is also explicitly masked from Clarity
+            session recordings so its contents are not uploaded.
             If you prefer complete isolation, you can clone the repository and
             run the generator entirely offline.
           </p>

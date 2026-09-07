@@ -95,7 +95,7 @@ export default function StepIndicator({
       </div>
 
       {/* Progress text */}
-      <p className="text-center text-xs text-zinc-400 dark:text-zinc-500">
+      <p className="text-center text-xs text-zinc-600 dark:text-zinc-400">
         Step {currentStep} of {steps.length}
         {currentStep < steps.length && ` — ${Math.round((currentStep / steps.length) * 100)}% complete`}
         {currentStep === steps.length && ' — Ready to download!'}

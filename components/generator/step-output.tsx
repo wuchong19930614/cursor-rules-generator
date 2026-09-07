@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import RulePreview from './rule-preview';
 import {
   generateProjectRules,
@@ -63,8 +63,64 @@ export default function StepOutput({
   >('idle');
   const [zipError, setZipError] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const downloadMenuRef = useRef<HTMLDivElement>(null);
+  const downloadButtonRef = useRef<HTMLButtonElement>(null);
 
   const outputMode = config.outputMode || 'project-rules';
+
+  useEffect(() => {
+    if (!showDropdown) return;
+
+    const menuItems = () =>
+      Array.from(
+        downloadMenuRef.current?.querySelectorAll<HTMLButtonElement>(
+          '[role="menuitem"]'
+        ) ?? []
+      );
+    menuItems()[0]?.focus();
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (
+        downloadMenuRef.current?.contains(event.target as Node) ||
+        downloadButtonRef.current?.contains(event.target as Node)
+      ) {
+        return;
+      }
+      setShowDropdown(false);
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        setShowDropdown(false);
+        downloadButtonRef.current?.focus();
+        return;
+      }
+
+      if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) {
+        return;
+      }
+      const items = menuItems();
+      if (items.length === 0) return;
+      event.preventDefault();
+      const currentIndex = items.indexOf(document.activeElement as HTMLButtonElement);
+      let nextIndex = currentIndex;
+      if (event.key === 'ArrowDown') nextIndex = (currentIndex + 1) % items.length;
+      if (event.key === 'ArrowUp') {
+        nextIndex = (currentIndex - 1 + items.length) % items.length;
+      }
+      if (event.key === 'Home') nextIndex = 0;
+      if (event.key === 'End') nextIndex = items.length - 1;
+      items[nextIndex]?.focus();
+    };
+
+    document.addEventListener('pointerdown', handlePointerDown);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [showDropdown]);
 
   // 计算输出
   const legacyContent = useMemo(
@@ -352,8 +408,13 @@ export default function StepOutput({
         {/* Download dropdown */}
         <div className="relative">
           <button
+            ref={downloadButtonRef}
             type="button"
             onClick={() => setShowDropdown(!showDropdown)}
+            disabled={downloadState === 'loading'}
+            aria-haspopup="menu"
+            aria-expanded={showDropdown}
+            aria-controls="download-menu"
             className="min-h-[44px] px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 flex items-center gap-2
               border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300
               hover:bg-zinc-50 dark:hover:bg-zinc-800 shadow-sm"
@@ -367,6 +428,8 @@ export default function StepOutput({
 
           {showDropdown && (
             <div
+              ref={downloadMenuRef}
+              id="download-menu"
               className="absolute bottom-full mb-1 left-0 w-56 py-1 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 shadow-lg z-30"
               role="menu"
             >
@@ -380,7 +443,7 @@ export default function StepOutput({
                         setShowDropdown(false);
                         handleDownloadZip();
                       }}
-                      className="w-full text-left px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800"
+                      className="min-h-11 w-full text-left px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800"
                     >
                       Download ZIP (.zip)
                     </button>
@@ -400,7 +463,7 @@ export default function StepOutput({
                           : '# No rules generated yet.';
                       handleDownloadSingle(filename, text);
                     }}
-                    className="w-full text-left px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800"
+                    className="min-h-11 w-full text-left px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800"
                   >
                     Download .mdc
                   </button>
@@ -414,7 +477,7 @@ export default function StepOutput({
                     setShowDropdown(false);
                     handleDownloadSingle('AGENTS.md', agentsMdContent);
                   }}
-                  className="w-full text-left px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800"
+                  className="min-h-11 w-full text-left px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800"
                 >
                   Download AGENTS.md
                 </button>
@@ -427,7 +490,7 @@ export default function StepOutput({
                     setShowDropdown(false);
                     handleDownloadLegacyZip();
                   }}
-                  className="w-full text-left px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800"
+                  className="min-h-11 w-full text-left px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800"
                 >
                   Download .cursorrules ZIP
                 </button>

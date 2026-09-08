@@ -99,6 +99,20 @@ describe("generateCursorRules", () => {
     expect(output).toContain("TypeScript in Next.js");
   });
 
+  it("preserves Next.js special filenames when applying naming preferences", () => {
+    const output = generateCursorRules(
+      makeConfig({
+        selectedTags: ["nextjs"],
+        namingConvention: "snake_case",
+        style: { namingConvention: "snake_case" },
+      })
+    );
+
+    expect(output).toContain("page.tsx");
+    expect(output).toContain("layout.tsx");
+    expect(output).not.toContain("page.snake_case");
+  });
+
   it("appends custom rules at the end", () => {
     const output = generateCursorRules(
       makeConfig({
@@ -156,7 +170,7 @@ describe("generateCursorRules", () => {
   it("replaces {{NAMING}} variable", () => {
     const output = generateCursorRules(
       makeConfig({
-        selectedTags: ["nextjs"],
+        selectedTags: ["typescript"],
         namingConvention: "PascalCase",
       })
     );

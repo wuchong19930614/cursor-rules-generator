@@ -22,7 +22,7 @@ export const nextjsTemplate: CursorRuleTemplate = {
       optional: false,
       tags: ['nextjs'],
       content: `- Use the App Router for all new pages.
-- Place page components in app/ directory with page.{{NAMING}} naming.
+- Place page components in the app/ directory using Next.js special files such as page.tsx and layout.tsx.
 - Use layout.tsx for shared layouts.
 - Use loading.tsx for loading states (Suspense boundaries).
 - Use error.tsx for error boundaries per route segment.

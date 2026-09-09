@@ -55,3 +55,11 @@ Yesterday's Next.js template fix was confirmed in production HTML: `page.tsx` an
 3. Investigate the migration guide exposure and Go query opportunity. Make one evidence-backed content experiment once query/device context is sufficient.
 
 Report generated with the seo-google workflow; API responses were used directly instead of requiring duplicate local credentials.
+
+## Follow-through on 2026-09-09
+
+Analytics isolation was published in commit `252fbd8`; GitHub CI and Vercel both reported success.
+
+The Go page's query report returned only `go/cursorattestation` (10 impressions), `procedi` (1), and `rules_go` (1), all with zero clicks. The three page-level clicks are not attributable to a visible query in this report. This is insufficient evidence for a keyword-focused rewrite.
+
+Instead, the Go template and its explanatory copy were corrected: use the testing method `t.TempDir()` (available since Go 1.15), remove the universal `cmd/internal/pkg` layout requirement, and clarify that returning an error unchanged preserves its chain. Sources: [Go module organization](https://go.dev/doc/modules/layout), [testing.T.TempDir](https://pkg.go.dev/testing#T.TempDir). The FAQ now distinguishes standard-library minimum versions from third-party dependency requirements. These are content-correctness improvements, not a claim of a measured SEO uplift.

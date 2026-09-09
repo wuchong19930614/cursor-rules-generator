@@ -21,7 +21,8 @@ export const goTemplate: CursorRuleTemplate = {
       title: 'Code Organization',
       optional: false,
       tags: ['go'],
-      content: `- Follow standard Go project layout (cmd/, internal/, pkg/).
+      content: `- Keep small modules simple; use cmd/ for multiple commands and internal/ for private implementation packages when needed.
+- Do not add pkg/ by default; follow the repository's existing package structure.
 - Use {{NAMING}} for unexported identifiers.
 - Use PascalCase for exported identifiers.
 - One package per directory — avoid package sprawl.
@@ -61,7 +62,7 @@ export const goTemplate: CursorRuleTemplate = {
 - Use subtests (t.Run) for organizing test cases.
 - Use testify for assertions when readability benefits.
 - Use test helpers with t.Helper() for better error reporting.
-- Use testing.TempDir() for temporary test directories.
+- Use t.TempDir() for automatically cleaned-up temporary test directories (Go 1.15+).
 - Run tests with -race flag to detect data races.`,
     },
   ],

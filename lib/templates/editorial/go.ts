@@ -5,16 +5,16 @@ import type { TemplateEditorial } from './types';
 
 export const goEditorial: TemplateEditorial = {
   slug: 'go',
-  lastUpdated: '2026-07-03',
+  lastUpdated: '2026-09-09',
   intro: [
     'Go looks like an easy language for Cursor to write — small grammar, one formatting style, a famously boring standard library. That surface simplicity is exactly the trap. The hard parts of Go are invisible in a single file: whether an error keeps its chain when it crosses three package boundaries, whether a goroutine started on line 40 can ever exit, whether a package belongs in internal/ or is about to become someone else\'s permanent API. Cursor gets the syntax right every time and these decisions wrong often enough to matter.',
-    'This rules file encodes the conventions Go teams actually enforce in review: errors wrapped with %w and inspected with errors.Is/errors.As, goroutines that take a context and are waited on, standard cmd/-internal/-pkg/ layout, and table-driven tests run under -race. Copy the rules directly, or open the generator to combine them with the rest of your stack before downloading.',
+    'This rules file covers error wrapping with %w and inspection with errors.Is/errors.As, goroutine cancellation and completion, focused packages, and table-driven tests run under -race. Start with your existing module layout; cmd/ and internal/ are useful when the project needs them, while pkg/ is not required. Copy the rules directly, or open the generator to combine them with the rest of your stack before downloading.',
   ],
   designNotes: [
     {
       heading: 'Error wrapping: why %w is a rule, not a suggestion',
       paragraphs: [
-        'The most common defect in AI-generated Go is the bare return: `if err != nil { return err }`. It compiles, it passes review at a glance, and it strips every layer of context — by the time the error reaches your logs it reads "connection refused" with no hint of which of nine downstream calls produced it. The template requires fmt.Errorf("context: %w", err) so each hop annotates the chain instead of erasing it.',
+        'Returning an error unchanged preserves its chain but adds no information about the operation that failed. When callers need that context, fmt.Errorf("load configuration: %w", err) can add it while preserving the wrapped error for inspection. Choose wrapping deliberately at package boundaries because callers can depend on errors exposed through the chain.',
         'The %w verb matters as much as the message. Wrapping with %v (or building strings by hand) produces an error that looks fine in logs but breaks errors.Is and errors.As, which is why the rules pair the two: wrap with %w on the way up, inspect with errors.Is/errors.As at the decision point. Without that pairing, Cursor falls back to the pattern it sees everywhere in older training data — strings.Contains(err.Error(), "not found") — a comparison that shatters the moment anyone rewords an error message. Defining custom error types with an Error() method gives errors.As a concrete target for the cases where callers need structured data, not just a sentinel.',
       ],
     },
@@ -28,7 +28,7 @@ export const goEditorial: TemplateEditorial = {
     {
       heading: 'cmd/, internal/, and one package per directory',
       paragraphs: [
-        'Package layout is where Cursor most needs a map, because Go\'s compiler will happily accept structures that Go programmers will not. Left alone, Cursor scatters helpers into a utils package, splits one concern across three directories, or — worse — exports everything, turning implementation details into API that other teams start importing. The layout rules give it the standard skeleton: entry points under cmd/, private code under internal/ (which the Go toolchain physically prevents outsiders from importing — the only layout rule the compiler enforces for you), and one cohesive package per directory.',
+        'Go does not require one directory skeleton for every project. A small module can start with its package or command in the root. For multiple commands, cmd/ separates entry points; internal/ restricts imports to the directory tree rooted at its parent. The template asks Cursor to preserve the existing structure and introduce these directories when useful, without adding pkg/ as a mandatory layer.',
         'The naming rules do double duty here. camelCase for unexported and PascalCase for exported identifiers is not just style — in Go, capitalization is the visibility system. When Cursor generates a helper as PascalCase out of habit, it has silently widened your public API. Making the convention explicit keeps generated identifiers unexported until someone decides otherwise.',
       ],
     },
@@ -54,7 +54,7 @@ export const goEditorial: TemplateEditorial = {
     {
       question: 'Do these rules work on older Go versions?',
       answer:
-        'Everything here works on Go 1.13 or newer, which is when %w wrapping and errors.Is/errors.As landed — and any module you touch today is well past that. If you are on a modern toolchain (1.21+), you can extend the concurrency guidance with a custom rule pointing Cursor at errgroup or the newer sync primitives; the template deliberately sticks to the standard-library core that every codebase shares.',
+        'The standard-library APIs named here require Go 1.15 or newer: %w wrapping and errors.Is/errors.As arrived in Go 1.13, but t.TempDir() was added in Go 1.15. Check the go directive in go.mod and your supported toolchains before adopting a rule. For older projects, replace t.TempDir() with a compatible temporary-directory helper and explicit cleanup. Optional third-party dependencies such as testify have their own version requirements.',
     },
     {
       question: 'How do I add conventions for Gin, Echo, gRPC, or my ORM?',

@@ -41,6 +41,18 @@ async function downloadFromMenu(
   };
 }
 
+test('local generation does not load or send production analytics', async ({ page }) => {
+  const requests: string[] = [];
+  page.on('request', (request) => {
+    if (/googletagmanager\.com|google-analytics\.com|clarity\.ms/.test(request.url())) requests.push(request.url());
+  });
+  await page.goto(generatorUrl({ t: ['react'], om: 'agents-md' }));
+  await finishWizard(page);
+  await page.waitForLoadState('networkidle');
+  expect(requests).toEqual([]);
+  expect(await page.evaluate(() => ({ gtag: typeof window.gtag, clarity: typeof window.clarity, dataLayer: window.dataLayer }))).toEqual({ gtag: 'undefined', clarity: 'undefined', dataLayer: undefined });
+});
+
 test('restores shared state without a hydration error', async ({ page }) => {
   const pageErrors: string[] = [];
   page.on('pageerror', (error) => pageErrors.push(error.message));

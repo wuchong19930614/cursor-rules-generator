@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   getGoogleAnalyticsInitScript,
   GOOGLE_ANALYTICS_TAG_ID,
+  isProductionAnalyticsUrl,
   sanitizeAnalyticsPageLocation,
   trackGeneratorEvent,
   trackPageView,
@@ -12,6 +13,18 @@ afterEach(() => {
 });
 
 describe('privacy-safe generator analytics', () => {
+  it.each(['http://127.0.0.1:3100/', 'http://localhost:3000/', 'https://preview.vercel.app/', 'https://www.cursorgenerator.dev.example.com/', 'invalid'])('suppresses analytics outside production: %s', (href) => {
+    const gtag = vi.fn();
+    const clarity = vi.fn();
+    const browserWindow = { location: { href }, gtag, clarity };
+    vi.stubGlobal('window', browserWindow);
+    expect(isProductionAnalyticsUrl(href)).toBe(false);
+    trackPageView('https://www.cursorgenerator.dev/');
+    trackGeneratorEvent('generator_share', { output_mode: 'agents-md', selected_tag_count: 1 });
+    expect(gtag).not.toHaveBeenCalled();
+    expect(clarity).not.toHaveBeenCalled();
+    expect(browserWindow).not.toHaveProperty('dataLayer');
+  });
   it('removes generator state and transient authorization parameters while preserving attribution', () => {
     expect(
       sanitizeAnalyticsPageLocation(
@@ -108,7 +121,7 @@ describe('privacy-safe generator analytics', () => {
   it('sends the allowlisted conversion metadata to GA4 and the event name to Clarity', () => {
     const gtag = vi.fn();
     const clarity = vi.fn();
-    vi.stubGlobal('window', { gtag, clarity });
+    vi.stubGlobal('window', { gtag, clarity, location: { href: 'https://www.cursorgenerator.dev/' } });
 
     trackGeneratorEvent('rules_download', {
       output_mode: 'project-rules',
@@ -119,6 +132,7 @@ describe('privacy-safe generator analytics', () => {
     });
 
     expect(gtag).toHaveBeenCalledWith('event', 'rules_download', {
+      page_location: 'https://www.cursorgenerator.dev/',
       output_mode: 'project-rules',
       selected_tag_count: 2,
       file_count: 3,
@@ -130,7 +144,7 @@ describe('privacy-safe generator analytics', () => {
 
   it('tracks sharing without accepting URL or custom-rule content', () => {
     const gtag = vi.fn();
-    vi.stubGlobal('window', { gtag });
+    vi.stubGlobal('window', { gtag, location: { href: 'https://www.cursorgenerator.dev/' } });
 
     trackGeneratorEvent('generator_share', {
       output_mode: 'agents-md',
@@ -138,6 +152,7 @@ describe('privacy-safe generator analytics', () => {
     });
 
     expect(gtag).toHaveBeenCalledWith('event', 'generator_share', {
+      page_location: 'https://www.cursorgenerator.dev/',
       output_mode: 'agents-md',
       selected_tag_count: 2,
     });
@@ -145,7 +160,7 @@ describe('privacy-safe generator analytics', () => {
 
   it('drops unexpected fields at the runtime analytics boundary', () => {
     const gtag = vi.fn();
-    vi.stubGlobal('window', { gtag });
+    vi.stubGlobal('window', { gtag, location: { href: 'https://www.cursorgenerator.dev/' } });
     const unsafeTrack = trackGeneratorEvent as (
       name: 'rules_copy',
       params: Record<string, string | number>
@@ -160,6 +175,7 @@ describe('privacy-safe generator analytics', () => {
     });
 
     expect(gtag).toHaveBeenCalledWith('event', 'rules_copy', {
+      page_location: 'https://www.cursorgenerator.dev/',
       output_mode: 'agents-md',
       selected_tag_count: 1,
       file_count: 1,
@@ -168,7 +184,7 @@ describe('privacy-safe generator analytics', () => {
   });
 
   it('queues events when gtag has not loaded yet', () => {
-    const browserWindow: { dataLayer?: unknown[] } = {};
+    const browserWindow: { dataLayer?: unknown[]; location: { href: string } } = { location: { href: 'https://www.cursorgenerator.dev/' } };
     vi.stubGlobal('window', browserWindow);
 
     trackGeneratorEvent('generator_start', {
@@ -183,6 +199,7 @@ describe('privacy-safe generator analytics', () => {
         'event',
         'generator_start',
         {
+          page_location: 'https://www.cursorgenerator.dev/',
           entry_step: 1,
           output_mode: 'project-rules',
           selected_tag_count: 0,

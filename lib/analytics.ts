@@ -5,6 +5,15 @@ type AnalyticsValue = string | number;
 export const GOOGLE_ANALYTICS_TAG_ID = 'G-2NM7XLC7H2';
 export const GOOGLE_ANALYTICS_READY_EVENT = 'google-analytics-ready';
 
+export function isProductionAnalyticsUrl(value: string): boolean {
+  try {
+    const { origin } = new URL(value);
+    return origin === 'https://www.cursorgenerator.dev' || origin === 'https://cursorgenerator.dev';
+  } catch {
+    return false;
+  }
+}
+
 const TRANSIENT_ANALYTICS_QUERY_PARAMS = [
   's',
   'state',
@@ -179,7 +188,7 @@ export function trackPageView(
   pageLocation?: string,
   pageReferrer?: string
 ): void {
-  if (typeof window === 'undefined') return;
+  if (typeof window === 'undefined' || !isProductionAnalyticsUrl(window.location?.href ?? '')) return;
 
   const currentPageLocation = pageLocation ?? window.location?.href;
   if (!currentPageLocation) return;
@@ -208,7 +217,7 @@ export function trackGeneratorEvent<Name extends GeneratorEventName>(
   name: Name,
   params: GeneratorEventParams[Name]
 ): void {
-  if (typeof window === 'undefined') return;
+  if (typeof window === 'undefined' || !isProductionAnalyticsUrl(window.location?.href ?? '')) return;
 
   const safeParams: Record<string, AnalyticsValue> = {};
   for (const key of PARAM_ALLOWLIST[name]) {

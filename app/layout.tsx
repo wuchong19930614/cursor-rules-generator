@@ -1,15 +1,9 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import localFont from "next/font/local";
 import Link from "next/link";
-import Script from "next/script";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import {
-  getGoogleAnalyticsInitScript,
-  GOOGLE_ANALYTICS_TAG_ID,
-} from "@/lib/analytics";
 import SiteHeader from "@/components/layout/site-header";
-import GoogleAnalyticsPageView from "@/components/analytics/google-analytics-page-view";
+import ProductionAnalytics from "@/components/analytics/production-analytics";
 import {
   getOrganizationSchema,
   getWebSiteSchema,
@@ -170,23 +164,7 @@ export default function RootLayout({
           Skip to content
         </a>
 
-        <Script
-          src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ANALYTICS_TAG_ID}`}
-          strategy="lazyOnload"
-        />
-        <Script id="gtag-init" strategy="lazyOnload">
-          {getGoogleAnalyticsInitScript(GOOGLE_ANALYTICS_TAG_ID)}
-        </Script>
-        <Script id="clarity-script" strategy="lazyOnload">
-          {`(function(c,l,a,r,i,t,y){
-    c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-    t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-    y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-})(window, document, "clarity", "script", "x58f26t4cc");`}
-        </Script>
-        <Suspense fallback={null}>
-          <GoogleAnalyticsPageView />
-        </Suspense>
+        <ProductionAnalytics />
         <SiteHeader navItems={primaryNav} />
         {children}
         <footer className="border-t border-zinc-200 bg-white dark:border-zinc-800 dark:bg-black">
